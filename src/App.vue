@@ -2,26 +2,48 @@
 import { ref, computed } from 'vue'
 import Circle from './model/Circle'
 
-const circles = ref([])
-const selectedCircleId = ref(null);
-const isContextMenuOpened = ref(false);
-const contextMenuLocation = ref({});
+const circles = ref({})
+const selectedCircleId = ref(null)
+const isContextMenuOpened = ref(false)
+const contextMenuLocation = ref({})
 const contextMenuStyles = computed(() => ({
   top: contextMenuLocation.value.y + 'px',
   left: contextMenuLocation.value.x + 'px'
 }))
 
+const selectedCircleRadius = computed({
+  get() {
+    if (!selectedCircleId.value) {
+      return 0
+    }
+
+    return circles.value[selectedCircleId.value].getR()
+  },
+  set(value) {
+    if (!selectedCircleId.value) {
+      return
+    }
+
+    circles.value[selectedCircleId.value].setR(value)
+  }
+});
+
 const createCircle = ({ clientX, clientY }) => {
   selectCircle();
-  const { length } = circles.value;
-  const circle = new Circle(length + 1, clientX, clientY);
+  const id = Object.keys(circles.value).length + 1;
+  const circle = new Circle(id, clientX, clientY);
 
-  circles.value.push(circle);
+  circles.value[id] = circle;
 }
 
+/**
+ * Method to open up custom context menu to manage element's properties
+ * - If selectCircle is called without arguments it will just deselect all circles
+ * 
+ * @param event click event to get clientX and clientY
+ * @param id circle id
+ */
 const selectCircle = (event, id) => {
-  console.log('>> event', event);
-  console.log('>> id', id);
   const { clientX, clientY } = event || {};
   selectedCircleId.value = id;
 
@@ -38,8 +60,6 @@ const selectCircle = (event, id) => {
     y: clientY,
     x: clientX,
   }
-
-  console.log('>> contextMenuStyles', contextMenuStyles);
 }
 </script>
 <template>
@@ -50,24 +70,31 @@ const selectCircle = (event, id) => {
       Right-click on a circle to adjust its radius
       </p>
     </foreignObject>
-    <circle v-for="circle in circles"
+    <circle v-for="(circle, key) in circles"
       class="circle"
       :cx="circle.getCx()"
       :cy="circle.getCy()"
       :r="circle.getR()"
       :class="{ selected: selectedCircleId === circle.getId() }"
-      @contextmenu.prevent="selectCircle($event, circle.getId())" />
+      @contextmenu.prevent="selectCircle($event, circle.getId())"
+      :key="key" />
   </svg>
   <div v-if="isContextMenuOpened"
     class="context-menu"
     :class="{ active: isContextMenuOpened }"
     :style="contextMenuStyles"
     >
-    <p>Adjust the radius of a selected circle</p>
+    <div class="context-menu_header">
+      <p>Adjust the radius of a selected circle</p>
+      <button @click="selectCircle">X</button>
+    </div>
     <div class="context-menu_range">
-      <span>1</span>
-      <input type="range" min="1" max="1000" step="1" />
-      <span>1000</span>
+      <div class="range-input">
+        <span>1</span>
+        <input type="range" min="1" max="1000" step="1" v-model="selectedCircleRadius" />
+        <span>1000</span>
+      </div>
+      <span class="selected-value">Current: {{ selectedCircleRadius }}</span>
     </div>
   </div>
 </template>
@@ -106,7 +133,7 @@ svg {
 .context-menu {
   position: absolute;
   width: 300px;
-  padding: 16px 32px;
+  padding: 16px 16px;
   border-radius: 8px;
   border: 1px solid #212529;
   text-align: center;
@@ -117,12 +144,28 @@ svg {
     display: block;
   }
 
-  &_range {
+  &_header {
     display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 8px;
 
+    button {
+      margin-top: 4px;
+      background-color: transparent;
+      padding: 2px 4px;
+      height: max-content;
+      cursor: pointer;
+      border: 1px solid #212529;
+      border-radius: 2px;
+      transition: all 0.1s ease-out;
+
+      &:hover {
+        background-color:#087f5b;
+        border: 1px solid #c3fae8;
+        color: #c3fae8;
+      }
+    }
+  }
+
+  &_range {
     input[type="range"] {
       -webkit-appearance: none; /* Remove default styling (Chrome, Safari, Edge) */
       appearance: none;
@@ -182,6 +225,19 @@ svg {
       height: 18px;
       border-radius: 50%;
       cursor: pointer;
+    }
+
+    .range-input {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      position: relative;
+    }
+
+    .selected-value {
+      font-size: 12px;
+      display: block;
     }
   }
 }
