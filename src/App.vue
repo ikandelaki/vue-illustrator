@@ -24,6 +24,11 @@ const selectedCircleRadius = computed({
       return
     }
 
+    if (value > 1000) {
+      circles.value[selectedCircleId.value].setR(1000)  
+      return
+    }
+
     circles.value[selectedCircleId.value].setR(value)
   }
 });
@@ -94,7 +99,10 @@ const selectCircle = (event, id) => {
         <input type="range" min="1" max="1000" step="1" v-model="selectedCircleRadius" />
         <span>1000</span>
       </div>
-      <span class="selected-value">Current: {{ selectedCircleRadius }}</span>
+      <div class="selected-value">
+        <span>Current: </span>
+        <input id="circle-radius" name="circle-radius" type="number" v-model="selectedCircleRadius" min="1" max="1000" />
+      </div>
     </div>
   </div>
 </template>
@@ -238,6 +246,22 @@ svg {
     .selected-value {
       font-size: 12px;
       display: block;
+    }
+  }
+
+  input {
+    background: transparent;
+    border: none;
+    text-decoration: underline;
+    color: #212529;
+    font-family: 'Fredoka';
+
+    &:focus,
+    &:focus-visible {
+      border: none;
+      outline: none;
+
+      color: #444;
     }
   }
 }
