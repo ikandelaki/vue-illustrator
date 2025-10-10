@@ -1,4 +1,5 @@
 export const DEFAULT_CIRCLE_RADIUS: number = 50;
+export const DEFAULT_CIRCLE_COLOR: string = '#ffffff';
 
 export interface CircleInterface {
 	id: number;
@@ -9,23 +10,32 @@ export interface CircleInterface {
 	setCx: (cx: number) => this;
 	getCy: () => number;
 	setCy: (cy: number) => this;
-	getR: () => number;
-	setR: (r: number) => this;
+	getRadius: () => number;
+	setRadius: (radius: number) => this;
 	getId: () => number;
-
+    getColor: () => string;
+    setColor: (color: string) => this;
 }
 
-export class Circle {
+export class Circle implements CircleInterface {
 	id: number;
 	cx: number;
 	cy: number;
-	r: number;
+	radius: number;
+    color: string;
 
-    constructor(id: number, cx: number, cy: number, r: number = DEFAULT_CIRCLE_RADIUS) {
+    constructor(
+        id: number,
+        cx: number,
+        cy: number,
+        radius: number = DEFAULT_CIRCLE_RADIUS,
+        color: string = DEFAULT_CIRCLE_COLOR
+    ) {
         this.id = id;
         this.cx = cx;
         this.cy = cy;
-        this.r = r;
+        this.radius = radius;
+        this.color = color;
     }
 
     /**
@@ -61,15 +71,15 @@ export class Circle {
     /**
      * Get Radius of a circle
      */
-    getR() {
-        return this.r;
+    getRadius() {
+        return this.radius;
     }
 
     /**
      * Set Radius of a circle
      */
-    setR(r) {
-        this.r = r;
+    setRadius(radius: number) {
+        this.radius = radius;
         return this;
     }
 
@@ -78,6 +88,27 @@ export class Circle {
      */
     getId() {
         return this.id;
+    }
+
+    /**
+     * Get color of a circle
+     * 
+     * @returns 
+     */
+    getColor() {
+        return this.color;
+    }
+
+    /**
+     * Set color of a circle
+     * 
+     * @param color
+     * @returns 
+     */
+    setColor(color) {
+        this.color = color;
+
+        return this;
     }
 }
 
