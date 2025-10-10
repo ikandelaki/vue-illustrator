@@ -1,72 +1,85 @@
 <script setup lang="ts">
-import { ref, computed } from 'vue'
-import Circle from './model/Circle'
+import { ref, computed, type Ref } from 'vue'
+import Circle, { CircleInterface } from './model/Circle'
+import ContextMenu from './components/ContextMenu.vue'
+import { ContextMenuLocation } from './types/ContextMenuLocation'
 
-const circles = ref({})
-const selectedCircleId = ref(null)
-const isContextMenuOpened = ref(false)
-const contextMenuLocation = ref({})
+const circles = ref<Record<number, CircleInterface>>({})
+const selectedCircleId = ref<number | null>(null)
+const isContextMenuOpened = ref<boolean>(false)
+const contextMenuLocation = ref<ContextMenuLocation>({ x: 0, y: 0 })
+const selectedCircleColor = computed({
+  get: () => {
+    if (!selectedCircleId.value) {
+      return '#ffffff';
+    }
+
+    console.log('>> val', circles.value[selectedCircleId.value].getColor())
+    return circles.value[selectedCircleId.value].getColor()
+  },
+  set: (color: string) => circles.value[selectedCircleId.value].setColor(color)
+})
+
+// computed style object for context menu
 const contextMenuStyles = computed(() => ({
-  top: contextMenuLocation.value.y + 'px',
-  left: contextMenuLocation.value.x + 'px'
+  top: `${contextMenuLocation.value.y}px`,
+  left: `${contextMenuLocation.value.x}px`
 }))
 
-const selectedCircleRadius = computed({
+// computed with getter & setter properly typed
+const selectedCircleRadius = computed<number>({
   get() {
     if (!selectedCircleId.value) {
       return 0
     }
 
-    return circles.value[selectedCircleId.value].getR()
+    const circle = circles.value[selectedCircleId.value]
+    return circle ? circle.getRadius() : 0
   },
-  set(value) {
+  set(value: number) {
     if (!selectedCircleId.value) {
       return
     }
 
-    if (value > 1000) {
-      circles.value[selectedCircleId.value].setR(1000)  
+    const circle = circles.value[selectedCircleId.value]
+    if (!circle) {
       return
     }
 
-    circles.value[selectedCircleId.value].setR(value)
+    const radius = Math.min(value, 1000)
+    circle.setRadius(radius)
   }
-});
+})
 
-const createCircle = ({ clientX, clientY }) => {
-  selectCircle();
-  const id = Object.keys(circles.value).length + 1;
-  const circle = new Circle(id, clientX, clientY);
+// typed event handler for SVG click
+const createCircle = (event: MouseEvent): void => {
+  selectCircle() // Deselect current selection
 
-  circles.value[id] = circle;
+  const { clientX, clientY } = event
+  const id = Object.keys(circles.value).length + 1
+  const circle = new Circle(id, clientX, clientY)
+
+  circles.value[id] = circle
 }
 
 /**
- * Method to open up custom context menu to manage element's properties
- * - If selectCircle is called without arguments it will just deselect all circles
- * 
- * @param event click event to get clientX and clientY
- * @param id circle id
+ * Opens up custom context menu to manage circle properties.
+ * If called without arguments, deselects all circles.
  */
-const selectCircle = (event, id) => {
-  const { clientX, clientY } = event || {};
-  selectedCircleId.value = id;
+const selectCircle = (event?: MouseEvent, id?: number | null): void => {
+  const { clientX = 0, clientY = 0 } = event ?? {}
+  selectedCircleId.value = id ?? null
 
-  // If no id is provided or it is null we will just deselect all circles and close context menu if opened
   if (!id) {
-    isContextMenuOpened.value = false;
-
-    return;
+    isContextMenuOpened.value = false
+    return
   }
 
-  // TODO: open context menu on top of a selected circle
-  isContextMenuOpened.value = true;
-  contextMenuLocation.value = {
-    y: clientY,
-    x: clientX,
-  }
+  isContextMenuOpened.value = true
+  contextMenuLocation.value = { x: clientX, y: clientY }
 }
 </script>
+
 <template>
   <svg @click="createCircle">
     <foreignObject x="0" y="40%" width="100%" height="200">
@@ -79,32 +92,20 @@ const selectCircle = (event, id) => {
       class="circle"
       :cx="circle.getCx()"
       :cy="circle.getCy()"
-      :r="circle.getR()"
+      :r="circle.getRadius()"
       :class="{ selected: selectedCircleId === circle.getId() }"
       @contextmenu.prevent="selectCircle($event, circle.getId())"
-      :key="key" />
+      :key="key"
+      :style="{ fill: circle.getColor() }"
+      />
   </svg>
-  <div v-if="isContextMenuOpened"
-    class="context-menu"
-    :class="{ active: isContextMenuOpened }"
-    :style="contextMenuStyles"
-    >
-    <div class="context-menu_header">
-      <p>Adjust the radius of a selected circle</p>
-      <button @click="selectCircle">X</button>
-    </div>
-    <div class="context-menu_range">
-      <div class="range-input">
-        <span>1</span>
-        <input type="range" min="1" max="1000" step="1" v-model="selectedCircleRadius" />
-        <span>1000</span>
-      </div>
-      <div class="selected-value">
-        <span>Current: </span>
-        <input id="circle-radius" name="circle-radius" type="number" v-model="selectedCircleRadius" min="1" max="1000" />
-      </div>
-    </div>
-  </div>
+  <ContextMenu 
+      :isContextMenuOpened
+      :style="contextMenuStyles"
+      v-model:selectedCircleRadius="selectedCircleRadius"
+      v-model:selectedCircleColor="selectedCircleColor"
+      @select-circle="selectCircle"
+    />
 </template>
 
 <style>
@@ -135,134 +136,6 @@ svg {
 
   &.selected {
     fill: #868e96;
-  }
-}
-
-.context-menu {
-  position: absolute;
-  width: 300px;
-  padding: 16px 16px;
-  border-radius: 8px;
-  border: 1px solid #212529;
-  text-align: center;
-  background-color: #0ca678;
-  font-family: 'Fredoka';
-
-  &.active {
-    display: block;
-  }
-
-  &_header {
-    display: flex;
-
-    button {
-      margin-top: 4px;
-      background-color: transparent;
-      padding: 2px 4px;
-      height: max-content;
-      cursor: pointer;
-      border: 1px solid #212529;
-      border-radius: 2px;
-      transition: all 0.1s ease-out;
-
-      &:hover {
-        background-color:#087f5b;
-        border: 1px solid #c3fae8;
-        color: #c3fae8;
-      }
-    }
-  }
-
-  &_range {
-    input[type="range"] {
-      -webkit-appearance: none; /* Remove default styling (Chrome, Safari, Edge) */
-      appearance: none;
-      width: 100%;
-      height: 6px;
-      background: #ddd;
-      border-radius: 5px;
-      outline: none;
-    }
-
-    /* --- TRACK --- */
-    input[type="range"]::-webkit-slider-runnable-track {
-      background: #087f5b; /* 🟢 your custom color */
-      height: 6px;
-      border-radius: 5px;
-    }
-
-    input[type="range"]::-moz-range-track {
-      background: #087f5b;
-      height: 6px;
-      border-radius: 5px;
-    }
-
-    input[type="range"]::-ms-track {
-      background: #087f5b;
-      height: 6px;
-      border-radius: 5px;
-      border-color: transparent;
-      color: transparent;
-    }
-
-    /* --- THUMB --- */
-    input[type="range"]::-webkit-slider-thumb {
-      -webkit-appearance: none;
-      appearance: none;
-      background: #212529;
-      width: 18px;
-      height: 18px;
-      border-radius: 50%;
-      cursor: pointer;
-      margin-top: -6px; /* centers the thumb */
-    }
-
-    input[type="range"]::-moz-range-thumb {
-      background: #212529;
-      border: none;
-      width: 18px;
-      height: 18px;
-      border-radius: 50%;
-      cursor: pointer;
-    }
-
-    input[type="range"]::-ms-thumb {
-      background: #212529;
-      border: none;
-      width: 18px;
-      height: 18px;
-      border-radius: 50%;
-      cursor: pointer;
-    }
-
-    .range-input {
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 8px;
-      position: relative;
-    }
-
-    .selected-value {
-      font-size: 12px;
-      display: block;
-    }
-  }
-
-  input {
-    background: transparent;
-    border: none;
-    text-decoration: underline;
-    color: #212529;
-    font-family: 'Fredoka';
-
-    &:focus,
-    &:focus-visible {
-      border: none;
-      outline: none;
-
-      color: #444;
-    }
   }
 }
 </style>
