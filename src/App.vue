@@ -14,10 +14,15 @@ const selectedCircleColor = computed({
       return '#ffffff';
     }
 
-    console.log('>> val', circles.value[selectedCircleId.value].getColor())
     return circles.value[selectedCircleId.value].getColor()
   },
-  set: (color: string) => circles.value[selectedCircleId.value].setColor(color)
+  set: (color: string) => {
+    if (!selectedCircleId.value) {
+      return;
+    }
+
+    circles.value[selectedCircleId.value].setColor(color)
+  }
 })
 
 // computed style object for context menu
@@ -100,10 +105,10 @@ const selectCircle = (event?: MouseEvent, id?: number | null): void => {
       />
   </svg>
   <ContextMenu 
-      :isContextMenuOpened
+      :is-context-menu-opened="isContextMenuOpened"
       :style="contextMenuStyles"
-      v-model:selectedCircleRadius="selectedCircleRadius"
-      v-model:selectedCircleColor="selectedCircleColor"
+      v-model:selected-circle-radius="selectedCircleRadius"
+      v-model:selected-circle-color="selectedCircleColor"
       @select-circle="selectCircle"
     />
 </template>
