@@ -1,17 +1,17 @@
 <script setup lang="ts">
 import { inject, ref } from 'vue'
 import { testRefKey, testRefTypeInterface } from '../keys/keys'
+import { CircleMenuItemsInterface } from '../types/CircleMenuItems';
 
 const { testRef, increaseTestRef } = inject<testRefTypeInterface>(testRefKey, {
   testRef: ref(0),
   increaseTestRef: () => {}
 })
 
-const selectedCircleRadius = defineModel('selectedCircleRadius')
 const selectedCircleColor = defineModel('selectedCircleColor')
 
-defineProps<{
-    isContextMenuOpened?: boolean,
+const props = defineProps<{
+    menuItems?: Array<CircleMenuItemsInterface>,
     contextMenuStyles?: Record<string, string>,
     selectedCircleRadius?: number,
     selectedCircleColor?: string
@@ -23,20 +23,28 @@ defineEmits<{
 
 const selectedMenuItemIndex = ref<string>('')
 const menuItems = ref<string[]>(['Circle radius', 'Color'])
+
+console.log('>> circleMenuItems', props.menuItems);
 </script>
 
 <template>
-  <div class="context-menu"
-  :class="{ active: isContextMenuOpened }"
-  :style="contextMenuStyles">
+  <div class="context-menu" :style="contextMenuStyles">
     <div class="context-menu_parent" v-if="!selectedMenuItemIndex">
       <p v-for="(menuItem) in menuItems" @click="selectedMenuItemIndex = menuItem">
         <span>{{ menuItem }}</span>
         <span>></span>
       </p>
     </div>
-    <div v-if="selectedMenuItemIndex">
-      <div class="context-menu_header">
+    <!-- <div v-if="selectedMenuItemIndex"> -->
+      <div v-for="(menuItem, index) in menuItems" :key="index">
+        {{ menuItem.child }}
+        <component
+          :is="menuItem.child"
+          v-bind="menuItem.props"
+          v-model="menuItem.props.vModel"
+        />
+      </div>
+      <!-- <div class="context-menu_header">
         <p>Adjust the radius of a selected circle</p>
         <button @click="$emit('select-circle')">X</button>
       </div>
@@ -50,13 +58,13 @@ const menuItems = ref<string[]>(['Circle radius', 'Color'])
           <span>Current: </span>
           <input id="circle-radius" name="circle-radius" type="number" v-model="selectedCircleRadius" min="1" max="1000" />
         </div>
-      </div>
+      </div> -->
       <div class="context-menu_color">
         <p>Choose the color:</p>
         <input id="color-picker" type="color" v-model="selectedCircleColor" />
       </div>
       <button @click="increaseTestRef">{{ testRef }}</button>
-    </div>
+    <!-- </div> -->
   </div>
 </template>
 

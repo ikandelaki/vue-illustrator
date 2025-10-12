@@ -4,6 +4,7 @@ import Circle, { CircleInterface } from './model/Circle'
 import { ContextMenuLocation } from './types/ContextMenuLocation'
 import { testRefKey } from './keys/keys'
 import Loader from './components/Loader.vue'
+import RangeInput from './components/RangeInput.vue'
 
 const ContextMenu = defineAsyncComponent({
   loader: () => import('./components/ContextMenu.vue'),
@@ -99,6 +100,14 @@ const selectCircle = (event?: MouseEvent, id?: number | null): void => {
   isContextMenuOpened.value = true
   contextMenuLocation.value = { x: clientX, y: clientY }
 }
+
+const circleMenuItems = [{
+  name: 'Color range',
+  child: RangeInput,
+  props: {
+    vModel: selectedCircleRadius
+  }
+}]
 </script>
 
 <template>
@@ -121,11 +130,10 @@ const selectCircle = (event?: MouseEvent, id?: number | null): void => {
       />
   </svg>
   <ContextMenu v-if="isContextMenuOpened"
-      :isContextMenuOpened
       :style="contextMenuStyles"
-      v-model:selectedCircleRadius="selectedCircleRadius"
       v-model:selectedCircleColor="selectedCircleColor"
       @select-circle="selectCircle"
+      :menuItems="circleMenuItems"
     />
 </template>
 
