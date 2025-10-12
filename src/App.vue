@@ -1,9 +1,15 @@
 <script setup lang="ts">
-import { ref, computed, provide, readonly } from 'vue'
+import { ref, computed, provide, readonly, defineAsyncComponent } from 'vue'
 import Circle, { CircleInterface } from './model/Circle'
-import ContextMenu from './components/ContextMenu.vue'
 import { ContextMenuLocation } from './types/ContextMenuLocation'
 import { testRefKey } from './keys/keys'
+import Loader from './components/Loader.vue'
+
+const ContextMenu = defineAsyncComponent({
+  loader: () => import('./components/ContextMenu.vue'),
+  loadingComponent: Loader,
+  delay: 200
+})
 
 const circles = ref<Record<number, CircleInterface>>({})
 const selectedCircleId = ref<number | null>(null)
@@ -17,6 +23,7 @@ provide(testRefKey, {
   testRef: readonly(testRef),
   increaseTestRef
 });
+
 const selectedCircleColor = computed({
   get: () => {
     if (!selectedCircleId.value) {
@@ -113,7 +120,7 @@ const selectCircle = (event?: MouseEvent, id?: number | null): void => {
       :style="{ fill: circle.getColor() }"
       />
   </svg>
-  <ContextMenu 
+  <ContextMenu v-if="isContextMenuOpened"
       :isContextMenuOpened
       :style="contextMenuStyles"
       v-model:selectedCircleRadius="selectedCircleRadius"

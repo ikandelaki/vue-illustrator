@@ -20,7 +20,7 @@ defineEmits<{
 </script>
 
 <template>
-    <div v-if="isContextMenuOpened"
+    <div
     class="context-menu"
     :class="{ active: isContextMenuOpened }"
     :style="contextMenuStyles"
