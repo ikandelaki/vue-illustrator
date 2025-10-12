@@ -1,27 +1,22 @@
 <script setup lang="ts">
-import { computed } from 'vue'
+import { inject, ref } from 'vue'
+import { testRefKey, testRefTypeInterface } from '../keys/keys'
 
-const props = defineProps<{
+const { testRef, increaseTestRef } = inject<testRefTypeInterface>(testRefKey, { testRef: ref(0), increaseTestRef: () => {} })
+
+const selectedCircleRadius = defineModel('selectedCircleRadius')
+const selectedCircleColor = defineModel('selectedCircleColor')
+
+defineProps<{
     isContextMenuOpened?: boolean,
     contextMenuStyles?: Record<string, string>,
     selectedCircleRadius?: number,
     selectedCircleColor?: string
 }>()
-const emit = defineEmits<{
-    (e: 'update:selectedCircleRadius', value: number): void
-    (e: 'update:selectedCircleColor', value: string): void
+
+defineEmits<{
     (e: 'select-circle'): void
 }>()
-
-const radiusProxy = computed({
-    get: () => props.selectedCircleRadius,
-    set: (value: number) => emit('update:selectedCircleRadius', value)
-})
-
-const colorProxy = computed({
-    get: () => props.selectedCircleColor,
-    set: (value: string) => emit('update:selectedCircleColor', value)
-})
 </script>
 
 <template>
@@ -37,18 +32,19 @@ const colorProxy = computed({
     <div class="context-menu_range">
       <div class="range-input">
         <span>1</span>
-        <input type="range" min="1" max="1000" step="1" v-model="radiusProxy" />
+        <input type="range" min="1" max="1000" step="1" v-model="selectedCircleRadius" />
         <span>1000</span>
       </div>
       <div class="selected-value">
         <span>Current: </span>
-        <input id="circle-radius" name="circle-radius" type="number" v-model="radiusProxy" min="1" max="1000" />
+        <input id="circle-radius" name="circle-radius" type="number" v-model="selectedCircleRadius" min="1" max="1000" />
       </div>
     </div>
     <div class="context-menu_color">
       <p>Choose the color:</p>
-      <input id="color-picker" type="color" v-model="colorProxy" />
+      <input id="color-picker" type="color" v-model="selectedCircleColor" />
     </div>
+    <button @click="increaseTestRef">{{ testRef }}</button>
   </div>
 </template>
 
