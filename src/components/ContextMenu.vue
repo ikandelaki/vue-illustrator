@@ -2,7 +2,10 @@
 import { inject, ref } from 'vue'
 import { testRefKey, testRefTypeInterface } from '../keys/keys'
 
-const { testRef, increaseTestRef } = inject<testRefTypeInterface>(testRefKey, { testRef: ref(0), increaseTestRef: () => {} })
+const { testRef, increaseTestRef } = inject<testRefTypeInterface>(testRefKey, {
+  testRef: ref(0),
+  increaseTestRef: () => {}
+})
 
 const selectedCircleRadius = defineModel('selectedCircleRadius')
 const selectedCircleColor = defineModel('selectedCircleColor')
@@ -17,41 +20,50 @@ defineProps<{
 defineEmits<{
     (e: 'select-circle'): void
 }>()
+
+const selectedMenuItemIndex = ref<string>('')
+const menuItems = ref<string[]>(['Circle radius', 'Color'])
 </script>
 
 <template>
-    <div
-    class="context-menu"
-    :class="{ active: isContextMenuOpened }"
-    :style="contextMenuStyles"
-    >
-    <div class="context-menu_header">
-      <p>Adjust the radius of a selected circle</p>
-      <button @click="$emit('select-circle')">X</button>
+  <div class="context-menu"
+  :class="{ active: isContextMenuOpened }"
+  :style="contextMenuStyles">
+    <div class="context-menu_parent" v-if="!selectedMenuItemIndex">
+      <p v-for="(menuItem) in menuItems" @click="selectedMenuItemIndex = menuItem">
+        <span>{{ menuItem }}</span>
+        <span>></span>
+      </p>
     </div>
-    <div class="context-menu_range">
-      <div class="range-input">
-        <span>1</span>
-        <input type="range" min="1" max="1000" step="1" v-model="selectedCircleRadius" />
-        <span>1000</span>
+    <div v-if="selectedMenuItemIndex">
+      <div class="context-menu_header">
+        <p>Adjust the radius of a selected circle</p>
+        <button @click="$emit('select-circle')">X</button>
       </div>
-      <div class="selected-value">
-        <span>Current: </span>
-        <input id="circle-radius" name="circle-radius" type="number" v-model="selectedCircleRadius" min="1" max="1000" />
+      <div class="context-menu_range">
+        <div class="range-input">
+          <span>1</span>
+          <input type="range" min="1" max="1000" step="1" v-model="selectedCircleRadius" />
+          <span>1000</span>
+        </div>
+        <div class="selected-value">
+          <span>Current: </span>
+          <input id="circle-radius" name="circle-radius" type="number" v-model="selectedCircleRadius" min="1" max="1000" />
+        </div>
       </div>
+      <div class="context-menu_color">
+        <p>Choose the color:</p>
+        <input id="color-picker" type="color" v-model="selectedCircleColor" />
+      </div>
+      <button @click="increaseTestRef">{{ testRef }}</button>
     </div>
-    <div class="context-menu_color">
-      <p>Choose the color:</p>
-      <input id="color-picker" type="color" v-model="selectedCircleColor" />
-    </div>
-    <button @click="increaseTestRef">{{ testRef }}</button>
   </div>
 </template>
 
 <style scoped lang="scss">
 .context-menu {
   position: absolute;
-  width: 300px;
+  max-width: 300px;
   padding: 16px 16px;
   border-radius: 8px;
   border: 1px solid #212529;
@@ -61,6 +73,27 @@ defineEmits<{
 
   &.active {
     display: block;
+  }
+
+  &_parent {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+
+    p {
+      cursor: pointer;
+      display: flex;
+      justify-content: space-between;
+      gap: 8px;
+      
+      span {
+        &:first-child {
+          &:hover {
+            text-decoration: underline;
+          }
+        }
+      }
+    }
   }
 
   &_header {
