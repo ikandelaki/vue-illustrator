@@ -22,22 +22,20 @@ defineEmits<{
 }>()
 
 const selectedMenuItemIndex = ref<string>('')
-const menuItems = ref<string[]>(['Circle radius', 'Color'])
 
 console.log('>> circleMenuItems', props.menuItems);
 </script>
 
 <template>
   <div class="context-menu" :style="contextMenuStyles">
-    <div class="context-menu_parent" v-if="!selectedMenuItemIndex">
+    <!-- <div class="context-menu_parent" v-if="!selectedMenuItemIndex">
       <p v-for="(menuItem) in menuItems" @click="selectedMenuItemIndex = menuItem">
         <span>{{ menuItem }}</span>
         <span>></span>
       </p>
-    </div>
+    </div> -->
     <!-- <div v-if="selectedMenuItemIndex"> -->
       <div v-for="(menuItem, index) in menuItems" :key="index">
-        {{ menuItem.child }}
         <component
           :is="menuItem.child"
           v-bind="menuItem.props"
@@ -68,7 +66,7 @@ console.log('>> circleMenuItems', props.menuItems);
   </div>
 </template>
 
-<style scoped lang="scss">
+<style lang="scss">
 .context-menu {
   position: absolute;
   max-width: 300px;

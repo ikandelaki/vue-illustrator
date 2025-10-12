@@ -1,5 +1,5 @@
 <script setup lang="ts">
-const value = defineModel('value')
+const value = defineModel('vModel')
 
 defineProps<{ value?: number }>()
 
