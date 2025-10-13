@@ -5,5 +5,6 @@ export type CircleMenuItemsInterface = {
     child: DefineComponent<any, any, any>
     // Find proper type for this
     props?: Record<any, any>
-    modelValue: any
+    modelValue: any,
+    emit: any
 }

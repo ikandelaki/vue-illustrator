@@ -107,7 +107,8 @@ const circleMenuItems = [{
   name: 'Color range',
   child: RangeInput,
   props: {},
-  modelValue: selectedCircleRadius
+  modelValue: selectedCircleRadius,
+  emit: selectCircle
 }]
 </script>
 
@@ -133,7 +134,7 @@ const circleMenuItems = [{
   <ContextMenu v-if="isContextMenuOpened"
       :style="contextMenuStyles"
       v-model:selectedCircleColor="selectedCircleColor"
-      @select-circle="selectCircle"
+      @emit-event="selectCircle"
       :menuItems="circleMenuItems"
     />
 </template>

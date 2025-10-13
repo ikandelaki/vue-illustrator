@@ -4,7 +4,7 @@ const modelValue = defineModel('modelValue')
 // defineProps<{ modelValue?: any }>()
 
 defineEmits<{
-    (e: 'select-circle'): () => void
+    (e: 'emit-event'): () => void
     (e: 'update:modelValue', value: number): void
 }>()
 
@@ -15,7 +15,7 @@ console.log('modelValue', modelValue);
 <template>
     <div class="context-menu_header">
         <p>Adjust the radius of a selected circle</p>
-        <button @click="$emit('select-circle')">X</button>
+        <button @click="$emit('emit-event')">X</button>
       </div>
       <div class="context-menu_range">
         <div class="range-input">

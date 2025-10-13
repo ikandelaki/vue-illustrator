@@ -18,7 +18,7 @@ const props = defineProps<{
 }>()
 
 defineEmits<{
-    (e: 'select-circle'): void
+    (e: 'emit-event'): void
 }>()
 
 const selectedMenuItemIndex = ref<string>('')
@@ -40,6 +40,7 @@ console.log('>> circleMenuItems', props.menuItems);
           :is="menuItem.child"
           v-bind="menuItem.props"
           v-model:modelValue="menuItem.modelValue"
+          @emit-event="menuItem.emit"
         />
       </div>
       <!-- <div class="context-menu_header">
