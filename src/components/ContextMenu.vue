@@ -39,7 +39,7 @@ console.log('>> circleMenuItems', props.menuItems);
         <component
           :is="menuItem.child"
           v-bind="menuItem.props"
-          v-model="menuItem.props.vModel"
+          v-model:modelValue="menuItem.modelValue"
         />
       </div>
       <!-- <div class="context-menu_header">

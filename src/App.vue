@@ -51,6 +51,7 @@ const contextMenuStyles = computed(() => ({
 // computed with getter & setter properly typed
 const selectedCircleRadius = computed<number>({
   get() {
+    console.log('>> get');
     if (!selectedCircleId.value) {
       return 0
     }
@@ -59,6 +60,7 @@ const selectedCircleRadius = computed<number>({
     return circle ? circle.getRadius() : 0
   },
   set(value: number) {
+    console.log('>> selectedCircleRadius value', value)
     if (!selectedCircleId.value) {
       return
     }
@@ -104,9 +106,8 @@ const selectCircle = (event?: MouseEvent, id?: number | null): void => {
 const circleMenuItems = [{
   name: 'Color range',
   child: RangeInput,
-  props: {
-    vModel: selectedCircleRadius
-  }
+  props: {},
+  modelValue: selectedCircleRadius
 }]
 </script>
 
