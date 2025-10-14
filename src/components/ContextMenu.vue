@@ -1,31 +1,31 @@
 <script setup lang="ts">
+import { ref } from 'vue'
 import { CircleMenuItemsInterface } from '../types/CircleMenuItems';
+const selectedMenuItemIndex = ref<number | null>(null)
 
 defineProps<{
-    menuItems?: Array<CircleMenuItemsInterface>,
+    menuItems: Array<CircleMenuItemsInterface>,
     style?: Record<string, string>,
 }>()
 </script>
 
 <template>
   <div class="context-menu" :style>
-    <!-- <div class="context-menu_parent" v-if="!selectedMenuItemIndex">
-      <p v-for="(menuItem) in menuItems" @click="selectedMenuItemIndex = menuItem">
-        <span>{{ menuItem }}</span>
+    <div class="context-menu_parent" v-if="selectedMenuItemIndex === null">
+      <p v-for="(menuItem, index) in menuItems" @click="selectedMenuItemIndex = index">
+        <span>{{ menuItem.name }}</span>
         <span>></span>
       </p>
-    </div> -->
-    <!-- <div v-if="selectedMenuItemIndex"> -->
-      <div v-for="(menuItem, index) in menuItems" :key="index">
-        <component
-          :is="menuItem.child"
-          v-bind="menuItem.props"
-          :value="menuItem.value"
-          @update:value="menuItem.setValue"
-          @closeMenu="menuItem.closeMenu"
-        />
-      </div>
-    <!-- </div> -->
+    </div>
+    <div v-if="selectedMenuItemIndex !== null">
+      <component
+        :is="menuItems[selectedMenuItemIndex].child"
+        v-bind="menuItems[selectedMenuItemIndex].props"
+        :value="menuItems[selectedMenuItemIndex].value"
+        @update:value="menuItems[selectedMenuItemIndex].setValue"
+        @closeMenu="menuItems[selectedMenuItemIndex].closeMenu"
+      />
+    </div>
   </div>
 </template>
 

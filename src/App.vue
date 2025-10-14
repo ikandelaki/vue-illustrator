@@ -52,8 +52,6 @@ const selectedCircleColor = computed(() => {
       return '#ffffff';
     }
 
-    console.log('>> circles.value[selectedCircleId.value].getColor()', circles.value[selectedCircleId.value].getColor())
-
     return circles.value[selectedCircleId.value].getColor()
 })
 
