@@ -1,18 +1,14 @@
 <script setup lang="ts">
 import { CircleMenuItemsInterface } from '../types/CircleMenuItems';
 
-const selectedCircleColor = defineModel('selectedCircleColor')
-
 defineProps<{
     menuItems?: Array<CircleMenuItemsInterface>,
-    contextMenuStyles?: Record<string, string>,
-    selectedCircleRadius?: number,
-    selectedCircleColor?: string
+    style?: Record<string, string>,
 }>()
 </script>
 
 <template>
-  <div class="context-menu" :style="contextMenuStyles">
+  <div class="context-menu" :style>
     <!-- <div class="context-menu_parent" v-if="!selectedMenuItemIndex">
       <p v-for="(menuItem) in menuItems" @click="selectedMenuItemIndex = menuItem">
         <span>{{ menuItem }}</span>
@@ -24,14 +20,10 @@ defineProps<{
         <component
           :is="menuItem.child"
           v-bind="menuItem.props"
-          :value="menuItem.modelValue"
-          @update:value="menuItem.modelEmit"
+          :value="menuItem.value"
+          @update:value="menuItem.setValue"
           @closeMenu="menuItem.closeMenu"
         />
-      </div>
-      <div class="context-menu_color">
-        <p>Choose the color:</p>
-        <input id="color-picker" type="color" v-model="selectedCircleColor" />
       </div>
     <!-- </div> -->
   </div>

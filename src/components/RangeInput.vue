@@ -1,9 +1,11 @@
 <script setup lang="ts">
-defineProps<{ value?: any }>()
+import { ComputedRef } from 'vue';
+
+defineProps<{ value: ComputedRef<number> }>()
 
 defineEmits<{
     (e: 'closeMenu'): () => void
-    (e: 'update:value', value: number): () => void
+    (e: 'update:value', value?: number): () => void
 }>()
 
 </script>

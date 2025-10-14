@@ -1,11 +1,11 @@
-import { DefineComponent } from "vue"
+import { ComputedRef, Component } from "vue"
 
-export type CircleMenuItemsInterface = {
+export type CircleMenuItemsInterface<T = number | string> = {
     name: string,
-    child: DefineComponent<any, any, any>
+    child: Component
     // Find proper type for this
     props?: Record<any, any>
-    modelValue: any
-    modelEmit: any
-    closeMenu: any
+    value: ComputedRef<T>
+    setValue: (value?: T | null) => void
+    closeMenu?: () => void
 }
