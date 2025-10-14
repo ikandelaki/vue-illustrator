@@ -2,7 +2,6 @@
 import { ref, computed, provide, readonly, defineAsyncComponent } from 'vue'
 import Circle, { CircleInterface } from './model/Circle'
 import { ContextMenuLocation } from './types/ContextMenuLocation'
-import { testRefKey } from './keys/keys'
 import Loader from './components/Loader.vue'
 import RangeInput from './components/RangeInput.vue'
 
@@ -16,14 +15,6 @@ const circles = ref<Record<number, CircleInterface>>({})
 const selectedCircleId = ref<number | null>(null)
 const isContextMenuOpened = ref<boolean>(false)
 const contextMenuLocation = ref<ContextMenuLocation>({ x: 0, y: 0 })
-const testRef = ref<number>(2)
-const increaseTestRef = () => {
-  testRef.value++
-}
-provide(testRefKey, { 
-  testRef: readonly(testRef),
-  increaseTestRef
-});
 
 const selectedCircleColor = computed({
   get: () => {
@@ -48,32 +39,28 @@ const contextMenuStyles = computed(() => ({
   left: `${contextMenuLocation.value.x}px`
 }))
 
-// computed with getter & setter properly typed
-const selectedCircleRadius = computed<number>({
-  get() {
-    console.log('>> get');
-    if (!selectedCircleId.value) {
-      return 0
-    }
-
-    const circle = circles.value[selectedCircleId.value]
-    return circle ? circle.getRadius() : 0
-  },
-  set(value: number) {
-    console.log('>> selectedCircleRadius value', value)
-    if (!selectedCircleId.value) {
-      return
-    }
-
-    const circle = circles.value[selectedCircleId.value]
-    if (!circle) {
-      return
-    }
-
-    const radius = Math.min(value, 1000)
-    circle.setRadius(radius)
+const getSelectedCircleRadius = computed(() => {
+  if (!selectedCircleId.value) {
+    return 0
   }
+
+  const circle = circles.value[selectedCircleId.value]
+  return circle ? circle.getRadius() : 0
 })
+
+const updateSelectedCircleRadius = (value?: number) => {
+  if (!selectedCircleId.value || !value) {
+    return
+  }
+
+  const circle = circles.value[selectedCircleId.value]
+  if (!circle) {
+    return
+  }
+
+  const radius = Math.min(value, 1000)
+  circle.setRadius(radius)
+}
 
 // typed event handler for SVG click
 const createCircle = (event: MouseEvent): void => {
@@ -107,8 +94,9 @@ const circleMenuItems = [{
   name: 'Color range',
   child: RangeInput,
   props: {},
-  modelValue: selectedCircleRadius,
-  emit: selectCircle
+  modelValue: getSelectedCircleRadius,
+  modelEmit: updateSelectedCircleRadius,
+  closeMenu: selectCircle
 }]
 </script>
 
@@ -134,7 +122,7 @@ const circleMenuItems = [{
   <ContextMenu v-if="isContextMenuOpened"
       :style="contextMenuStyles"
       v-model:selectedCircleColor="selectedCircleColor"
-      @emit-event="selectCircle"
+      @closeMenu="selectCircle"
       :menuItems="circleMenuItems"
     />
 </template>

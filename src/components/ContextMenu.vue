@@ -1,29 +1,14 @@
 <script setup lang="ts">
-import { inject, ref } from 'vue'
-import { testRefKey, testRefTypeInterface } from '../keys/keys'
 import { CircleMenuItemsInterface } from '../types/CircleMenuItems';
-
-const { testRef, increaseTestRef } = inject<testRefTypeInterface>(testRefKey, {
-  testRef: ref(0),
-  increaseTestRef: () => {}
-})
 
 const selectedCircleColor = defineModel('selectedCircleColor')
 
-const props = defineProps<{
+defineProps<{
     menuItems?: Array<CircleMenuItemsInterface>,
     contextMenuStyles?: Record<string, string>,
     selectedCircleRadius?: number,
     selectedCircleColor?: string
 }>()
-
-defineEmits<{
-    (e: 'emit-event'): void
-}>()
-
-const selectedMenuItemIndex = ref<string>('')
-
-console.log('>> circleMenuItems', props.menuItems);
 </script>
 
 <template>
@@ -39,30 +24,15 @@ console.log('>> circleMenuItems', props.menuItems);
         <component
           :is="menuItem.child"
           v-bind="menuItem.props"
-          v-model:modelValue="menuItem.modelValue"
-          @emit-event="menuItem.emit"
+          :value="menuItem.modelValue"
+          @update:value="menuItem.modelEmit"
+          @closeMenu="menuItem.closeMenu"
         />
       </div>
-      <!-- <div class="context-menu_header">
-        <p>Adjust the radius of a selected circle</p>
-        <button @click="$emit('select-circle')">X</button>
-      </div>
-      <div class="context-menu_range">
-        <div class="range-input">
-          <span>1</span>
-          <input type="range" min="1" max="1000" step="1" v-model="selectedCircleRadius" />
-          <span>1000</span>
-        </div>
-        <div class="selected-value">
-          <span>Current: </span>
-          <input id="circle-radius" name="circle-radius" type="number" v-model="selectedCircleRadius" min="1" max="1000" />
-        </div>
-      </div> -->
       <div class="context-menu_color">
         <p>Choose the color:</p>
         <input id="color-picker" type="color" v-model="selectedCircleColor" />
       </div>
-      <button @click="increaseTestRef">{{ testRef }}</button>
     <!-- </div> -->
   </div>
 </template>
