@@ -4,7 +4,6 @@ import { ComputedRef } from 'vue';
 defineProps<{ value: ComputedRef<number> }>()
 
 defineEmits<{
-    (e: 'closeMenu'): () => void
     (e: 'update:value', value?: number): () => void
 }>()
 
@@ -13,7 +12,6 @@ defineEmits<{
 <template>
     <div class="context-menu_header">
         <p>Adjust the radius of a selected circle</p>
-        <button @click="$emit('closeMenu')">X</button>
       </div>
       <div class="context-menu_range">
         <div class="range-input">

@@ -6,6 +6,9 @@ import Loader from './components/Loader.vue'
 import RangeInput from './components/RangeInput.vue'
 import ColorInput from './components/ColorInput.vue'
 import { CircleMenuItemsInterface } from './types/CircleMenuItems'
+import Header from './components/Header.vue'
+import { CIRCLE, RECTANGLE, SHAPE_TYPES, ShapeType } from './types/ShapeTypes'
+import { DEFAULT_RECT_HEIGHT, DEFAULT_RECT_WIDTH, RectangleInterface } from './model/Rectangle'
 
 const ContextMenu = defineAsyncComponent({
   loader: () => import('./components/ContextMenu.vue'),
@@ -14,9 +17,11 @@ const ContextMenu = defineAsyncComponent({
 })
 
 const circles = ref<Record<number, CircleInterface>>({})
+const rectangles = ref<Record<number, RectangleInterface>>({});
 const selectedCircleId = ref<number | null>(null)
 const isContextMenuOpened = ref<boolean>(false)
 const contextMenuLocation = ref<ContextMenuLocation>({ x: 0, y: 0 })
+const selectedShape = ref<ShapeType>(CIRCLE)
 
 // computed style object for context menu
 const contextMenuStyles = computed(() => ({
@@ -91,14 +96,55 @@ const selectCircle = (event?: MouseEvent, id?: number | null): void => {
   contextMenuLocation.value = { x: clientX, y: clientY }
 }
 
+const createRectangle = (event: MouseEvent): void => {
+  const { clientX = 0, clientY = 0 } = event ?? {}
+  const id = Object.keys(rectangles.value).length + 1
+
+  const rect = {
+    id,
+    x: clientX,
+    y: clientY,
+    width: DEFAULT_RECT_WIDTH,
+    height: DEFAULT_RECT_HEIGHT,
+    rx: 0,
+    ry: 0
+  };
+
+  rectangles.value[id] = rect
+}
+
+const createObject = (event: MouseEvent): void => {
+  if (selectedShape.value === CIRCLE) {
+    createCircle(event)
+    return;
+  }
+
+  if (selectedShape.value === RECTANGLE) {
+    createRectangle(event)
+    return;
+  }
+}
+
+const setSelectedShape = (value: ShapeType) => {
+  if (!(value in SHAPE_TYPES)) {
+    console.error('>> setSelectedShape: not a correct shape type')
+    return;
+  }
+
+  if (value === selectedShape.value) {
+    return;
+  }
+
+  selectedShape.value = value;
+}
+
 const circleMenuItems: CircleMenuItemsInterface<any>[] = [
   {
     name: 'Radius',
     child: RangeInput,
     props: {},
     value: selectedCircleRadius,
-    setValue: setSelectedCircleRadius,
-    closeMenu: selectCircle
+    setValue: setSelectedCircleRadius
   },
   {
     name: 'Color',
@@ -111,7 +157,11 @@ const circleMenuItems: CircleMenuItemsInterface<any>[] = [
 </script>
 
 <template>
-  <svg @click="createCircle">
+  <Header
+    :selectedShape="selectedShape"
+    @select-shape="setSelectedShape"
+    />
+  <svg @click="createObject">
     <foreignObject x="0" y="40%" width="100%" height="200">
       <p class="canvas-details">
         Click on the canvas to draw a  circle. click on a circle to select it. <br />
@@ -119,7 +169,7 @@ const circleMenuItems: CircleMenuItemsInterface<any>[] = [
       </p>
     </foreignObject>
     <circle v-for="(circle, key) in circles"
-      class="circle"
+      class="shape circle"
       :cx="circle.getCx()"
       :cy="circle.getCy()"
       :r="circle.getRadius()"
@@ -128,12 +178,24 @@ const circleMenuItems: CircleMenuItemsInterface<any>[] = [
       :key="key"
       :style="{ fill: circle.getColor() }"
       />
+    <rect v-for="(rectangle, key) in rectangles"
+      class="shape rectangle"
+      :x="rectangle.x"
+      :y="rectangle.y"
+      :rx="rectangle.rx"
+      :ry="rectangle.ry"
+      :width="rectangle.width"
+      :height="rectangle.height"
+      :key="key"
+      :style="{ fill: rectangle.color }"
+    />
   </svg>
   <ContextMenu v-if="isContextMenuOpened"
       :style="contextMenuStyles"
       v-model:selectedCircleColor="selectedCircleColor"
       @closeMenu="selectCircle"
       :menuItems="circleMenuItems"
+      :closeMenu="selectCircle"
     />
 </template>
 
@@ -158,7 +220,7 @@ svg {
   color: #bbb;
 }
 
-.circle {
+.shape {
   fill: #fff;
   stroke: #212529;
   stroke-width: 1;

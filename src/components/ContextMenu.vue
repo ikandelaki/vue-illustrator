@@ -3,6 +3,10 @@ import { ref } from 'vue'
 import { CircleMenuItemsInterface } from '../types/CircleMenuItems';
 const selectedMenuItemIndex = ref<number | null>(null)
 
+defineEmits<{
+  (e: 'closeMenu'): () => void
+}>()
+
 defineProps<{
     menuItems: Array<CircleMenuItemsInterface>,
     style?: Record<string, string>,
@@ -12,19 +16,28 @@ defineProps<{
 <template>
   <div class="context-menu" :style>
     <div class="context-menu_parent" v-if="selectedMenuItemIndex === null">
+      <div class="context-menu_navigate">
+        <span>Adjust...</span>
+        <button @click="$emit('closeMenu')">X</button>
+      </div>
       <p v-for="(menuItem, index) in menuItems" @click="selectedMenuItemIndex = index">
         <span>{{ menuItem.name }}</span>
         <span>></span>
       </p>
     </div>
     <div v-if="selectedMenuItemIndex !== null">
-      <component
-        :is="menuItems[selectedMenuItemIndex].child"
-        v-bind="menuItems[selectedMenuItemIndex].props"
-        :value="menuItems[selectedMenuItemIndex].value"
-        @update:value="menuItems[selectedMenuItemIndex].setValue"
-        @closeMenu="menuItems[selectedMenuItemIndex].closeMenu"
-      />
+      <div class="context-menu_navigate">
+        <button @click="selectedMenuItemIndex = null">Back</button>
+        <button @click="$emit('closeMenu')">X</button>
+      </div>
+      <div class="context-menu_component">
+        <component
+          :is="menuItems[selectedMenuItemIndex].child"
+          v-bind="menuItems[selectedMenuItemIndex].props"
+          :value="menuItems[selectedMenuItemIndex].value"
+          @update:value="menuItems[selectedMenuItemIndex].setValue"
+        />
+      </div>
     </div>
   </div>
 </template>
@@ -67,23 +80,6 @@ defineProps<{
 
   &_header {
     display: flex;
-
-    button {
-      margin-top: 4px;
-      background-color: transparent;
-      padding: 2px 4px;
-      height: max-content;
-      cursor: pointer;
-      border: 1px solid #212529;
-      border-radius: 2px;
-      transition: all 0.1s ease-out;
-
-      &:hover {
-        background-color:#087f5b;
-        border: 1px solid #c3fae8;
-        color: #c3fae8;
-      }
-    }
   }
 
   &_range {
@@ -182,6 +178,32 @@ defineProps<{
     margin-top: 12px;
     display: flex;
     gap: 8px
+  }
+
+  button {
+    background-color: transparent;
+    padding: 2px 4px;
+    height: max-content;
+    cursor: pointer;
+    border: 1px solid #212529;
+    border-radius: 2px;
+    transition: all 0.1s ease-out;
+
+    &:hover {
+      background-color:#087f5b;
+      border: 1px solid #c3fae8;
+      color: #c3fae8;
+    }
+  }
+
+  &_navigate {
+    display: flex;
+    justify-content: space-between;
+    gap: 8px;
+  }
+
+  &_component {
+    margin-top: 8px;
   }
 }
 </style>
