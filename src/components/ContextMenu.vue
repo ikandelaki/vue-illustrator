@@ -1,26 +1,68 @@
 <script setup lang="ts">
-import { ref } from 'vue'
-import { CircleMenuItemsInterface } from '../types/CircleMenuItems';
-const selectedMenuItemIndex = ref<number | null>(null)
+import { computed, ref } from "vue";
+import { CircleMenuItemsInterface } from "../types/CircleMenuItems";
+import { useCirclesStore } from "../store/circles";
+import { storeToRefs } from "pinia";
+import RangeInput from "./RangeInput.vue";
+import ColorInput from "./ColorInput.vue";
+import { useContextMenuStore } from "../store/contextMenu";
 
-defineEmits<{
-  (e: 'closeMenu'): () => void
-}>()
+// Nested level of the context menu
+const selectedMenuItemIndex = ref<number | null>(null);
+
+const contextMenuStore = useContextMenuStore();
+const circlesStore = useCirclesStore();
+const { selectedCircleRadius, selectedCircleColor } = storeToRefs(circlesStore);
+const { setSelectedCircleRadius, setSelectedCircleColor, selectCircle } =
+  circlesStore;
+const { isContextMenuOpened, contextMenuLocation } =
+  storeToRefs(contextMenuStore);
+
+// computed style object for context menu
+const contextMenuStyles = computed(() => ({
+  top: `${contextMenuLocation.value.y}px`,
+  left: `${contextMenuLocation.value.x}px`,
+}));
+
+// Individual control elements in the context menu
+// like radius selector, color input, etc.
+const circleMenuItems: CircleMenuItemsInterface<any>[] = [
+  {
+    name: "Radius",
+    child: RangeInput,
+    props: {},
+    value: selectedCircleRadius,
+    setValue: setSelectedCircleRadius,
+  },
+  {
+    name: "Color",
+    child: ColorInput,
+    props: {},
+    value: selectedCircleColor,
+    setValue: setSelectedCircleColor,
+  },
+];
 
 defineProps<{
-    menuItems: Array<CircleMenuItemsInterface>,
-    style?: Record<string, string>,
-}>()
+  style?: Record<string, string>;
+}>();
 </script>
 
 <template>
-  <div class="context-menu" :style>
+  <div
+    class="context-menu"
+    :style="contextMenuStyles"
+    v-if="isContextMenuOpened"
+  >
     <div class="context-menu_parent" v-if="selectedMenuItemIndex === null">
       <div class="context-menu_navigate">
         <span>Adjust...</span>
-        <button @click="$emit('closeMenu')">X</button>
+        <button @click="selectCircle">X</button>
       </div>
-      <p v-for="(menuItem, index) in menuItems" @click="selectedMenuItemIndex = index">
+      <p
+        v-for="(menuItem, index) in circleMenuItems"
+        @click="selectedMenuItemIndex = index"
+      >
         <span>{{ menuItem.name }}</span>
         <span>></span>
       </p>
@@ -28,14 +70,14 @@ defineProps<{
     <div v-if="selectedMenuItemIndex !== null">
       <div class="context-menu_navigate">
         <button @click="selectedMenuItemIndex = null">Back</button>
-        <button @click="$emit('closeMenu')">X</button>
+        <button @click="selectCircle">X</button>
       </div>
       <div class="context-menu_component">
         <component
-          :is="menuItems[selectedMenuItemIndex].child"
-          v-bind="menuItems[selectedMenuItemIndex].props"
-          :value="menuItems[selectedMenuItemIndex].value"
-          @update:value="menuItems[selectedMenuItemIndex].setValue"
+          :is="circleMenuItems[selectedMenuItemIndex].child"
+          v-bind="circleMenuItems[selectedMenuItemIndex].props"
+          :value="circleMenuItems[selectedMenuItemIndex].value"
+          @update:value="circleMenuItems[selectedMenuItemIndex].setValue"
         />
       </div>
     </div>
@@ -51,7 +93,7 @@ defineProps<{
   border: 1px solid #212529;
   text-align: center;
   background-color: #0ca678;
-  font-family: 'Fredoka';
+  font-family: "Fredoka";
 
   &.active {
     display: block;
@@ -67,7 +109,7 @@ defineProps<{
       display: flex;
       justify-content: space-between;
       gap: 8px;
-      
+
       span {
         &:first-child {
           &:hover {
@@ -163,7 +205,7 @@ defineProps<{
     border: none;
     text-decoration: underline;
     color: #212529;
-    font-family: 'Fredoka';
+    font-family: "Fredoka";
 
     &:focus,
     &:focus-visible {
@@ -177,7 +219,7 @@ defineProps<{
   &_color {
     margin-top: 12px;
     display: flex;
-    gap: 8px
+    gap: 8px;
   }
 
   button {
@@ -190,7 +232,7 @@ defineProps<{
     transition: all 0.1s ease-out;
 
     &:hover {
-      background-color:#087f5b;
+      background-color: #087f5b;
       border: 1px solid #c3fae8;
       color: #c3fae8;
     }
