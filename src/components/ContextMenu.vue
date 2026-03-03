@@ -26,6 +26,7 @@ const contextMenuStyles = computed(() => ({
 
 // Individual control elements in the context menu
 // like radius selector, color input, etc.
+// -- If we need to add a new type of control element it should be added here
 const circleMenuItems: CircleMenuItemsInterface<any>[] = [
   {
     name: "Radius",

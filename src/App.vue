@@ -7,6 +7,7 @@ import { useCirclesStore } from "./store/circles";
 import { storeToRefs } from "pinia";
 import { useRectanglesStore } from "./store/rectangles";
 import Circles from "./components/Circles.vue";
+import Rectangles from "./components/Rectangles.vue";
 
 const ContextMenu = defineAsyncComponent({
   loader: () => import("./components/ContextMenu.vue"),
@@ -19,7 +20,6 @@ const rectanglesStore = useRectanglesStore();
 
 const { createCircle } = circlesStore;
 
-const { rectangles } = storeToRefs(rectanglesStore);
 const { createRectangle } = rectanglesStore;
 
 const selectedShape = ref<ShapeType>(CIRCLE);
@@ -61,18 +61,7 @@ const setSelectedShape = (value: ShapeType) => {
       </p>
     </foreignObject>
     <Circles />
-    <rect
-      v-for="(rectangle, key) in rectangles"
-      class="shape rectangle"
-      :x="rectangle.x"
-      :y="rectangle.y"
-      :rx="rectangle.rx"
-      :ry="rectangle.ry"
-      :width="rectangle.width"
-      :height="rectangle.height"
-      :key="key"
-      :style="{ fill: rectangle.color }"
-    />
+    <Rectangles />
   </svg>
   <ContextMenu />
 </template>
