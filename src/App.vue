@@ -4,8 +4,7 @@ import Loader from "./components/Loader.vue";
 import Header from "./components/Header.vue";
 import { CIRCLE, RECTANGLE, SHAPE_TYPES, ShapeType } from "./types/ShapeTypes";
 import { useObjectsStore } from "./store/objects";
-import Circles from "./components/Circles.vue";
-import Rectangles from "./components/Rectangles.vue";
+import Objects from "./components/Objects.vue";
 
 const ContextMenu = defineAsyncComponent({
   loader: () => import("./components/ContextMenu.vue"),
@@ -20,6 +19,7 @@ const selectedShape = ref<ShapeType>(CIRCLE);
 
 const handleCreateObject = (event: MouseEvent): void => {
   if (selectedShape.value === CIRCLE) {
+    console.log(">> creating circle");
     createObject(CIRCLE, event);
     return;
   }
@@ -54,8 +54,7 @@ const setSelectedShape = (value: ShapeType) => {
         Right-click on a circle to adjust its radius
       </p>
     </foreignObject>
-    <Circles />
-    <Rectangles />
+    <Objects />
   </svg>
   <ContextMenu />
 </template>

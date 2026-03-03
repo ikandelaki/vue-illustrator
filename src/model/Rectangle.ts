@@ -2,6 +2,8 @@ export const DEFAULT_RECT_WIDTH = 50;
 export const DEFAULT_RECT_HEIGHT = 40;
 export const DEFAULT_RECT_COLOR = "#fff";
 
+import { ShapeType, RECTANGLE } from "../types/ShapeTypes";
+
 export interface RectangleInterface {
   id: number;
   x: number;
@@ -11,7 +13,7 @@ export interface RectangleInterface {
   rx: number;
   ry: number;
   color: string;
-  type: string;
+  type: ShapeType;
   getX: () => number;
   setX: (x: number) => this;
   getY: () => number;
@@ -34,7 +36,7 @@ export class Rectangle implements RectangleInterface {
   rx: number;
   ry: number;
   color: string;
-  type: string = "RECTANGLE";
+  type: ShapeType; // assigned in constructor
 
   constructor(
     id: number,
@@ -54,6 +56,7 @@ export class Rectangle implements RectangleInterface {
     this.rx = rx;
     this.ry = ry;
     this.color = color;
+    this.type = RECTANGLE;
   }
 
   getX() {

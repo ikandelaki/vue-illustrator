@@ -28,7 +28,7 @@ export const useObjectsStore = defineStore("objects", () => {
    */
   const selectedObjectRadius = computed(() => {
     const obj = selectedObject.value;
-    if (!obj || obj.type !== "CIRCLE") return 0;
+    if (!obj || obj.type !== CIRCLE) return 0;
     return (obj as CircleInterface).getRadius();
   });
 
@@ -38,7 +38,7 @@ export const useObjectsStore = defineStore("objects", () => {
   const setSelectedObjectRadius = (value?: number) => {
     if (!selectedObjectId.value || !value) return;
     const obj = objects.value[selectedObjectId.value];
-    if (!obj || obj.type !== "CIRCLE") return;
+    if (!obj || obj.type !== CIRCLE) return;
     const radius = Math.min(value, 1000);
     (obj as CircleInterface).setRadius(radius);
   };
@@ -93,6 +93,7 @@ export const useObjectsStore = defineStore("objects", () => {
     const { clientX, clientY } = event;
     const id = Math.max(...Object.keys(objects.value).map(Number), 0) + 1;
 
+    console.log(">> id", id);
     if (shapeType === CIRCLE) {
       const circle = new Circle(id, clientX, clientY);
       objects.value[id] = circle;
@@ -107,7 +108,7 @@ export const useObjectsStore = defineStore("objects", () => {
    */
   const circles = computed(() => {
     return Object.fromEntries(
-      Object.entries(objects.value).filter(([_, obj]) => obj.type === "CIRCLE"),
+      Object.entries(objects.value).filter(([_, obj]) => obj.type === CIRCLE),
     ) as Record<number, CircleInterface>;
   });
 
@@ -117,7 +118,7 @@ export const useObjectsStore = defineStore("objects", () => {
   const rectangles = computed(() => {
     return Object.fromEntries(
       Object.entries(objects.value).filter(
-        ([_, obj]) => obj.type === "RECTANGLE",
+        ([_, obj]) => obj.type === RECTANGLE,
       ),
     ) as Record<number, RectangleInterface>;
   });

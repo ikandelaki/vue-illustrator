@@ -1,3 +1,5 @@
+import { CIRCLE, ShapeType } from "../types/ShapeTypes";
+
 export const DEFAULT_CIRCLE_RADIUS: number = 50;
 export const DEFAULT_CIRCLE_COLOR: string = "#ffffff";
 
@@ -6,7 +8,7 @@ export interface CircleInterface {
   cx: number;
   cy: number;
   radius: number;
-  type: string;
+  type: ShapeType;
   getCx: () => number;
   setCx: (cx: number) => this;
   getCy: () => number;
@@ -24,7 +26,7 @@ export class Circle implements CircleInterface {
   cy: number;
   radius: number;
   color: string;
-  type: string = "CIRCLE";
+  type: string; // will be set in constructor
 
   constructor(
     id: number,
@@ -38,6 +40,8 @@ export class Circle implements CircleInterface {
     this.cy = cy;
     this.radius = radius;
     this.color = color;
+    // use constant from shape types to ensure consistency
+    this.type = CIRCLE;
   }
 
   /**
