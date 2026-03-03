@@ -1,30 +1,109 @@
 export const DEFAULT_RECT_WIDTH = 50;
 export const DEFAULT_RECT_HEIGHT = 40;
+export const DEFAULT_RECT_COLOR = "#fff";
 
 export interface RectangleInterface {
-    width: number,
-    height: number,
-    x?: number,
-    y?: number,
-    rx?: number,
-    ry?: number,
-    color?: string
+  id: number;
+  x: number;
+  y: number;
+  width: number;
+  height: number;
+  rx: number;
+  ry: number;
+  color: string;
+  type: string;
+  getX: () => number;
+  setX: (x: number) => this;
+  getY: () => number;
+  setY: (y: number) => this;
+  getWidth: () => number;
+  setWidth: (width: number) => this;
+  getHeight: () => number;
+  setHeight: (height: number) => this;
+  getId: () => number;
+  getColor: () => string;
+  setColor: (color: string) => this;
 }
 
-export const DEFAULT_RECT_COLOR = '#fff';
+export class Rectangle implements RectangleInterface {
+  id: number;
+  x: number;
+  y: number;
+  width: number;
+  height: number;
+  rx: number;
+  ry: number;
+  color: string;
+  type: string = "RECTANGLE";
 
-/**
- * Factory to create a RectangleInterface with defaults applied.
- * Use this instead of trying to put defaults on the interface itself.
- */
-export function createRectangle(overrides: Partial<RectangleInterface> = {}): RectangleInterface {
-    return {
-        width: overrides.width ?? DEFAULT_RECT_WIDTH,
-        height: overrides.height ?? DEFAULT_RECT_HEIGHT,
-        x: overrides.x,
-        y: overrides.y,
-        rx: overrides.rx,
-        ry: overrides.ry,
-        color: overrides.color ?? DEFAULT_RECT_COLOR,
-    }
+  constructor(
+    id: number,
+    x: number,
+    y: number,
+    width: number = DEFAULT_RECT_WIDTH,
+    height: number = DEFAULT_RECT_HEIGHT,
+    rx: number = 0,
+    ry: number = 0,
+    color: string = DEFAULT_RECT_COLOR,
+  ) {
+    this.id = id;
+    this.x = x;
+    this.y = y;
+    this.width = width;
+    this.height = height;
+    this.rx = rx;
+    this.ry = ry;
+    this.color = color;
+  }
+
+  getX() {
+    return this.x;
+  }
+
+  setX(x: number) {
+    this.x = x;
+    return this;
+  }
+
+  getY() {
+    return this.y;
+  }
+
+  setY(y: number) {
+    this.y = y;
+    return this;
+  }
+
+  getWidth() {
+    return this.width;
+  }
+
+  setWidth(width: number) {
+    this.width = width;
+    return this;
+  }
+
+  getHeight() {
+    return this.height;
+  }
+
+  setHeight(height: number) {
+    this.height = height;
+    return this;
+  }
+
+  getId() {
+    return this.id;
+  }
+
+  getColor() {
+    return this.color;
+  }
+
+  setColor(color: string) {
+    this.color = color;
+    return this;
+  }
 }
+
+export default Rectangle;

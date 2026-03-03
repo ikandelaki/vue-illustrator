@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { computed, ref } from "vue";
 import { CircleMenuItemsInterface } from "../types/CircleMenuItems";
-import { useCirclesStore } from "../store/circles";
+import { useObjectsStore } from "../store/objects";
 import { storeToRefs } from "pinia";
 import RangeInput from "./RangeInput.vue";
 import ColorInput from "./ColorInput.vue";
@@ -11,10 +11,11 @@ import { useContextMenuStore } from "../store/contextMenu";
 const selectedMenuItemIndex = ref<number | null>(null);
 
 const contextMenuStore = useContextMenuStore();
-const circlesStore = useCirclesStore();
-const { selectedCircleRadius, selectedCircleColor } = storeToRefs(circlesStore);
-const { setSelectedCircleRadius, setSelectedCircleColor, selectCircle } =
-  circlesStore;
+const objectsStore = useObjectsStore();
+const { selectedObjectRadius, selectedObjectColor, selectedObjectType } =
+  storeToRefs(objectsStore);
+const { setSelectedObjectRadius, setSelectedObjectColor, selectObject } =
+  objectsStore;
 const { isContextMenuOpened, contextMenuLocation } =
   storeToRefs(contextMenuStore);
 
@@ -25,24 +26,32 @@ const contextMenuStyles = computed(() => ({
 }));
 
 // Individual control elements in the context menu
-// like radius selector, color input, etc.
-// -- If we need to add a new type of control element it should be added here
-const circleMenuItems: CircleMenuItemsInterface<any>[] = [
-  {
-    name: "Radius",
-    child: RangeInput,
-    props: {},
-    value: selectedCircleRadius,
-    setValue: setSelectedCircleRadius,
-  },
-  {
+// Build menu items based on selected object type
+const menuItems = computed(() => {
+  const items: CircleMenuItemsInterface<any>[] = [];
+
+  // Only show radius for circles
+  if (selectedObjectType.value === "circle") {
+    items.push({
+      name: "Radius",
+      child: RangeInput,
+      props: {},
+      value: selectedObjectRadius,
+      setValue: setSelectedObjectRadius,
+    });
+  }
+
+  // Color works for all objects
+  items.push({
     name: "Color",
     child: ColorInput,
     props: {},
-    value: selectedCircleColor,
-    setValue: setSelectedCircleColor,
-  },
-];
+    value: selectedObjectColor,
+    setValue: setSelectedObjectColor,
+  });
+
+  return items;
+});
 
 defineProps<{
   style?: Record<string, string>;
@@ -58,27 +67,28 @@ defineProps<{
     <div class="context-menu_parent" v-if="selectedMenuItemIndex === null">
       <div class="context-menu_navigate">
         <span>Adjust...</span>
-        <button @click="selectCircle">X</button>
+        <button @click="selectObject">X</button>
       </div>
       <p
-        v-for="(menuItem, index) in circleMenuItems"
+        v-for="(item, index) in menuItems"
         @click="selectedMenuItemIndex = index"
+        :key="index"
       >
-        <span>{{ menuItem.name }}</span>
+        <span>{{ item.name }}</span>
         <span>></span>
       </p>
     </div>
     <div v-if="selectedMenuItemIndex !== null">
       <div class="context-menu_navigate">
         <button @click="selectedMenuItemIndex = null">Back</button>
-        <button @click="selectCircle">X</button>
+        <button @click="selectObject">X</button>
       </div>
       <div class="context-menu_component">
         <component
-          :is="circleMenuItems[selectedMenuItemIndex].child"
-          v-bind="circleMenuItems[selectedMenuItemIndex].props"
-          :value="circleMenuItems[selectedMenuItemIndex].value"
-          @update:value="circleMenuItems[selectedMenuItemIndex].setValue"
+          :is="menuItems[selectedMenuItemIndex].child"
+          v-bind="menuItems[selectedMenuItemIndex].props"
+          :value="menuItems[selectedMenuItemIndex].value"
+          @update:value="menuItems[selectedMenuItemIndex].setValue"
         />
       </div>
     </div>

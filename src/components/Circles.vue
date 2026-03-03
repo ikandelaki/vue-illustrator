@@ -1,10 +1,10 @@
 <script setup lang="ts">
 import { storeToRefs } from "pinia";
-import { useCirclesStore } from "../store/circles";
+import { useObjectsStore } from "../store/objects";
 
-const store = useCirclesStore();
-const { circles, selectedCircleId } = storeToRefs(store);
-const { selectCircle } = store;
+const store = useObjectsStore();
+const { circles, selectedObjectId } = storeToRefs(store);
+const { selectObject } = store;
 </script>
 <template>
   <circle
@@ -13,8 +13,8 @@ const { selectCircle } = store;
     :cx="circle.getCx()"
     :cy="circle.getCy()"
     :r="circle.getRadius()"
-    :class="{ selected: selectedCircleId === circle.getId() }"
-    @contextmenu.prevent="selectCircle($event, circle.getId())"
+    :class="{ selected: selectedObjectId === circle.getId() }"
+    @contextmenu.prevent="selectObject($event, circle.getId(), 'circle')"
     :key="key"
     :style="{ fill: circle.getColor() }"
   />

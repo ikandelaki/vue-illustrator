@@ -3,9 +3,7 @@ import { ref, defineAsyncComponent } from "vue";
 import Loader from "./components/Loader.vue";
 import Header from "./components/Header.vue";
 import { CIRCLE, RECTANGLE, SHAPE_TYPES, ShapeType } from "./types/ShapeTypes";
-import { useCirclesStore } from "./store/circles";
-import { storeToRefs } from "pinia";
-import { useRectanglesStore } from "./store/rectangles";
+import { useObjectsStore } from "./store/objects";
 import Circles from "./components/Circles.vue";
 import Rectangles from "./components/Rectangles.vue";
 
@@ -15,23 +13,19 @@ const ContextMenu = defineAsyncComponent({
   delay: 200,
 });
 
-const circlesStore = useCirclesStore();
-const rectanglesStore = useRectanglesStore();
-
-const { createCircle } = circlesStore;
-
-const { createRectangle } = rectanglesStore;
+const objectsStore = useObjectsStore();
+const { createObject } = objectsStore;
 
 const selectedShape = ref<ShapeType>(CIRCLE);
 
-const createObject = (event: MouseEvent): void => {
+const handleCreateObject = (event: MouseEvent): void => {
   if (selectedShape.value === CIRCLE) {
-    createCircle(event);
+    createObject(CIRCLE, event);
     return;
   }
 
   if (selectedShape.value === RECTANGLE) {
-    createRectangle(event);
+    createObject(RECTANGLE, event);
     return;
   }
 };
@@ -52,7 +46,7 @@ const setSelectedShape = (value: ShapeType) => {
 
 <template>
   <Header :selectedShape="selectedShape" @select-shape="setSelectedShape" />
-  <svg @click="createObject">
+  <svg @click="handleCreateObject">
     <foreignObject x="0" y="40%" width="100%" height="200">
       <p class="canvas-details">
         Click on the canvas to draw a circle. click on a circle to select it.
