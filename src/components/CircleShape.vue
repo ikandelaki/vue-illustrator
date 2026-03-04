@@ -20,7 +20,7 @@ const resizeCircle = (anchorId: string, event: MouseEvent) => {
     :cx="object.getCx()"
     :cy="object.getCy()"
     :r="object.getRadius()"
-    :class="{ selected: selected }"
+    :class="[{ selected: selected }, $attrs.class]"
     :style="{ fill: object.getColor() }"
     @contextmenu.prevent="selectObject($event, object.getId(), object.type)"
   />

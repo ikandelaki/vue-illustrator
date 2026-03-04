@@ -26,5 +26,12 @@ const shapeComponents = computed(() => shapeRegistry);
     :key="object.getId()"
     :object="object"
     :selected="selectedObjectId === object.getId()"
+    class="shape"
   />
 </template>
+
+<style>
+.shape {
+  cursor: pointer;
+}
+</style>

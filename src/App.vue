@@ -5,6 +5,8 @@ import Header from "./components/Header.vue";
 import { CIRCLE, RECTANGLE, SHAPE_TYPES, ShapeType } from "./types/ShapeTypes";
 import { useObjectsStore } from "./store/objects";
 import Objects from "./components/Objects.vue";
+import { useSelectedShapeStore } from "./store/selectedShape";
+import { storeToRefs } from "pinia";
 
 const ContextMenu = defineAsyncComponent({
   loader: () => import("./components/ContextMenu.vue"),
@@ -12,10 +14,10 @@ const ContextMenu = defineAsyncComponent({
   delay: 200,
 });
 
-const objectsStore = useObjectsStore();
-const { createObject } = objectsStore;
-
-const selectedShape = ref<ShapeType>(CIRCLE);
+const { createObject } = useObjectsStore();
+const selectedShapeStore = useSelectedShapeStore();
+const { setSelectedShape } = selectedShapeStore;
+const { selectedShape } = storeToRefs(selectedShapeStore);
 
 const handleCreateObject = (event: MouseEvent): void => {
   if (selectedShape.value === CIRCLE) {
@@ -27,19 +29,6 @@ const handleCreateObject = (event: MouseEvent): void => {
     createObject(RECTANGLE, event);
     return;
   }
-};
-
-const setSelectedShape = (value: ShapeType) => {
-  if (!(value in SHAPE_TYPES)) {
-    console.error(">> setSelectedShape: not a correct shape type");
-    return;
-  }
-
-  if (value === selectedShape.value) {
-    return;
-  }
-
-  selectedShape.value = value;
 };
 </script>
 
