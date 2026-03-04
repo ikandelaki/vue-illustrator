@@ -5,14 +5,14 @@ import { computed } from "vue";
 import { SHAPE_TYPES } from "../types/ShapeTypes";
 import { CircleInterface } from "../model/Circle";
 
+const OFFSET_LENGTH = 20;
+
 const objectsStore = useObjectsStore();
 const { objects, selectedObjectId } = storeToRefs(objectsStore);
 
-const object = selectedObjectId.value
-  ? objects.value[selectedObjectId.value]
-  : null;
-
-const selectedObject = computed(() => object);
+const selectedObject = computed(() => {
+  return selectedObjectId.value ? objects.value[selectedObjectId.value] : null;
+});
 
 // Bounding box corners derived from shape geometry
 const bbox = computed(() => {
@@ -21,12 +21,10 @@ const bbox = computed(() => {
   }
 
   if (selectedObject.value.type === SHAPE_TYPES.circle) {
-    const circle = selectedObject.value as CircleInterface;
-
     return {
-      x: circle.cx - circle.radius,
-      y: circle.cy - circle.radius,
-      size: circle.radius * 2,
+      x: selectedObject.value.cx - selectedObject.value.radius - OFFSET_LENGTH,
+      y: selectedObject.value.cy - selectedObject.value.radius - OFFSET_LENGTH,
+      size: selectedObject.value.radius * 2,
     };
   }
 
@@ -43,16 +41,18 @@ const anchors = computed(() => {
   }
   const { x, y, size } = bbox.value;
   return [
-    { id: "tl", cx: x, cy: y },
-    { id: "tr", cx: x + size, cy: y },
-    { id: "bl", cx: x, cy: y + size },
-    { id: "br", cx: x + size, cy: y + size },
+    { id: "tl", cx: bbox.value.x, cy: bbox.value.y },
+    { id: "tr", cx: bbox.value.x + bbox.value.size, cy: bbox.value.y },
+    { id: "bl", cx: bbox.value.x, cy: bbox.value.y + bbox.value.size },
+    {
+      id: "br",
+      cx: bbox.value.x + bbox.value.size,
+      cy: bbox.value.y + bbox.value.size,
+    },
   ];
 });
 </script>
 <template>
-  {{ selectedObjectId }}
-  {{ bbox }}
   <template v-if="selectedObjectId && bbox">
     <rect
       class="selection-box"
