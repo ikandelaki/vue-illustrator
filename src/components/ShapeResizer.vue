@@ -7,6 +7,10 @@ import { CircleInterface } from "../model/Circle";
 
 const OFFSET_LENGTH = 20;
 
+defineEmits<{
+  resize: [anchorId: string, event: MouseEvent];
+}>();
+
 const objectsStore = useObjectsStore();
 const { objects, selectedObjectId } = storeToRefs(objectsStore);
 
@@ -21,10 +25,11 @@ const bbox = computed(() => {
   }
 
   if (selectedObject.value.type === SHAPE_TYPES.circle) {
+    const circle = selectedObject.value as CircleInterface;
     return {
-      x: selectedObject.value.cx - selectedObject.value.radius - OFFSET_LENGTH,
-      y: selectedObject.value.cy - selectedObject.value.radius - OFFSET_LENGTH,
-      size: selectedObject.value.radius * 2,
+      x: circle.cx - circle.radius - OFFSET_LENGTH,
+      y: circle.cy - circle.radius - OFFSET_LENGTH,
+      size: (circle.radius + OFFSET_LENGTH) * 2,
     };
   }
 
@@ -41,14 +46,10 @@ const anchors = computed(() => {
   }
   const { x, y, size } = bbox.value;
   return [
-    { id: "tl", cx: bbox.value.x, cy: bbox.value.y },
-    { id: "tr", cx: bbox.value.x + bbox.value.size, cy: bbox.value.y },
-    { id: "bl", cx: bbox.value.x, cy: bbox.value.y + bbox.value.size },
-    {
-      id: "br",
-      cx: bbox.value.x + bbox.value.size,
-      cy: bbox.value.y + bbox.value.size,
-    },
+    { id: "tl", cx: x, cy: y },
+    { id: "tr", cx: x + size, cy: y },
+    { id: "bl", cx: x, cy: y + size },
+    { id: "br", cx: x + size, cy: y + size },
   ];
 });
 </script>
@@ -63,6 +64,7 @@ const anchors = computed(() => {
       fill="none"
       stroke="black"
       stroke-width="1"
+      stroke-dasharray="1, 2"
     />
     <circle
       v-for="anchor in anchors"
@@ -74,6 +76,7 @@ const anchors = computed(() => {
       fill="white"
       stroke="black"
       stroke-width="1"
+      @mousedown="$emit('resize', anchor.id, $event)"
     />
   </template>
 </template>

@@ -9,6 +9,9 @@ const { object, selected } = defineProps<{
 }>();
 
 const { selectObject } = useObjectsStore();
+const resizeCircle = (anchorId: string, event: MouseEvent) => {
+  console.log("event", event);
+};
 </script>
 
 <template>
@@ -21,5 +24,5 @@ const { selectObject } = useObjectsStore();
     :style="{ fill: object.getColor() }"
     @contextmenu.prevent="selectObject($event, object.getId(), object.type)"
   />
-  <ShapeResizer />
+  <ShapeResizer @resize="resizeCircle" />
 </template>

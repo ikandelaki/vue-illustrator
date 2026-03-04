@@ -8,7 +8,6 @@ import { CIRCLE, RECTANGLE } from "../types/ShapeTypes";
 
 const objectsStore = useObjectsStore();
 const { objects, selectedObjectId } = storeToRefs(objectsStore);
-const { selectObject } = objectsStore;
 
 // registry that maps type string to component
 const shapeRegistry: Record<string, any> = {
@@ -16,7 +15,6 @@ const shapeRegistry: Record<string, any> = {
   [RECTANGLE]: RectangleShape,
 };
 
-console.log(">> objects", objects);
 // generic list that will grow as we add new types
 const shapeComponents = computed(() => shapeRegistry);
 </script>
