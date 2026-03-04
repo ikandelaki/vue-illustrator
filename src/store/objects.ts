@@ -74,7 +74,6 @@ export const useObjectsStore = defineStore("objects", () => {
     selectedObjectId.value = id ?? null;
     selectedObjectType.value = type ?? null;
 
-    console.log(">> id", id);
     if (!id) {
       isContextMenuOpened.value = false;
       return;
@@ -93,7 +92,6 @@ export const useObjectsStore = defineStore("objects", () => {
     const { clientX, clientY } = event;
     const id = Math.max(...Object.keys(objects.value).map(Number), 0) + 1;
 
-    console.log(">> id", id);
     if (shapeType === CIRCLE) {
       const circle = new Circle(id, clientX, clientY);
       objects.value[id] = circle;

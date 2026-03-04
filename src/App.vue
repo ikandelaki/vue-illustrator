@@ -19,7 +19,6 @@ const selectedShape = ref<ShapeType>(CIRCLE);
 
 const handleCreateObject = (event: MouseEvent): void => {
   if (selectedShape.value === CIRCLE) {
-    console.log(">> creating circle");
     createObject(CIRCLE, event);
     return;
   }

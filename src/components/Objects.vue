@@ -8,6 +8,7 @@ import { CIRCLE, RECTANGLE } from "../types/ShapeTypes";
 
 const objectsStore = useObjectsStore();
 const { objects, selectedObjectId } = storeToRefs(objectsStore);
+const { selectObject } = objectsStore;
 
 // registry that maps type string to component
 const shapeRegistry: Record<string, any> = {
@@ -27,8 +28,5 @@ const shapeComponents = computed(() => shapeRegistry);
     :key="object.getId()"
     :object="object"
     :selected="selectedObjectId === object.getId()"
-    @contextmenu.prevent="
-      objectsStore.selectObject($event, object.getId(), object.type)
-    "
   />
 </template>
