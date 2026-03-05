@@ -20,6 +20,7 @@ const selectedObject = computed(() => {
 
 // Bounding box corners derived from shape geometry
 const bbox = computed(() => {
+  console.log("selectedObject.value", selectedObject.value);
   if (!selectedObject.value) {
     return null;
   }

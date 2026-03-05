@@ -63,6 +63,20 @@ export const useObjectsStore = defineStore("objects", () => {
   };
 
   /**
+   * Select an object without opening context menu
+   *
+   * @param id
+   * @returns
+   */
+  const setSelectedObject = (id: number) => {
+    if (!id) {
+      return;
+    }
+
+    selectedObjectId.value = id;
+  };
+
+  /**
    * Select an object and open context menu
    */
   const selectObject = (
@@ -126,6 +140,7 @@ export const useObjectsStore = defineStore("objects", () => {
     circles,
     rectangles,
     selectedObjectId,
+    setSelectedObject,
     selectedObjectType,
     selectedObjectRadius,
     setSelectedObjectRadius,

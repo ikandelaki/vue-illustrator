@@ -23,6 +23,7 @@ const resizeCircle = (anchorId: string, event: MouseEvent) => {
     :class="[{ selected: selected }, $attrs.class]"
     :style="{ fill: object.getColor() }"
     @contextmenu.prevent="selectObject($event, object.getId(), object.type)"
+    @click="$emit('click')"
   />
   <ShapeResizer @resize="resizeCircle" />
 </template>

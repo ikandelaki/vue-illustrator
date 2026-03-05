@@ -4,10 +4,15 @@ import { storeToRefs } from "pinia";
 import { useObjectsStore } from "../store/objects";
 import CircleShape from "./CircleShape.vue";
 import RectangleShape from "./RectangleShape.vue";
-import { CIRCLE, RECTANGLE } from "../types/ShapeTypes";
+import { CIRCLE, RECTANGLE, SHAPE_TYPES } from "../types/ShapeTypes";
+import { useSelectedShapeStore } from "../store/selectedShape";
 
 const objectsStore = useObjectsStore();
+const selectedShapeStore = useSelectedShapeStore();
+const { setSelectedObject } = objectsStore;
 const { objects, selectedObjectId } = storeToRefs(objectsStore);
+const { setSelectedShape } = selectedShapeStore;
+const { selectedShape } = storeToRefs(selectedShapeStore);
 
 // registry that maps type string to component
 const shapeRegistry: Record<string, any> = {
@@ -17,6 +22,14 @@ const shapeRegistry: Record<string, any> = {
 
 // generic list that will grow as we add new types
 const shapeComponents = computed(() => shapeRegistry);
+
+const handleShapeClick = (id: number) => {
+  if (selectedShape.value !== SHAPE_TYPES.cursor) {
+    return;
+  }
+
+  setSelectedObject(id);
+};
 </script>
 
 <template>
@@ -27,6 +40,7 @@ const shapeComponents = computed(() => shapeRegistry);
     :object="object"
     :selected="selectedObjectId === object.getId()"
     class="shape"
+    @click="handleShapeClick(object.getId())"
   />
 </template>
 
