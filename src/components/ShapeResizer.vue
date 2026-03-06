@@ -109,7 +109,7 @@ const resize = (event: MouseEvent, anchorId: string) => {
   // Based on the similar triangle relativity formula
   const newRadius =
     (currentDistance / prevDistance) * selectedObject.value.radius;
-  selectedObject.value.radius = newRadius;
+  selectedObject.value.radius = Math.max(1, newRadius);
   prevPointerX.value = currentX;
   prevPointerY.value = currentY;
 };
