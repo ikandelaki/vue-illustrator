@@ -9,9 +9,6 @@ const { object, selected } = defineProps<{
 }>();
 
 const { selectObject } = useObjectsStore();
-const resizeCircle = (anchorId: string, event: MouseEvent) => {
-  console.log("event", event);
-};
 </script>
 
 <template>
@@ -25,5 +22,5 @@ const resizeCircle = (anchorId: string, event: MouseEvent) => {
     @contextmenu.prevent="selectObject($event, object.getId(), object.type)"
     @click="$emit('click')"
   />
-  <ShapeResizer @resize="resizeCircle" />
+  <ShapeResizer />
 </template>

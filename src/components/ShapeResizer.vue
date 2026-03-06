@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { storeToRefs } from "pinia";
 import { useObjectsStore } from "../store/objects";
-import { computed } from "vue";
+import { computed, ref } from "vue";
 import { SHAPE_TYPES } from "../types/ShapeTypes";
 import { CircleInterface } from "../model/Circle";
 
@@ -11,6 +11,7 @@ defineEmits<{
   resize: [anchorId: string, event: MouseEvent];
 }>();
 
+const isResizing = ref<boolean>(false);
 const objectsStore = useObjectsStore();
 const { objects, selectedObjectId } = storeToRefs(objectsStore);
 
@@ -53,6 +54,32 @@ const anchors = computed(() => {
     { id: "br", cx: x + size, cy: y + size },
   ];
 });
+
+const startResize = () => {
+  isResizing.value = true;
+};
+
+const resize = (event: MouseEvent, anchorId: string) => {
+  const anchor = anchors.value.find((anchor) => anchor.id === anchorId);
+
+  if (!isResizing.value || !anchor) {
+    return;
+  }
+
+  console.log(">> isResizing.value", isResizing.value);
+  const startX = anchor.cx;
+  const startY = anchor.cy;
+  const endX = event.clientX;
+  const endY = event.clientY;
+  const resizeValue = Math.sqrt(
+    Math.pow(endX - startX, 2) + Math.pow(startY - endY, 2),
+  );
+  selectedObject.value.radius += resizeValue;
+};
+
+const endResize = () => {
+  isResizing.value = false;
+};
 </script>
 <template>
   <template v-if="selectedObjectId && bbox">
@@ -77,7 +104,9 @@ const anchors = computed(() => {
       fill="white"
       stroke="black"
       stroke-width="1"
-      @mousedown="$emit('resize', anchor.id, $event)"
+      @mousedown="startResize"
+      @mousemove="($event) => resize($event, anchor.id)"
+      @mouseup="endResize"
     />
   </template>
 </template>
