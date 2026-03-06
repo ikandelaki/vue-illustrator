@@ -4,8 +4,9 @@ import { useObjectsStore } from "../store/objects";
 import { computed, ref } from "vue";
 import { SHAPE_TYPES } from "../types/ShapeTypes";
 import { CircleInterface } from "../model/Circle";
+import { calculateDistance } from "../utils/math";
 
-const OFFSET_LENGTH = 20;
+const OFFSET_LENGTH = 0;
 
 defineEmits<{
   resize: [anchorId: string, event: MouseEvent];
@@ -23,9 +24,12 @@ const selectedObject = computed(() => {
 
 // Bounding box corners derived from shape geometry
 const bbox = computed(() => {
-  console.log("selectedObject.value", selectedObject.value);
   if (!selectedObject.value) {
-    return null;
+    return {
+      x: 0,
+      y: 0,
+      size: 0,
+    };
   }
 
   if (selectedObject.value.type === SHAPE_TYPES.circle) {
@@ -59,8 +63,10 @@ const anchors = computed(() => {
 
 const startResize = (event: MouseEvent, anchorId: string) => {
   isResizing.value = true;
+  prevPointerX.value = event.clientX;
+  prevPointerY.value = event.clientY;
 
-  const onMouseMove = () => resize(event, anchorId);
+  const onMouseMove = (moveEvent: MouseEvent) => resize(moveEvent, anchorId);
 
   const onMouseUp = () => {
     isResizing.value = false;
@@ -78,31 +84,34 @@ const resize = (event: MouseEvent, anchorId: string) => {
   const currentX = event.clientX;
   const currentY = event.clientY;
 
-  if (!isResizing.value || !anchor) {
+  if (
+    !isResizing.value ||
+    !anchor ||
+    (currentX === prevPointerX.value && currentY === prevPointerY.value)
+  ) {
     return;
   }
 
-  if (!prevPointerX.value && !prevPointerY.value) {
-    prevPointerX.value = currentX;
-    prevPointerY.value = currentY;
-
-    return;
-  }
-
-  console.log(">> isResizing.value", isResizing.value);
-  const startX = anchor.cx;
-  const startY = anchor.cy;
-  const resizeValue = Math.sqrt(
-    Math.pow(currentX - startX, 2) + Math.pow(startY - currentY, 2),
-  );
-  const prevResizeValue = Math.sqrt(
-    Math.pow(prevPointerX.value - startX, 2) +
-      Math.pow(prevPointerY.value - startY, 2),
+  const prevDistance = calculateDistance(
+    prevPointerX.value,
+    prevPointerY.value,
+    selectedObject.value.cx,
+    selectedObject.value.cy,
   );
 
+  const currentDistance = calculateDistance(
+    currentX,
+    currentY,
+    selectedObject.value.cx,
+    selectedObject.value.cy,
+  );
+
+  // Based on the similar triangle relativity formula
+  const newRadius =
+    (currentDistance / prevDistance) * selectedObject.value.radius;
+  selectedObject.value.radius = newRadius;
   prevPointerX.value = currentX;
   prevPointerY.value = currentY;
-  selectedObject.value.radius += resizeValue - prevResizeValue;
 };
 </script>
 <template>
