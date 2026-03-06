@@ -84,11 +84,7 @@ const resize = (event: MouseEvent, anchorId: string) => {
   const currentX = event.clientX;
   const currentY = event.clientY;
 
-  if (
-    !isResizing.value ||
-    !anchor ||
-    (currentX === prevPointerX.value && currentY === prevPointerY.value)
-  ) {
+  if (!isResizing.value || !anchor || !selectedObject.value) {
     return;
   }
 

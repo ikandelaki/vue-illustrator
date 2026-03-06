@@ -12,6 +12,8 @@ export interface RectangleInterface {
   height: number;
   rx: number;
   ry: number;
+  cx: number;
+  cy: number;
   color: string;
   type: ShapeType;
   getX: () => number;
@@ -31,6 +33,8 @@ export class Rectangle implements RectangleInterface {
   id: number;
   x: number;
   y: number;
+  cx: number;
+  cy: number;
   width: number;
   height: number;
   rx: number;
@@ -57,6 +61,9 @@ export class Rectangle implements RectangleInterface {
     this.ry = ry;
     this.color = color;
     this.type = RECTANGLE;
+
+    this.cx = x + width / 2;
+    this.cy = y + height / 2;
   }
 
   getX() {
