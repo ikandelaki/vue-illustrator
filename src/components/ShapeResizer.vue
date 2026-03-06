@@ -12,6 +12,8 @@ defineEmits<{
 }>();
 
 const isResizing = ref<boolean>(false);
+const prevPointerX = ref<number>(0);
+const prevPointerY = ref<number>(0);
 const objectsStore = useObjectsStore();
 const { objects, selectedObjectId } = storeToRefs(objectsStore);
 
@@ -55,30 +57,52 @@ const anchors = computed(() => {
   ];
 });
 
-const startResize = () => {
+const startResize = (event: MouseEvent, anchorId: string) => {
   isResizing.value = true;
+
+  const onMouseMove = () => resize(event, anchorId);
+
+  const onMouseUp = () => {
+    isResizing.value = false;
+
+    window.removeEventListener("mousemove", onMouseMove);
+    window.removeEventListener("mouseup", onMouseUp);
+  };
+
+  window.addEventListener("mousemove", onMouseMove);
+  window.addEventListener("mouseup", onMouseUp);
 };
 
 const resize = (event: MouseEvent, anchorId: string) => {
   const anchor = anchors.value.find((anchor) => anchor.id === anchorId);
+  const currentX = event.clientX;
+  const currentY = event.clientY;
 
   if (!isResizing.value || !anchor) {
+    return;
+  }
+
+  if (!prevPointerX.value && !prevPointerY.value) {
+    prevPointerX.value = currentX;
+    prevPointerY.value = currentY;
+
     return;
   }
 
   console.log(">> isResizing.value", isResizing.value);
   const startX = anchor.cx;
   const startY = anchor.cy;
-  const endX = event.clientX;
-  const endY = event.clientY;
   const resizeValue = Math.sqrt(
-    Math.pow(endX - startX, 2) + Math.pow(startY - endY, 2),
+    Math.pow(currentX - startX, 2) + Math.pow(startY - currentY, 2),
   );
-  selectedObject.value.radius += resizeValue;
-};
+  const prevResizeValue = Math.sqrt(
+    Math.pow(prevPointerX.value - startX, 2) +
+      Math.pow(prevPointerY.value - startY, 2),
+  );
 
-const endResize = () => {
-  isResizing.value = false;
+  prevPointerX.value = currentX;
+  prevPointerY.value = currentY;
+  selectedObject.value.radius += resizeValue - prevResizeValue;
 };
 </script>
 <template>
@@ -104,9 +128,7 @@ const endResize = () => {
       fill="white"
       stroke="black"
       stroke-width="1"
-      @mousedown="startResize"
-      @mousemove="($event) => resize($event, anchor.id)"
-      @mouseup="endResize"
+      @mousedown="startResize($event, anchor.id)"
     />
   </template>
 </template>
