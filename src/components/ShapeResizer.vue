@@ -131,6 +131,7 @@ const resize = (event: MouseEvent, anchorId: string) => {
       v-for="anchor in anchors"
       :key="anchor.id"
       class="resize-anchor"
+      :class="{ [anchor.id]: anchor.id }"
       :cx="anchor.cx"
       :cy="anchor.cy"
       r="5"
@@ -144,6 +145,14 @@ const resize = (event: MouseEvent, anchorId: string) => {
 
 <style scoped>
 .resize-anchor {
-  cursor: nwse-resize;
+  &.tl,
+  &.br {
+    cursor: nwse-resize;
+  }
+
+  &.tr,
+  &.bl {
+    cursor: nesw-resize;
+  }
 }
 </style>

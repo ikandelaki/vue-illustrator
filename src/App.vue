@@ -66,6 +66,12 @@ svg {
   text-align: center;
   padding: 0 50px;
   color: #bbb;
+
+  -webkit-user-select: none; /* Safari */
+  -moz-user-select: none; /* Firefox */
+  -ms-user-select: none; /* IE 10+ */
+  user-select: none; /* Standard syntax */
+  cursor: default;
 }
 
 .shape {
