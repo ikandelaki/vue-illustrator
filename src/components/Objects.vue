@@ -10,7 +10,7 @@ import { useSelectedShapeStore } from "../store/selectedShape";
 const objectsStore = useObjectsStore();
 const selectedShapeStore = useSelectedShapeStore();
 const { setSelectedObject, updateSelectedObjectPosition } = objectsStore;
-const { objects, selectedObjectId } = storeToRefs(objectsStore);
+const { objects, selectedObjectId, selectedObject } = storeToRefs(objectsStore);
 const { selectedShape } = storeToRefs(selectedShapeStore);
 
 // registry that maps type string to component
@@ -31,12 +31,18 @@ const handleShapeClick = (id: number) => {
 };
 
 const handleShapeMove = (event: MouseEvent, objectId: number) => {
-  if (objectId !== selectedObjectId.value) {
+  if (objectId !== selectedObjectId.value || !selectedObject.value) {
     return;
   }
 
+  const startX = event.clientX - selectedObject.value.cx;
+  const startY = event.clientY - selectedObject.value.cy;
+
   const onMouseMove = (moveEvent: MouseEvent) =>
-    updateSelectedObjectPosition(moveEvent.clientX, moveEvent.clientY);
+    updateSelectedObjectPosition(
+      moveEvent.clientX - startX,
+      moveEvent.clientY - startY,
+    );
 
   const onMouseUp = () => {
     window.removeEventListener("mousemove", onMouseMove);
