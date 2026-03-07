@@ -6,6 +6,7 @@ import CircleShape from "./CircleShape.vue";
 import RectangleShape from "./RectangleShape.vue";
 import { CIRCLE, RECTANGLE, SHAPE_TYPES } from "../types/ShapeTypes";
 import { useSelectedShapeStore } from "../store/selectedShape";
+import { useDragElement } from "../composables/mouse";
 
 const objectsStore = useObjectsStore();
 const selectedShapeStore = useSelectedShapeStore();
@@ -29,6 +30,7 @@ const handleShapeClick = (id: number) => {
 
   setSelectedObject(id);
 };
+
 const handleShapeMove = (event: PointerEvent, objectId: number) => {
   // 1. Ensure this is the selected object
   if (objectId !== selectedObjectId.value || !selectedObject.value) return;
@@ -45,14 +47,8 @@ const handleShapeMove = (event: PointerEvent, objectId: number) => {
     );
   };
 
-  const onPointerUp = () => {
-    // 4. Cleanup global listeners
-    window.removeEventListener("pointermove", onPointerMove);
-    window.removeEventListener("pointerup", onPointerUp);
-  };
-
-  window.addEventListener("pointermove", onPointerMove);
-  window.addEventListener("pointerup", onPointerUp);
+  // 4. Use a composable to add and remove 'move' event listeners
+  useDragElement(onPointerMove);
 };
 </script>
 

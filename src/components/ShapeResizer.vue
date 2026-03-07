@@ -5,6 +5,7 @@ import { computed, ref } from "vue";
 import { SHAPE_TYPES } from "../types/ShapeTypes";
 import { CircleInterface } from "../model/Circle";
 import { calculateDistance } from "../utils/math";
+import { useDragElement } from "../composables/mouse";
 
 const OFFSET_LENGTH = 0;
 
@@ -64,16 +65,9 @@ const startResize = (event: MouseEvent, anchorId: string) => {
   prevPointerY.value = event.clientY;
 
   const onMouseMove = (moveEvent: MouseEvent) => resize(moveEvent, anchorId);
+  const onMouseUp = () => (isResizing.value = false);
 
-  const onMouseUp = () => {
-    isResizing.value = false;
-
-    window.removeEventListener("mousemove", onMouseMove);
-    window.removeEventListener("mouseup", onMouseUp);
-  };
-
-  window.addEventListener("mousemove", onMouseMove);
-  window.addEventListener("mouseup", onMouseUp);
+  useDragElement(onMouseMove, onMouseUp);
 };
 
 const resize = (event: MouseEvent, anchorId: string) => {
