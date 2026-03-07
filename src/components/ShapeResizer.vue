@@ -16,11 +16,8 @@ const isResizing = ref<boolean>(false);
 const prevPointerX = ref<number>(0);
 const prevPointerY = ref<number>(0);
 const objectsStore = useObjectsStore();
-const { objects, selectedObjectId } = storeToRefs(objectsStore);
-
-const selectedObject = computed(() => {
-  return selectedObjectId.value ? objects.value[selectedObjectId.value] : null;
-});
+const { selectedObjectId, selectedObject } = storeToRefs(objectsStore);
+const { setSelectedObjectRadius } = objectsStore;
 
 // Bounding box corners derived from shape geometry
 const bbox = computed(() => {
@@ -105,7 +102,7 @@ const resize = (event: MouseEvent, anchorId: string) => {
   // Based on the similar triangle relativity formula
   const newRadius =
     (currentDistance / prevDistance) * selectedObject.value.radius;
-  selectedObject.value.radius = Math.max(1, newRadius);
+  setSelectedObjectRadius(Math.max(1, newRadius));
   prevPointerX.value = currentX;
   prevPointerY.value = currentY;
 };

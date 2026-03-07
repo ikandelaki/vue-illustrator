@@ -9,9 +9,8 @@ import { useSelectedShapeStore } from "../store/selectedShape";
 
 const objectsStore = useObjectsStore();
 const selectedShapeStore = useSelectedShapeStore();
-const { setSelectedObject } = objectsStore;
+const { setSelectedObject, updateSelectedObjectPosition } = objectsStore;
 const { objects, selectedObjectId } = storeToRefs(objectsStore);
-const { setSelectedShape } = selectedShapeStore;
 const { selectedShape } = storeToRefs(selectedShapeStore);
 
 // registry that maps type string to component
@@ -30,6 +29,23 @@ const handleShapeClick = (id: number) => {
 
   setSelectedObject(id);
 };
+
+const handleShapeMove = (event: MouseEvent, objectId: number) => {
+  if (objectId !== selectedObjectId.value) {
+    return;
+  }
+
+  const onMouseMove = (moveEvent: MouseEvent) =>
+    updateSelectedObjectPosition(moveEvent.clientX, moveEvent.clientY);
+
+  const onMouseUp = () => {
+    window.removeEventListener("mousemove", onMouseMove);
+    window.removeEventListener("mouseup", onMouseUp);
+  };
+
+  window.addEventListener("mousemove", onMouseMove);
+  window.addEventListener("mouseup", onMouseUp);
+};
 </script>
 
 <template>
@@ -41,6 +57,7 @@ const handleShapeClick = (id: number) => {
     :selected="selectedObjectId === object.getId()"
     class="shape"
     @click="handleShapeClick(object.getId())"
+    @mousedown="handleShapeMove($event, object.getId())"
   />
 </template>
 

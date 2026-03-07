@@ -1,9 +1,10 @@
 import { defineStore, storeToRefs } from "pinia";
-import { computed, ref } from "vue";
+import { computed, ref, registerRuntimeCompiler } from "vue";
 import Circle, { CircleInterface } from "../model/Circle";
 import Rectangle, { RectangleInterface } from "../model/Rectangle";
 import { useContextMenuStore } from "./contextMenu";
-import { ShapeType, CIRCLE, RECTANGLE } from "../types/ShapeTypes";
+import { ShapeType, CIRCLE, RECTANGLE, SHAPE_TYPES } from "../types/ShapeTypes";
+import { SHARE_ENV } from "worker_threads";
 
 type ShapeObject = CircleInterface | RectangleInterface;
 
@@ -36,9 +37,15 @@ export const useObjectsStore = defineStore("objects", () => {
    * Set radius of selected circle
    */
   const setSelectedObjectRadius = (value?: number) => {
-    if (!selectedObjectId.value || !value) return;
+    if (!selectedObjectId.value || !value) {
+      return;
+    }
+
     const obj = objects.value[selectedObjectId.value];
-    if (!obj || obj.type !== CIRCLE) return;
+    if (!obj || obj.type !== CIRCLE) {
+      return;
+    }
+
     const radius = Math.min(value, 1000);
     (obj as CircleInterface).setRadius(radius);
   };
@@ -115,6 +122,19 @@ export const useObjectsStore = defineStore("objects", () => {
     }
   };
 
+  const updateSelectedObjectPosition = (x: number, y: number): void => {
+    if (!selectedObjectId.value || !selectedObject.value) {
+      return;
+    }
+
+    if (selectedObject.value.type === SHAPE_TYPES.circle) {
+      selectedObject.value.cx = x;
+      selectedObject.value.cy = y;
+
+      return;
+    }
+  };
+
   /**
    * Get circles from objects
    */
@@ -140,6 +160,7 @@ export const useObjectsStore = defineStore("objects", () => {
     circles,
     rectangles,
     selectedObjectId,
+    selectedObject,
     setSelectedObject,
     selectedObjectType,
     selectedObjectRadius,
@@ -148,5 +169,6 @@ export const useObjectsStore = defineStore("objects", () => {
     setSelectedObjectColor,
     selectObject,
     createObject,
+    updateSelectedObjectPosition,
   };
 });
