@@ -29,28 +29,32 @@ const handleShapeClick = (id: number) => {
 
   setSelectedObject(id);
 };
+const handleShapeMove = (event: PointerEvent, objectId: number) => {
+  // 1. Ensure this is the selected object
+  console.log(">> handleShapeMove 1");
+  if (objectId !== selectedObjectId.value || !selectedObject.value) return;
 
-const handleShapeMove = (event: MouseEvent, objectId: number) => {
-  if (objectId !== selectedObjectId.value || !selectedObject.value) {
-    return;
-  }
-
+  // 2. Calculate the "Grab Offset" (where inside the shape you clicked)
   const startX = event.clientX - selectedObject.value.cx;
   const startY = event.clientY - selectedObject.value.cy;
 
-  const onMouseMove = (moveEvent: MouseEvent) =>
+  const onPointerMove = (moveEvent: PointerEvent) => {
+    // 3. Update position based on global mouse movement minus the grab offset
     updateSelectedObjectPosition(
       moveEvent.clientX - startX,
       moveEvent.clientY - startY,
     );
-
-  const onMouseUp = () => {
-    window.removeEventListener("mousemove", onMouseMove);
-    window.removeEventListener("mouseup", onMouseUp);
   };
 
-  window.addEventListener("mousemove", onMouseMove);
-  window.addEventListener("mouseup", onMouseUp);
+  const onPointerUp = () => {
+    // 4. Cleanup global listeners
+    window.removeEventListener("pointermove", onPointerMove);
+    window.removeEventListener("pointerup", onPointerUp);
+  };
+
+  // 5. Attach to window to ensure we don't "lose" the drag if moving fast
+  window.addEventListener("pointermove", onPointerMove);
+  window.addEventListener("pointerup", onPointerUp);
 };
 </script>
 
@@ -63,12 +67,21 @@ const handleShapeMove = (event: MouseEvent, objectId: number) => {
     :selected="selectedObjectId === object.getId()"
     class="shape"
     @click="handleShapeClick(object.getId())"
-    @mousedown="handleShapeMove($event, object.getId())"
+    @pointerdown="handleShapeMove($event, object.getId())"
   />
 </template>
 
 <style>
 .shape {
+  touch-action: none;
   cursor: pointer;
+
+  &.selected {
+    cursor: grab;
+  }
+}
+
+.shape:active {
+  cursor: grabbing;
 }
 </style>

@@ -21,7 +21,7 @@ const { selectObject } = useObjectsStore();
     :style="{ fill: object.getColor() }"
     @contextmenu.prevent="selectObject($event, object.getId(), object.type)"
     @click="$emit('click')"
-    @mousedown="$emit('mousedown', $event)"
+    @pointerdown="$emit('pointerdown', $event)"
   />
   <ShapeResizer />
 </template>

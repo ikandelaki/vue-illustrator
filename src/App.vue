@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, defineAsyncComponent } from "vue";
+import { defineAsyncComponent } from "vue";
 import Loader from "./components/Loader.vue";
 import Header from "./components/Header.vue";
 import { CIRCLE, RECTANGLE, SHAPE_TYPES, ShapeType } from "./types/ShapeTypes";
@@ -20,16 +20,42 @@ const { setSelectedShape } = selectedShapeStore;
 const { selectedShape } = storeToRefs(selectedShapeStore);
 
 const handleCreateObject = (event: MouseEvent): void => {
-  if (selectedShape.value === CIRCLE) {
+  if (selectedShape.value === SHAPE_TYPES.circle) {
     createObject(CIRCLE, event);
     return;
   }
 
-  if (selectedShape.value === RECTANGLE) {
+  if (selectedShape.value === SHAPE_TYPES.rectangle) {
     createObject(RECTANGLE, event);
     return;
   }
 };
+
+// If the element clicked is not a shape it means we clicked outside, so we should de-select the selected shape
+// TODO: this logic messes with context menu property changes, need to think of a proper way to do this.
+// const handleOutsideClick = (event: MouseEvent) => {
+//   if (selectedShape.value !== SHAPE_TYPES.cursor) {
+//     return;
+//   }
+
+//   const target = event.target as HTMLElement;
+
+//   if (
+//     !target.classList?.length ||
+//     (target.classList?.length && !target?.classList.contains("shape"))
+//   ) {
+//     deSelectObject();
+//     return;
+//   }
+// };
+
+// onMounted(() => {
+//   window.addEventListener("click", handleOutsideClick);
+// });
+
+// onUnmounted(() => {
+//   window.removeEventListener("click", handleOutsideClick);
+// });
 </script>
 
 <template>
@@ -37,9 +63,9 @@ const handleCreateObject = (event: MouseEvent): void => {
   <svg @click="handleCreateObject">
     <foreignObject x="0" y="40%" width="100%" height="200">
       <p class="canvas-details">
-        Click on the canvas to draw a circle. click on a circle to select it.
+        Click on the canvas to draw a shape. click on a shape to select it.
         <br />
-        Right-click on a circle to adjust its radius
+        Left-click on a shape to adjust its properties
       </p>
     </foreignObject>
     <Objects />

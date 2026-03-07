@@ -108,7 +108,7 @@ export const useObjectsStore = defineStore("objects", () => {
    * Create a new object (circle or rectangle)
    */
   const createObject = (shapeType: ShapeType, event: MouseEvent): void => {
-    selectObject(); // Deselect current selection
+    deSelectObject(); // Deselect current selection
 
     const { clientX, clientY } = event;
     const id = Math.max(...Object.keys(objects.value).map(Number), 0) + 1;
@@ -133,6 +133,10 @@ export const useObjectsStore = defineStore("objects", () => {
 
       return;
     }
+  };
+
+  const deSelectObject = () => {
+    selectObject();
   };
 
   /**
@@ -170,5 +174,6 @@ export const useObjectsStore = defineStore("objects", () => {
     selectObject,
     createObject,
     updateSelectedObjectPosition,
+    deSelectObject,
   };
 });
