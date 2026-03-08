@@ -111,10 +111,21 @@ const resize = (event: MouseEvent, anchorId: string) => {
     selectedObject.value.cy,
   );
 
+  if (selectedObject.value.type === SHAPE_TYPES.circle) {
+    const newRadius =
+      (currentDistance / prevDistance) * selectedObject.value.radius;
+    setSelectedObjectRadius(Math.max(1, newRadius));
+  }
+
+  if (selectedObject.value.type === SHAPE_TYPES.rectangle) {
+    const rect = selectedObject.value as RectangleInterface;
+    const widthToHeightRatio = rect.height / rect.width;
+    const newWidth = (currentDistance / prevDistance) * rect.width;
+    const newHeight = newWidth * widthToHeightRatio;
+    rect.width = newWidth;
+    rect.height = newHeight;
+  }
   // Based on the similar triangle relativity formula
-  const newRadius =
-    (currentDistance / prevDistance) * selectedObject.value.radius;
-  setSelectedObjectRadius(Math.max(1, newRadius));
   prevPointerX.value = currentX;
   prevPointerY.value = currentY;
 };
