@@ -1,5 +1,5 @@
 import { defineStore, storeToRefs } from "pinia";
-import { computed, ref, registerRuntimeCompiler } from "vue";
+import { computed, ref } from "vue";
 import Circle, { CircleInterface } from "../model/Circle";
 import Rectangle, {
   DEFAULT_RECT_HEIGHT,
@@ -8,7 +8,6 @@ import Rectangle, {
 } from "../model/Rectangle";
 import { useContextMenuStore } from "./contextMenu";
 import { ShapeType, CIRCLE, RECTANGLE, SHAPE_TYPES } from "../types/ShapeTypes";
-import { SHARE_ENV } from "worker_threads";
 
 type ShapeObject = CircleInterface | RectangleInterface;
 
