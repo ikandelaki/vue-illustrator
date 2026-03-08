@@ -6,6 +6,7 @@ import { SHAPE_TYPES } from "../types/ShapeTypes";
 import { CircleInterface } from "../model/Circle";
 import { calculateDistance } from "../utils/math";
 import { useDragElement } from "../composables/mouse";
+import { RectangleInterface } from "../model/Rectangle";
 
 const OFFSET_LENGTH = 0;
 
@@ -22,27 +23,44 @@ const { setSelectedObjectRadius } = objectsStore;
 
 // Bounding box corners derived from shape geometry
 const bbox = computed(() => {
+  console.log(">> selectedObject.value", selectedObject.value);
   if (!selectedObject.value) {
     return {
       x: 0,
       y: 0,
-      size: 0,
+      width: 0,
+      height: 0,
     };
   }
 
   if (selectedObject.value.type === SHAPE_TYPES.circle) {
     const circle = selectedObject.value as CircleInterface;
+
     return {
       x: circle.cx - circle.radius - OFFSET_LENGTH,
       y: circle.cy - circle.radius - OFFSET_LENGTH,
-      size: (circle.radius + OFFSET_LENGTH) * 2,
+      width: (circle.radius + OFFSET_LENGTH) * 2,
+      height: (circle.radius + OFFSET_LENGTH) * 2,
+    };
+  }
+
+  if (selectedObject.value.type === SHAPE_TYPES.rectangle) {
+    const rectangle = selectedObject.value as RectangleInterface;
+
+    console.log(">> returning bbox");
+    return {
+      x: rectangle.x - OFFSET_LENGTH,
+      y: rectangle.y - OFFSET_LENGTH,
+      width: rectangle.width,
+      height: rectangle.height,
     };
   }
 
   return {
     x: 0,
     y: 0,
-    size: 0,
+    width: 0,
+    height: 0,
   };
 });
 
@@ -50,12 +68,12 @@ const anchors = computed(() => {
   if (!bbox.value) {
     return [];
   }
-  const { x, y, size } = bbox.value;
+  const { x, y, width, height } = bbox.value;
   return [
     { id: "tl", cx: x, cy: y },
-    { id: "tr", cx: x + size, cy: y },
-    { id: "bl", cx: x, cy: y + size },
-    { id: "br", cx: x + size, cy: y + size },
+    { id: "tr", cx: x + width, cy: y },
+    { id: "bl", cx: x, cy: y + height },
+    { id: "br", cx: x + width, cy: y + height },
   ];
 });
 
@@ -102,13 +120,13 @@ const resize = (event: MouseEvent, anchorId: string) => {
 };
 </script>
 <template>
-  <template v-if="selectedObjectId && bbox">
+  <template v-if="selectedObjectId && bbox.width">
     <rect
       class="selection-box"
       :x="bbox.x"
       :y="bbox.y"
-      :width="bbox.size"
-      :height="bbox.size"
+      :width="bbox.width"
+      :height="bbox.height"
       fill="none"
       stroke="black"
       stroke-width="1"
@@ -132,6 +150,9 @@ const resize = (event: MouseEvent, anchorId: string) => {
 
 <style scoped>
 .resize-anchor {
+  position: relative;
+  z-index: 1111;
+
   &.tl,
   &.br {
     cursor: nwse-resize;
