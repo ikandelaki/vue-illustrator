@@ -1,7 +1,11 @@
 import { defineStore, storeToRefs } from "pinia";
 import { computed, ref, registerRuntimeCompiler } from "vue";
 import Circle, { CircleInterface } from "../model/Circle";
-import Rectangle, { RectangleInterface } from "../model/Rectangle";
+import Rectangle, {
+  DEFAULT_RECT_HEIGHT,
+  DEFAULT_RECT_WIDTH,
+  RectangleInterface,
+} from "../model/Rectangle";
 import { useContextMenuStore } from "./contextMenu";
 import { ShapeType, CIRCLE, RECTANGLE, SHAPE_TYPES } from "../types/ShapeTypes";
 import { SHARE_ENV } from "worker_threads";
@@ -117,7 +121,9 @@ export const useObjectsStore = defineStore("objects", () => {
       const circle = new Circle(id, clientX, clientY);
       objects.value[id] = circle;
     } else if (shapeType === RECTANGLE) {
-      const rectangle = new Rectangle(id, clientX, clientY);
+      const x = clientX - DEFAULT_RECT_WIDTH / 2;
+      const y = clientY - DEFAULT_RECT_HEIGHT / 2;
+      const rectangle = new Rectangle(id, x, y);
       objects.value[id] = rectangle;
     }
   };
