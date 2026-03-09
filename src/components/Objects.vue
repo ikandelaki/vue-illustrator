@@ -1,10 +1,10 @@
 <script setup lang="ts">
 import { computed } from "vue";
 import { storeToRefs } from "pinia";
-import { useObjectsStore } from "../store/objects";
+import { ShapeObject, useObjectsStore } from "../store/objects";
 import CircleShape from "./CircleShape.vue";
 import RectangleShape from "./RectangleShape.vue";
-import { CIRCLE, RECTANGLE, SHAPE_TYPES } from "../types/ShapeTypes";
+import { CIRCLE, RECTANGLE, SHAPE_TYPES, ShapeType } from "../types/ShapeTypes";
 import { useSelectedShapeStore } from "../store/selectedShape";
 import { useDragElement } from "../composables/mouse";
 import ShapeResizer from "./ShapeResizer.vue";
@@ -33,13 +33,32 @@ const handleShapeClick = (id: number) => {
   setSelectedObject(id);
 };
 
+const calculateStartXAndYWithOffset = (
+  event: MouseEvent,
+  object: ShapeObject,
+) => {
+  if (object.type === SHAPE_TYPES.circle) {
+    return {
+      startX: event.clientX - object.cx,
+      startY: event.clientY - object.cy,
+    };
+  }
+
+  return {
+    startX: event.clientX - object.x,
+    startY: event.clientY - object.y,
+  };
+};
+
 const handleShapeMove = (event: PointerEvent, objectId: number) => {
   // 1. Ensure this is the selected object
   if (objectId !== selectedObjectId.value || !selectedObject.value) return;
 
   // 2. Calculate the "Grab Offset" (to prevent the shape from jumping to the mouse)
-  const startX = event.clientX - selectedObject.value.cx;
-  const startY = event.clientY - selectedObject.value.cy;
+  const { startX, startY } = calculateStartXAndYWithOffset(
+    event,
+    selectedObject.value,
+  );
 
   const onPointerMove = (moveEvent: PointerEvent) => {
     // 3. Update position based on global mouse movement minus the grab offset

@@ -1,9 +1,5 @@
 <script setup lang="ts">
 import type { RectangleInterface } from "../model/Rectangle";
-import ShapeResizer from "./ShapeResizer.vue";
-import { useObjectsStore } from "../store/objects";
-
-const { selectObject } = useObjectsStore();
 
 const { object, selected } = defineProps<{
   object: RectangleInterface;

@@ -9,7 +9,7 @@ import Rectangle, {
 import { useContextMenuStore } from "./contextMenu";
 import { ShapeType, CIRCLE, RECTANGLE, SHAPE_TYPES } from "../types/ShapeTypes";
 
-type ShapeObject = CircleInterface | RectangleInterface;
+export type ShapeObject = CircleInterface | RectangleInterface;
 
 export const useObjectsStore = defineStore("objects", () => {
   const objects = ref<Record<number, ShapeObject>>({});
@@ -149,8 +149,17 @@ export const useObjectsStore = defineStore("objects", () => {
     }
 
     if (selectedObject.value.type === SHAPE_TYPES.circle) {
+      // 2. Calculate the "Grab Offset" (to prevent the shape from jumping to the mouse)
+
       selectedObject.value.cx = x;
       selectedObject.value.cy = y;
+
+      return;
+    }
+
+    if (selectedObject.value.type === SHAPE_TYPES.rectangle) {
+      selectedObject.value.x = x;
+      selectedObject.value.y = y;
 
       return;
     }
