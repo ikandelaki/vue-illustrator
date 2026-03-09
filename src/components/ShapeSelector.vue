@@ -19,15 +19,18 @@ const selectShape = (shape: ShapeType) => {
     <button
       class="circle"
       @click="selectShape(SHAPE_TYPES.circle)"
-      aria-label="Select circle"
+      aria-label="Select a circle"
     >
       <span></span>
     </button>
     <button
       class="rectangle"
       @click="selectShape(SHAPE_TYPES.rectangle)"
-      aria-label="Select rectangle"
+      aria-label="Select a rectangle"
     >
+      <span></span>
+    </button>
+    <button class="triangle" aria-label="Select a triangle">
       <span></span>
     </button>
   </div>
@@ -59,6 +62,14 @@ const selectShape = (shape: ShapeType) => {
     background-color: #fff;
     border-radius: 4px;
     border: 1px solid #000;
+  }
+
+  .triangle {
+    width: 0;
+    height: 0;
+    border-left: 25px solid transparent;
+    border-right: 25px solid transparent;
+    border-bottom: 25px solid #fff;
   }
 }
 </style>
