@@ -23,7 +23,10 @@ export const useObjectsStore = defineStore("objects", () => {
    * Get the selected object (could be circle or rectangle)
    */
   const selectedObject = computed(() => {
-    if (!selectedObjectId.value) return null;
+    if (!selectedObjectId.value) {
+      return null;
+    }
+
     return objects.value[selectedObjectId.value] ?? null;
   });
 
@@ -32,7 +35,11 @@ export const useObjectsStore = defineStore("objects", () => {
    */
   const selectedObjectRadius = computed(() => {
     const obj = selectedObject.value;
-    if (!obj || obj.type !== CIRCLE) return 0;
+
+    if (!obj || obj.type !== CIRCLE) {
+      return 0;
+    }
+
     return (obj as CircleInterface).getRadius();
   });
 
@@ -58,7 +65,10 @@ export const useObjectsStore = defineStore("objects", () => {
    */
   const selectedObjectColor = computed(() => {
     const obj = selectedObject.value;
-    if (!obj) return "#ffffff";
+    if (!obj) {
+      return "#ffffff";
+    }
+
     return obj.getColor();
   });
 
@@ -66,9 +76,15 @@ export const useObjectsStore = defineStore("objects", () => {
    * Set color of selected object
    */
   const setSelectedObjectColor = (value?: string) => {
-    if (!selectedObjectId.value || !value) return;
+    if (!selectedObjectId.value || !value) {
+      return;
+    }
+
     const obj = objects.value[selectedObjectId.value];
-    if (!obj) return;
+    if (!obj) {
+      return;
+    }
+
     obj.setColor(value);
   };
 

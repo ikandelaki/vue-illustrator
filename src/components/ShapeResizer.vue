@@ -23,7 +23,6 @@ const { setSelectedObjectRadius } = objectsStore;
 
 // Bounding box corners derived from shape geometry
 const bbox = computed(() => {
-  console.log(">> selectedObject.value", selectedObject.value);
   if (!selectedObject.value) {
     return {
       x: 0,
@@ -47,7 +46,6 @@ const bbox = computed(() => {
   if (selectedObject.value.type === SHAPE_TYPES.rectangle) {
     const rectangle = selectedObject.value as RectangleInterface;
 
-    console.log(">> returning bbox");
     return {
       x: rectangle.x - OFFSET_LENGTH,
       y: rectangle.y - OFFSET_LENGTH,

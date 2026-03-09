@@ -7,10 +7,12 @@ import RectangleShape from "./RectangleShape.vue";
 import { CIRCLE, RECTANGLE, SHAPE_TYPES } from "../types/ShapeTypes";
 import { useSelectedShapeStore } from "../store/selectedShape";
 import { useDragElement } from "../composables/mouse";
+import ShapeResizer from "./ShapeResizer.vue";
 
 const objectsStore = useObjectsStore();
 const selectedShapeStore = useSelectedShapeStore();
-const { setSelectedObject, updateSelectedObjectPosition } = objectsStore;
+const { setSelectedObject, updateSelectedObjectPosition, selectObject } =
+  objectsStore;
 const { objects, selectedObjectId, selectedObject } = storeToRefs(objectsStore);
 const { selectedShape } = storeToRefs(selectedShapeStore);
 
@@ -62,7 +64,9 @@ const handleShapeMove = (event: PointerEvent, objectId: number) => {
     class="shape"
     @click="handleShapeClick(object.getId())"
     @pointerdown="handleShapeMove($event, object.getId())"
+    @contextmenu.prevent="selectObject($event, object.getId(), object.type)"
   />
+  <ShapeResizer />
 </template>
 
 <style>
