@@ -18,6 +18,11 @@ export const useObjectsStore = defineStore("objects", () => {
   const contextMenuStore = useContextMenuStore();
   const { isContextMenuOpened, contextMenuLocation } =
     storeToRefs(contextMenuStore);
+  const {
+    setContextMenuLocation,
+    setIsContextMenuOpened,
+    setSelectedMenuItemIndex,
+  } = contextMenuStore;
 
   /**
    * Get the selected object (could be circle or rectangle)
@@ -115,12 +120,13 @@ export const useObjectsStore = defineStore("objects", () => {
     selectedObjectType.value = type ?? null;
 
     if (!id) {
-      isContextMenuOpened.value = false;
+      setIsContextMenuOpened(false);
       return;
     }
 
-    isContextMenuOpened.value = true;
-    contextMenuLocation.value = { x: clientX, y: clientY };
+    setIsContextMenuOpened();
+    setContextMenuLocation(clientX, clientY);
+    setSelectedMenuItemIndex(null);
   };
 
   /**

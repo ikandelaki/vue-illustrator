@@ -7,17 +7,15 @@ import RangeInput from "./RangeInput.vue";
 import ColorInput from "./ColorInput.vue";
 import { useContextMenuStore } from "../store/contextMenu";
 
-// Nested level of the context menu
-const selectedMenuItemIndex = ref<number | null>(null);
-
 const contextMenuStore = useContextMenuStore();
 const objectsStore = useObjectsStore();
 const { selectedObjectRadius, selectedObjectColor, selectedObjectType } =
   storeToRefs(objectsStore);
 const { setSelectedObjectRadius, setSelectedObjectColor, selectObject } =
   objectsStore;
-const { isContextMenuOpened, contextMenuLocation } =
+const { isContextMenuOpened, contextMenuLocation, selectedMenuItemIndex } =
   storeToRefs(contextMenuStore);
+const { setSelectedMenuItemIndex } = contextMenuStore;
 
 // computed style object for context menu
 const contextMenuStyles = computed(() => ({
@@ -80,7 +78,7 @@ defineProps<{
     </div>
     <div v-if="selectedMenuItemIndex !== null">
       <div class="context-menu_navigate">
-        <button @click="selectedMenuItemIndex = null">Back</button>
+        <button @click="() => setSelectedMenuItemIndex(0)">Back</button>
         <button @click="selectObject">X</button>
       </div>
       <div class="context-menu_component">
