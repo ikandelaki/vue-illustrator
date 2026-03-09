@@ -16,30 +16,42 @@ const selectShape = (shape: ShapeType) => {
     <button @click="selectShape(SHAPE_TYPES.cursor)">
       <CursorIcon />
     </button>
-    <button
-      class="circle"
-      @click="selectShape(SHAPE_TYPES.circle)"
-      aria-label="Select a circle"
-    >
-      <span></span>
-    </button>
-    <button
-      class="rectangle"
-      @click="selectShape(SHAPE_TYPES.rectangle)"
-      aria-label="Select a rectangle"
-    >
-      <span></span>
-    </button>
-    <button class="triangle" aria-label="Select a triangle">
-      <span></span>
-    </button>
+    <div class="shape-selector_shapes">
+      <button
+        class="circle"
+        @click="selectShape(SHAPE_TYPES.circle)"
+        aria-label="Select a circle"
+      >
+        <span></span>
+      </button>
+      <button
+        class="rectangle"
+        @click="selectShape(SHAPE_TYPES.rectangle)"
+        aria-label="Select a rectangle"
+      >
+        <span></span>
+      </button>
+      <button class="triangle" aria-label="Select a triangle">
+        <span></span>
+      </button>
+    </div>
   </div>
 </template>
 
 <style lang="scss">
 .shape-selector {
   display: flex;
+  align-items: center;
   gap: 8px;
+
+  &_shapes {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 16px;
+    background-color: #495057;
+    border-radius: 4px;
+  }
 
   button {
     cursor: pointer;
@@ -48,8 +60,8 @@ const selectShape = (shape: ShapeType) => {
   }
 
   .circle {
-    height: 25px;
-    width: 25px;
+    height: 20px;
+    width: 20px;
     background-color: #fff;
     border-radius: 50%;
     display: inline-block;
@@ -57,19 +69,19 @@ const selectShape = (shape: ShapeType) => {
   }
 
   .rectangle {
-    width: 35px;
-    height: 25px;
+    width: 25px;
+    height: 20px;
     background-color: #fff;
     border-radius: 4px;
     border: 1px solid #000;
   }
 
   .triangle {
-    width: 0;
-    height: 0;
-    border-left: 25px solid transparent;
-    border-right: 25px solid transparent;
-    border-bottom: 25px solid #fff;
+    width: 20px;
+    height: 20px;
+    background-color: #fff;
+    clip-path: polygon(0 0, 0% 100%, 100% 100%);
+    border: 1px solid #000;
   }
 }
 </style>
