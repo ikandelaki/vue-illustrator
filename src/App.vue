@@ -2,7 +2,13 @@
 import { defineAsyncComponent } from "vue";
 import Loader from "./components/Loader.vue";
 import Header from "./components/Header.vue";
-import { CIRCLE, RECTANGLE, SHAPE_TYPES, ShapeType } from "./types/ShapeTypes";
+import {
+  CIRCLE,
+  RECTANGLE,
+  SHAPE_TYPES,
+  ShapeType,
+  TRIANGLE,
+} from "./types/ShapeTypes";
 import { useObjectsStore } from "./store/objects";
 import Objects from "./components/Objects.vue";
 import { useSelectedShapeStore } from "./store/selectedShape";
@@ -27,6 +33,11 @@ const handleCreateObject = (event: MouseEvent): void => {
 
   if (selectedShape.value === SHAPE_TYPES.rectangle) {
     createObject(RECTANGLE, event);
+    return;
+  }
+
+  if (selectedShape.value === SHAPE_TYPES.triangle) {
+    createObject(TRIANGLE, event);
     return;
   }
 };

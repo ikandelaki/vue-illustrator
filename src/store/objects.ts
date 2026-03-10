@@ -1,3 +1,7 @@
+import Triangle, {
+  DEFAULT_TRIANGLE_WIDTH,
+  TriangleInterface,
+} from "./../model/Triangle";
 import { defineStore, storeToRefs } from "pinia";
 import { computed, ref } from "vue";
 import Circle, { CircleInterface } from "../model/Circle";
@@ -8,16 +12,18 @@ import Rectangle, {
 } from "../model/Rectangle";
 import { useContextMenuStore } from "./contextMenu";
 import { ShapeType, CIRCLE, RECTANGLE, SHAPE_TYPES } from "../types/ShapeTypes";
+import { TriangleInterface } from "../model/Triangle";
 
-export type ShapeObject = CircleInterface | RectangleInterface;
+export type ShapeObject =
+  | CircleInterface
+  | RectangleInterface
+  | TriangleInterface;
 
 export const useObjectsStore = defineStore("objects", () => {
   const objects = ref<Record<number, ShapeObject>>({});
   const selectedObjectId = ref<number | null>(null);
   const selectedObjectType = ref<ShapeType | null>(null);
   const contextMenuStore = useContextMenuStore();
-  const { isContextMenuOpened, contextMenuLocation } =
-    storeToRefs(contextMenuStore);
   const {
     setContextMenuLocation,
     setIsContextMenuOpened,
@@ -138,14 +144,27 @@ export const useObjectsStore = defineStore("objects", () => {
     const { clientX, clientY } = event;
     const id = Math.max(...Object.keys(objects.value).map(Number), 0) + 1;
 
-    if (shapeType === CIRCLE) {
+    if (shapeType === SHAPE_TYPES.circle) {
       const circle = new Circle(id, clientX, clientY);
       objects.value[id] = circle;
-    } else if (shapeType === RECTANGLE) {
+    } else if (shapeType === SHAPE_TYPES.rectangle) {
       const x = clientX - DEFAULT_RECT_WIDTH / 2;
       const y = clientY - DEFAULT_RECT_HEIGHT / 2;
       const rectangle = new Rectangle(id, x, y);
       objects.value[id] = rectangle;
+    } else if (shapeType === SHAPE_TYPES.triangle) {
+      const x1 = clientX;
+      const y1 = clientY;
+      const triangle = new Triangle(
+        id,
+        x1,
+        y1,
+        x1 + DEFAULT_TRIANGLE_WIDTH,
+        y1,
+        x1,
+        y1 + DEFAULT_TRIANGLE_WIDTH,
+      );
+      objects.value[id] = triangle;
     }
   };
 

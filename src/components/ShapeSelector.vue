@@ -31,7 +31,11 @@ const selectShape = (shape: ShapeType) => {
       >
         <span></span>
       </button>
-      <button class="triangle" aria-label="Select a triangle">
+      <button
+        class="triangle"
+        @click="selectShape(SHAPE_TYPES.triangle)"
+        aria-label="Select a triangle"
+      >
         <span></span>
       </button>
     </div>
