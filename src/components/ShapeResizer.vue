@@ -56,13 +56,18 @@ const bbox = computed(() => {
   }
 
   if (selectedObject.value.type === SHAPE_TYPES.triangle) {
-    const triangle = selectedObject.value as TriangleInterface;
+    const tri = selectedObject.value as TriangleInterface;
+
+    const minX = Math.min(tri.x1, tri.x2, tri.x3);
+    const maxX = Math.max(tri.x1, tri.x2, tri.x3);
+    const minY = Math.min(tri.y1, tri.y2, tri.y3);
+    const maxY = Math.max(tri.y1, tri.y2, tri.y3);
 
     return {
-      x: triangle.x1 - OFFSET_LENGTH,
-      y: triangle.y1 - OFFSET_LENGTH,
-      width: triangle.x2 - triangle.x1,
-      height: triangle.y3 - triangle.y1,
+      x: minX - OFFSET_LENGTH,
+      y: minY - OFFSET_LENGTH,
+      width: maxX - minX + OFFSET_LENGTH * 2,
+      height: maxY - minY + OFFSET_LENGTH * 2,
     };
   }
 
@@ -141,6 +146,8 @@ const resize = (event: MouseEvent, anchorId: string) => {
 
     rect.width = newWidth;
     rect.height = newHeight;
+    rect.x = centerX - newWidth / 2;
+    rect.y = centerY - newHeight / 2;
   }
 
   if (selectedObject.value.type === SHAPE_TYPES.triangle) {
