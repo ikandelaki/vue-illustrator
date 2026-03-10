@@ -1,6 +1,6 @@
 export const DEFAULT_RECT_WIDTH = 50;
 export const DEFAULT_RECT_HEIGHT = 40;
-export const DEFAULT_RECT_COLOR = "#fff";
+export const DEFAULT_RECT_COLOR = "#ffffff";
 
 import { ShapeType, RECTANGLE } from "../types/ShapeTypes";
 

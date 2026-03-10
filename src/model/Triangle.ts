@@ -1,6 +1,7 @@
 import { SHAPE_TYPES } from "../types/ShapeTypes";
 
 export const DEFAULT_TRIANGLE_WIDTH = 50;
+export const DEFAULT_TRIANGLE_COLOR = "#ffffff";
 
 export interface TriangleInterface {
   x1: number;
@@ -47,7 +48,7 @@ export default class Triangle implements TriangleInterface {
     this.y2 = y2;
     this.x3 = x3;
     this.y3 = y3;
-    this.color = color ?? "#fff";
+    this.color = color ?? DEFAULT_TRIANGLE_COLOR;
     this.width = width ?? DEFAULT_TRIANGLE_WIDTH;
   }
 
