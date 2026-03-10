@@ -7,6 +7,7 @@ import { CircleInterface } from "../model/Circle";
 import { calculateDistance } from "../utils/math";
 import { useDragElement } from "../composables/mouse";
 import { RectangleInterface } from "../model/Rectangle";
+import Triangle, { TriangleInterface } from "../model/Triangle";
 
 const OFFSET_LENGTH = 0;
 
@@ -51,6 +52,17 @@ const bbox = computed(() => {
       y: rectangle.y - OFFSET_LENGTH,
       width: rectangle.width,
       height: rectangle.height,
+    };
+  }
+
+  if (selectedObject.value.type === SHAPE_TYPES.triangle) {
+    const triangle = selectedObject.value as TriangleInterface;
+
+    return {
+      x: triangle.x1 - OFFSET_LENGTH,
+      y: triangle.y1 - OFFSET_LENGTH,
+      width: triangle.x2 - triangle.x1,
+      height: triangle.y3 - triangle.y1,
     };
   }
 
