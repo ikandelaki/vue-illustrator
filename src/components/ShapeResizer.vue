@@ -4,10 +4,10 @@ import { useObjectsStore } from "../store/objects";
 import { computed, ref } from "vue";
 import { SHAPE_TYPES } from "../types/ShapeTypes";
 import { CircleInterface } from "../model/Circle";
-import { calculateDistance } from "../utils/math";
+import { calculateDistance, getObjectCenterPosition } from "../utils/math";
 import { useDragElement } from "../composables/mouse";
 import { RectangleInterface } from "../model/Rectangle";
-import Triangle, { TriangleInterface } from "../model/Triangle";
+import { TriangleInterface } from "../model/Triangle";
 
 const OFFSET_LENGTH = 0;
 
@@ -107,34 +107,59 @@ const resize = (event: MouseEvent, anchorId: string) => {
     return;
   }
 
+  const { x: centerX = 0, y: centerY = 0 } = getObjectCenterPosition(
+    selectedObject.value,
+  );
+
   const prevDistance = calculateDistance(
     prevPointerX.value,
     prevPointerY.value,
-    selectedObject.value.cx,
-    selectedObject.value.cy,
+    centerX,
+    centerY,
   );
 
   const currentDistance = calculateDistance(
     currentX,
     currentY,
-    selectedObject.value.cx,
-    selectedObject.value.cy,
+    centerX,
+    centerY,
   );
 
   if (selectedObject.value.type === SHAPE_TYPES.circle) {
-    const newRadius =
-      (currentDistance / prevDistance) * selectedObject.value.radius;
+    const circle = selectedObject.value as CircleInterface;
+
+    const newRadius = (currentDistance / prevDistance) * circle.radius;
     setSelectedObjectRadius(Math.max(1, newRadius));
   }
 
   if (selectedObject.value.type === SHAPE_TYPES.rectangle) {
     const rect = selectedObject.value as RectangleInterface;
+
     const widthToHeightRatio = rect.height / rect.width;
     const newWidth = (currentDistance / prevDistance) * rect.width;
     const newHeight = newWidth * widthToHeightRatio;
+
     rect.width = newWidth;
     rect.height = newHeight;
   }
+
+  if (selectedObject.value.type === SHAPE_TYPES.triangle) {
+    const triangle = selectedObject.value as TriangleInterface;
+
+    // Determine the scale factor (prevent division by zero)
+    const scale = prevDistance !== 0 ? currentDistance / prevDistance : 1;
+
+    // Scale each point relative to the center
+    triangle.x1 = centerX + (triangle.x1 - centerX) * scale;
+    triangle.y1 = centerY + (triangle.y1 - centerY) * scale;
+
+    triangle.x2 = centerX + (triangle.x2 - centerX) * scale;
+    triangle.y2 = centerY + (triangle.y2 - centerY) * scale;
+
+    triangle.x3 = centerX + (triangle.x3 - centerX) * scale;
+    triangle.y3 = centerY + (triangle.y3 - centerY) * scale;
+  }
+
   // Based on the similar triangle relativity formula
   prevPointerX.value = currentX;
   prevPointerY.value = currentY;
