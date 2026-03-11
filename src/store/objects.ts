@@ -13,6 +13,7 @@ import Rectangle, {
 import { useContextMenuStore } from "./contextMenu";
 import { ShapeType, CIRCLE, RECTANGLE, SHAPE_TYPES } from "../types/ShapeTypes";
 import { TriangleInterface } from "../model/Triangle";
+import { getObjectCenterPosition } from "../utils/math";
 
 export type ShapeObject =
   | CircleInterface
@@ -147,12 +148,20 @@ export const useObjectsStore = defineStore("objects", () => {
     if (shapeType === SHAPE_TYPES.circle) {
       const circle = new Circle(id, clientX, clientY);
       objects.value[id] = circle;
-    } else if (shapeType === SHAPE_TYPES.rectangle) {
+
+      return;
+    }
+
+    if (shapeType === SHAPE_TYPES.rectangle) {
       const x = clientX - DEFAULT_RECT_WIDTH / 2;
       const y = clientY - DEFAULT_RECT_HEIGHT / 2;
       const rectangle = new Rectangle(id, x, y);
       objects.value[id] = rectangle;
-    } else if (shapeType === SHAPE_TYPES.triangle) {
+
+      return;
+    }
+
+    if (shapeType === SHAPE_TYPES.triangle) {
       const x1 = clientX;
       const y1 = clientY;
       const triangle = new Triangle(
@@ -168,6 +177,13 @@ export const useObjectsStore = defineStore("objects", () => {
     }
   };
 
+  /**
+   * X and Y represent the future center position of the object
+   *
+   * @param x
+   * @param y
+   * @returns
+   */
   const updateSelectedObjectPosition = (x: number, y: number): void => {
     if (!selectedObjectId.value || !selectedObject.value) {
       return;
@@ -183,10 +199,23 @@ export const useObjectsStore = defineStore("objects", () => {
     }
 
     if (selectedObject.value.type === SHAPE_TYPES.rectangle) {
-      selectedObject.value.x = x;
-      selectedObject.value.y = y;
+      selectedObject.value.x = x - selectedObject.value.width / 2;
+      selectedObject.value.y = y - selectedObject.value.height / 2;
 
       return;
+    }
+
+    if (selectedObject.value.type === SHAPE_TYPES.triangle) {
+      const tri = selectedObject.value as TriangleInterface;
+      const { x: currentX = 0, y: currentY = 0 } = getObjectCenterPosition(tri);
+      const deltaX = x - currentX;
+      const deltaY = y - currentY;
+      tri.x1 += deltaX;
+      tri.x2 += deltaX;
+      tri.x3 += deltaX;
+      tri.y1 += deltaY;
+      tri.y2 += deltaY;
+      tri.y3 += deltaY;
     }
   };
 

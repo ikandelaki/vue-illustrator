@@ -15,6 +15,7 @@ import { useSelectedShapeStore } from "../store/selectedShape";
 import { useDragElement } from "../composables/mouse";
 import ShapeResizer from "./ShapeResizer.vue";
 import TriangleShape from "./TriangleShape.vue";
+import { getObjectCenterPosition } from "../utils/math";
 
 const objectsStore = useObjectsStore();
 const selectedShapeStore = useSelectedShapeStore();
@@ -45,16 +46,18 @@ const calculateStartXAndYWithOffset = (
   event: MouseEvent,
   object: ShapeObject,
 ) => {
+  const { x = 0, y = 0 } = getObjectCenterPosition(object);
+
   if (object.type === SHAPE_TYPES.circle) {
     return {
-      startX: event.clientX - object.cx,
-      startY: event.clientY - object.cy,
+      startX: event.clientX - x,
+      startY: event.clientY - y,
     };
   }
 
   return {
-    startX: event.clientX - object.x,
-    startY: event.clientY - object.y,
+    startX: event.clientX - x,
+    startY: event.clientY - y,
   };
 };
 
