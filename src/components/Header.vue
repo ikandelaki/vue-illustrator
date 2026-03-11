@@ -20,11 +20,13 @@ defineProps<{
 <style lang="scss">
 .header-container {
   position: absolute;
+  z-index: 9;
   width: 100%;
   height: 50px;
   background: #343a40;
   display: flex;
   align-items: center;
   padding: 8px 16px;
+  box-shadow: 0px 8px 10px -10px black;
 }
 </style>

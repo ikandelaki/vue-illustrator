@@ -13,6 +13,7 @@ import { useObjectsStore } from "./store/objects";
 import Objects from "./components/Objects.vue";
 import { useSelectedShapeStore } from "./store/selectedShape";
 import { storeToRefs } from "pinia";
+import Sidebar from "./components/Sidebar.vue";
 
 const ContextMenu = defineAsyncComponent({
   loader: () => import("./components/ContextMenu.vue"),
@@ -82,6 +83,7 @@ const handleCreateObject = (event: MouseEvent): void => {
     <Objects />
   </svg>
   <ContextMenu />
+  <Sidebar />
 </template>
 
 <style>
@@ -94,7 +96,7 @@ const handleCreateObject = (event: MouseEvent): void => {
 
 <style lang="scss" scoped>
 svg {
-  width: 100vw;
+  width: 100%;
   height: 100vh;
   background-color: #eee;
 }
