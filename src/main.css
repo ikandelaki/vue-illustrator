@@ -1,12 +1,16 @@
 /* src/assets/styles/main.css or within a <style> tag in a .vue file */
+:root {
+  --header-total-height: 50px;
+}
+
 @font-face {
-  font-family: 'Fredoka';
-  src: url('./assets/fonts/fredoka/Fredoka-Regular.ttf') format('truetype');
+  font-family: "Fredoka";
+  src: url("./assets/fonts/fredoka/Fredoka-Regular.ttf") format("truetype");
   font-display: auto;
   font-weight: normal;
   font-style: normal;
 }
 
 body {
-  font-family: 'Fredoka', sans-serif;
+  font-family: "Fredoka", sans-serif;
 }

@@ -22,7 +22,7 @@ defineProps<{
   position: absolute;
   z-index: 9;
   width: 100%;
-  height: 50px;
+  height: var(--header-total-height);
   background: #343a40;
   display: flex;
   align-items: center;
