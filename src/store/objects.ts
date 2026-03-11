@@ -223,6 +223,16 @@ export const useObjectsStore = defineStore("objects", () => {
     selectObject();
   };
 
+  const deleteObject = (id: number | null) => {
+    if (id === undefined || id === null || !objects.value[id]) {
+      return;
+    }
+
+    delete objects.value[id];
+    setIsContextMenuOpened(false);
+    setSelectedMenuItemIndex(null);
+  };
+
   /**
    * Get circles from objects
    */
@@ -259,5 +269,6 @@ export const useObjectsStore = defineStore("objects", () => {
     createObject,
     updateSelectedObjectPosition,
     deSelectObject,
+    deleteObject,
   };
 });

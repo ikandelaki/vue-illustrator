@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { computed, ref } from "vue";
-import { CircleMenuItemsInterface } from "../types/CircleMenuItems";
+import { MenuItemsInterface } from "../types/CircleMenuItems";
 import { useObjectsStore } from "../store/objects";
 import { storeToRefs } from "pinia";
 import RangeInput from "./RangeInput.vue";
@@ -9,10 +9,18 @@ import { useContextMenuStore } from "../store/contextMenu";
 
 const contextMenuStore = useContextMenuStore();
 const objectsStore = useObjectsStore();
-const { selectedObjectRadius, selectedObjectColor, selectedObjectType } =
-  storeToRefs(objectsStore);
-const { setSelectedObjectRadius, setSelectedObjectColor, selectObject } =
-  objectsStore;
+const {
+  selectedObjectRadius,
+  selectedObjectColor,
+  selectedObjectType,
+  selectedObjectId,
+} = storeToRefs(objectsStore);
+const {
+  setSelectedObjectRadius,
+  setSelectedObjectColor,
+  selectObject,
+  deleteObject,
+} = objectsStore;
 const { isContextMenuOpened, contextMenuLocation, selectedMenuItemIndex } =
   storeToRefs(contextMenuStore);
 const { setSelectedMenuItemIndex } = contextMenuStore;
@@ -26,7 +34,15 @@ const contextMenuStyles = computed(() => ({
 // Individual control elements in the context menu
 // Build menu items based on selected object type
 const menuItems = computed(() => {
-  const items: CircleMenuItemsInterface<any>[] = [];
+  const items: MenuItemsInterface<any>[] = [
+    {
+      name: "Color",
+      child: ColorInput,
+      props: {},
+      value: selectedObjectColor,
+      setValue: setSelectedObjectColor,
+    },
+  ];
 
   // Only show radius for circles
   if (selectedObjectType.value === "circle") {
@@ -38,15 +54,6 @@ const menuItems = computed(() => {
       setValue: setSelectedObjectRadius,
     });
   }
-
-  // Color works for all objects
-  items.push({
-    name: "Color",
-    child: ColorInput,
-    props: {},
-    value: selectedObjectColor,
-    setValue: setSelectedObjectColor,
-  });
 
   return items;
 });
@@ -75,6 +82,12 @@ defineProps<{
         <span>{{ item.name }}</span>
         <span>></span>
       </p>
+      <button
+        class="context-menu_delete"
+        @click="deleteObject(selectedObjectId)"
+      >
+        Delete
+      </button>
     </div>
     <div v-if="selectedMenuItemIndex !== null">
       <div class="context-menu_navigate">
@@ -244,6 +257,16 @@ defineProps<{
       background-color: #087f5b;
       border: 1px solid #c3fae8;
       color: #c3fae8;
+    }
+
+    &.context-menu_delete {
+      background-color: #f03e3e;
+
+      &:hover {
+        color: #000;
+        border: 1px solid #000;
+        background-color: #ff6b6b;
+      }
     }
   }
 
