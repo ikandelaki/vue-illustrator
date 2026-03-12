@@ -38,9 +38,11 @@ const transformObject = () => {
     rect.x = rect.width / 2;
     rect.y = rect.height / 2;
   }
+
   if (props.type === SHAPE_TYPES.triangle) {
     const tri = sidebarObject.value as TriangleInterface;
 
+    // Coordinates to center a triangle inside of a 100x100 square "canvas"
     tri.x1 = 25;
     tri.y1 = 75;
     tri.x2 = 25;
