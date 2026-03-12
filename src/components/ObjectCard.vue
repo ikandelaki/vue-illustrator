@@ -1,9 +1,11 @@
 <script setup lang="ts">
 import { storeToRefs } from "pinia";
-import Circle, { DEFAULT_CIRCLE_RADIUS } from "../model/Circle";
 import { objectMap, shapeComponents, ShapeObject } from "../store/objects";
 import { useObjectsStore } from "../store/objects";
 import { watch, ref } from "vue";
+import { SHAPE_TYPES } from "../types/ShapeTypes";
+import { CircleInterface } from "../model/Circle";
+import { RectangleInterface } from "../model/Rectangle";
 
 const props = defineProps<{
   name: string;
@@ -17,6 +19,26 @@ const { objects } = storeToRefs(objectsStore);
 
 const object = new objectMap.value[props.type]();
 const sidebarObject = ref<ShapeObject>(object);
+
+const transformObject = () => {
+  if (props.type === SHAPE_TYPES.circle) {
+    const circle = sidebarObject.value as CircleInterface;
+
+    circle.setCx(circle.radius);
+    circle.setCy(circle.radius);
+  }
+
+  if (props.type === SHAPE_TYPES.rectangle) {
+    const rect = sidebarObject.value as RectangleInterface;
+
+    rect.width = 50;
+    rect.height = 50;
+    rect.x = rect.width / 2;
+    rect.y = rect.height / 2;
+  }
+};
+
+transformObject();
 
 watch(
   () => objects.value[props.id].color,
