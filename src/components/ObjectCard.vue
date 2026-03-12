@@ -6,6 +6,7 @@ import { watch, ref } from "vue";
 import { SHAPE_TYPES } from "../types/ShapeTypes";
 import { CircleInterface } from "../model/Circle";
 import { RectangleInterface } from "../model/Rectangle";
+import { TriangleInterface } from "../model/Triangle";
 
 const props = defineProps<{
   name: string;
@@ -36,6 +37,16 @@ const transformObject = () => {
     rect.height = 50;
     rect.x = rect.width / 2;
     rect.y = rect.height / 2;
+  }
+  if (props.type === SHAPE_TYPES.triangle) {
+    const tri = sidebarObject.value as TriangleInterface;
+
+    tri.x1 = 25;
+    tri.y1 = 75;
+    tri.x2 = 25;
+    tri.y2 = 25;
+    tri.x3 = 75;
+    tri.y3 = 25;
   }
 };
 
