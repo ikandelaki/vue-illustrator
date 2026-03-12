@@ -241,6 +241,15 @@ export const useObjectsStore = defineStore("objects", () => {
     setSelectedMenuItemIndex(null);
   };
 
+  const setObjectName = (event: Event, id: number) => {
+    const { value = "" } = (event.currentTarget as HTMLInputElement) || {};
+    if (!value || !id) {
+      return;
+    }
+
+    objects.value[id as number].name = value;
+  };
+
   /**
    * Get circles from objects
    */
@@ -278,6 +287,7 @@ export const useObjectsStore = defineStore("objects", () => {
     updateSelectedObjectPosition,
     deSelectObject,
     deleteObject,
+    setObjectName,
   };
 });
 

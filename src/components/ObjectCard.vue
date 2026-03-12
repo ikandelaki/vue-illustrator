@@ -16,6 +16,7 @@ const props = defineProps<{
 
 const objectsStore = useObjectsStore();
 const { objects } = storeToRefs(objectsStore);
+const { setObjectName } = objectsStore;
 
 const object = new objectMap.value[props.type]();
 const sidebarObject = ref<ShapeObject>(object);
@@ -40,6 +41,8 @@ const transformObject = () => {
 
 transformObject();
 
+// Watch for color change for the specific object
+// If the color changes, we should also update the color for the sidebar object as well
 watch(
   () => objects.value[props.id].color,
   (value?: string) => {
@@ -58,11 +61,19 @@ watch(
       {{ id }}
     </div>
     <div class="object-card_details">
-      <svg class="details_shape">
-        <component :is="shapeComponents[type]" :object="sidebarObject" />
-      </svg>
+      <div class="details_shape">
+        <svg>
+          <component :is="shapeComponents[type]" :object="sidebarObject" />
+        </svg>
+      </div>
       <div class="details_description">
-        <h2>{{ name }}</h2>
+        <input
+          type="text"
+          name="name"
+          :id="String(id)"
+          :value="name"
+          @input="(event) => setObjectName(event, id)"
+        />
         <span>{{ type }}</span>
       </div>
     </div>
@@ -85,6 +96,28 @@ watch(
       &_shape {
         width: 100px;
         height: 100px;
+      }
+
+      &_description {
+        display: flex;
+        flex-direction: column;
+
+        input {
+          background: none;
+          border: none;
+          color: #f1f3f5;
+          font-family: Fredoka;
+          font-size: 24px;
+          font-weight: bold;
+          max-width: 100%;
+          padding: 8px 16px;
+          border-bottom: 1px solid #fff;
+
+          &:focus-visible {
+            border-bottom: 1px solid #fff;
+            outline: none;
+          }
+        }
       }
     }
   }
