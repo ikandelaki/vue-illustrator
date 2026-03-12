@@ -76,7 +76,11 @@ watch(
     <div class="object-card_details">
       <div class="details_shape">
         <svg>
-          <component :is="shapeComponents[type]" :object="sidebarObject" />
+          <component
+            :is="shapeComponents[type]"
+            :object="sidebarObject"
+            class="shape"
+          />
         </svg>
       </div>
       <div class="details_description">
@@ -85,7 +89,7 @@ watch(
           name="name"
           :id="String(id)"
           :value="name"
-          @input="(event) => setObjectName(event, id)"
+          @input="setObjectName($event, id)"
         />
         <span>{{ type }}</span>
       </div>
@@ -103,6 +107,8 @@ watch(
   &_details {
     display: flex;
     align-items: center;
+    flex: 1;
+    min-width: 0;
     gap: 8px;
 
     .details {
@@ -114,6 +120,8 @@ watch(
       &_description {
         display: flex;
         flex-direction: column;
+        flex: 1;
+        min-width: 0;
 
         input {
           background: none;

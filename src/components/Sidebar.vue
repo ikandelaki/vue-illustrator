@@ -17,7 +17,7 @@ const { objects } = storeToRefs(objectsStore);
             :type="object.type"
             :id="object.id"
             :color="object.color"
-            :key="object.id + object.name"
+            :key="object.id + object.type"
           />
         </li>
       </ul>
