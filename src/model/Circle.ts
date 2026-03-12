@@ -1,32 +1,26 @@
-import { CIRCLE, ShapeType } from "../types/ShapeTypes";
+import { SHAPE_TYPES } from "../types/ShapeTypes";
+import BaseModel, { BaseModelInterface } from "./Base";
 
 export const DEFAULT_CIRCLE_RADIUS: number = 50;
 export const DEFAULT_CIRCLE_COLOR: string = "#ffffff";
 
-export interface CircleInterface {
-  id: number;
+export interface CircleInterface extends BaseModelInterface {
   cx: number;
   cy: number;
   radius: number;
-  type: ShapeType;
   getCx: () => number;
   setCx: (cx: number) => this;
   getCy: () => number;
   setCy: (cy: number) => this;
   getRadius: () => number;
   setRadius: (radius: number) => this;
-  getId: () => number;
-  getColor: () => string;
-  setColor: (color: string) => this;
 }
 
-export class Circle implements CircleInterface {
+export class Circle extends BaseModel implements CircleInterface {
   id: number;
   cx: number;
   cy: number;
   radius: number;
-  color: string;
-  type: string; // will be set in constructor
 
   constructor(
     id: number,
@@ -35,13 +29,12 @@ export class Circle implements CircleInterface {
     radius: number = DEFAULT_CIRCLE_RADIUS,
     color: string = DEFAULT_CIRCLE_COLOR,
   ) {
+    super({ id, color, type: SHAPE_TYPES.circle, name: SHAPE_TYPES.circle });
+
     this.id = id;
     this.cx = cx;
     this.cy = cy;
     this.radius = radius;
-    this.color = color;
-    // use constant from shape types to ensure consistency
-    this.type = CIRCLE;
   }
 
   /**
@@ -86,34 +79,6 @@ export class Circle implements CircleInterface {
    */
   setRadius(radius: number) {
     this.radius = radius;
-    return this;
-  }
-
-  /**
-   * Get Circle id
-   */
-  getId() {
-    return this.id;
-  }
-
-  /**
-   * Get color of a circle
-   *
-   * @returns
-   */
-  getColor() {
-    return this.color;
-  }
-
-  /**
-   * Set color of a circle
-   *
-   * @param color
-   * @returns
-   */
-  setColor(color: string) {
-    this.color = color;
-
     return this;
   }
 }

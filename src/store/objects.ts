@@ -2,7 +2,7 @@ import Triangle, {
   DEFAULT_TRIANGLE_WIDTH,
   TriangleInterface,
 } from "./../model/Triangle";
-import { defineStore, storeToRefs } from "pinia";
+import { defineStore } from "pinia";
 import { computed, ref } from "vue";
 import Circle, { CircleInterface } from "../model/Circle";
 import Rectangle, {
@@ -11,9 +11,17 @@ import Rectangle, {
   RectangleInterface,
 } from "../model/Rectangle";
 import { useContextMenuStore } from "./contextMenu";
-import { ShapeType, CIRCLE, RECTANGLE, SHAPE_TYPES } from "../types/ShapeTypes";
-import { TriangleInterface } from "../model/Triangle";
+import {
+  ShapeType,
+  CIRCLE,
+  RECTANGLE,
+  SHAPE_TYPES,
+  TRIANGLE,
+} from "../types/ShapeTypes";
 import { getObjectCenterPosition } from "../utils/math";
+import CircleShape from "../components/CircleShape.vue";
+import RectangleShape from "../components/RectangleShape.vue";
+import TriangleShape from "../components/TriangleShape.vue";
 
 export type ShapeObject =
   | CircleInterface
@@ -272,3 +280,22 @@ export const useObjectsStore = defineStore("objects", () => {
     deleteObject,
   };
 });
+
+// registry that maps type string to component
+export const shapeRegistry: Record<string, any> = {
+  [CIRCLE]: CircleShape,
+  [RECTANGLE]: RectangleShape,
+  [TRIANGLE]: TriangleShape,
+};
+
+// generic list that will grow as we add new types
+export const shapeComponents = computed(() => shapeRegistry);
+
+// registry that maps type string to object classes
+export const objectRegistry: Record<string, any> = {
+  [CIRCLE]: Circle,
+  [RECTANGLE]: Rectangle,
+  [TRIANGLE]: Triangle,
+};
+
+export const objectMap = computed(() => objectRegistry);

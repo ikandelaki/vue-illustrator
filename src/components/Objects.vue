@@ -1,21 +1,12 @@
 <script setup lang="ts">
-import { computed } from "vue";
 import { storeToRefs } from "pinia";
 import { ShapeObject, useObjectsStore } from "../store/objects";
-import CircleShape from "./CircleShape.vue";
-import RectangleShape from "./RectangleShape.vue";
-import {
-  CIRCLE,
-  RECTANGLE,
-  SHAPE_TYPES,
-  ShapeType,
-  TRIANGLE,
-} from "../types/ShapeTypes";
+import { SHAPE_TYPES } from "../types/ShapeTypes";
 import { useSelectedShapeStore } from "../store/selectedShape";
 import { useDragElement } from "../composables/mouse";
 import ShapeResizer from "./ShapeResizer.vue";
-import TriangleShape from "./TriangleShape.vue";
 import { getObjectCenterPosition } from "../utils/math";
+import { shapeComponents } from "../store/objects";
 
 const objectsStore = useObjectsStore();
 const selectedShapeStore = useSelectedShapeStore();
@@ -23,16 +14,6 @@ const { setSelectedObject, updateSelectedObjectPosition, selectObject } =
   objectsStore;
 const { objects, selectedObjectId, selectedObject } = storeToRefs(objectsStore);
 const { selectedShape } = storeToRefs(selectedShapeStore);
-
-// registry that maps type string to component
-const shapeRegistry: Record<string, any> = {
-  [CIRCLE]: CircleShape,
-  [RECTANGLE]: RectangleShape,
-  [TRIANGLE]: TriangleShape,
-};
-
-// generic list that will grow as we add new types
-const shapeComponents = computed(() => shapeRegistry);
 
 const handleShapeClick = (id: number) => {
   if (selectedShape.value !== SHAPE_TYPES.cursor) {

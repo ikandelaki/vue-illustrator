@@ -1,33 +1,27 @@
 import { SHAPE_TYPES } from "../types/ShapeTypes";
+import BaseModel, { BaseModelInterface } from "./Base";
 
 export const DEFAULT_TRIANGLE_WIDTH = 50;
 export const DEFAULT_TRIANGLE_COLOR = "#ffffff";
 
-export interface TriangleInterface {
+export interface TriangleInterface extends BaseModelInterface {
   x1: number;
   y1: number;
   x2: number;
   y2: number;
   x3: number;
   y3: number;
-  color: string;
-  type: string;
   width: number;
-  getColor: () => string;
-  setColor: (color: string) => this;
-  getId: () => number;
 }
 
-export default class Triangle implements TriangleInterface {
+export class Triangle extends BaseModel implements TriangleInterface {
   x1: number;
   y1: number;
   x2: number;
   y2: number;
   x3: number;
   y3: number;
-  color: string;
   width: number;
-  id: number;
   type: string = SHAPE_TYPES.triangle;
 
   constructor(
@@ -41,31 +35,20 @@ export default class Triangle implements TriangleInterface {
     width?: number,
     color?: string,
   ) {
-    this.id = id;
+    super({
+      id,
+      color,
+      type: SHAPE_TYPES.triangle,
+      name: SHAPE_TYPES.triangle,
+    });
     this.x1 = x1;
     this.y1 = y1;
     this.x2 = x2;
     this.y2 = y2;
     this.x3 = x3;
     this.y3 = y3;
-    this.color = color ?? DEFAULT_TRIANGLE_COLOR;
     this.width = width ?? DEFAULT_TRIANGLE_WIDTH;
   }
-
-  getColor(): string {
-    return this.color;
-  }
-
-  setColor(color: string): this {
-    if (!color) {
-      return this;
-    }
-
-    this.color = color;
-    return this;
-  }
-
-  getId(): number {
-    return this.id;
-  }
 }
+
+export default Triangle;

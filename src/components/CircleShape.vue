@@ -3,7 +3,7 @@ import type { CircleInterface } from "../model/Circle";
 
 const { object, selected } = defineProps<{
   object: CircleInterface;
-  selected: boolean;
+  selected?: boolean;
 }>();
 </script>
 

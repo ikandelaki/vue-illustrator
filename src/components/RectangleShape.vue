@@ -3,7 +3,7 @@ import type { RectangleInterface } from "../model/Rectangle";
 
 const { object, selected } = defineProps<{
   object: RectangleInterface;
-  selected: boolean;
+  selected?: boolean;
 }>();
 </script>
 

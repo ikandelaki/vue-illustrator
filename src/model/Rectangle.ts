@@ -2,10 +2,10 @@ export const DEFAULT_RECT_WIDTH = 50;
 export const DEFAULT_RECT_HEIGHT = 40;
 export const DEFAULT_RECT_COLOR = "#ffffff";
 
-import { ShapeType, RECTANGLE } from "../types/ShapeTypes";
+import { ShapeType, RECTANGLE, SHAPE_TYPES } from "../types/ShapeTypes";
+import BaseModel, { BaseModelInterface } from "./Base";
 
-export interface RectangleInterface {
-  id: number;
+export interface RectangleInterface extends BaseModelInterface {
   x: number;
   y: number;
   width: number;
@@ -14,8 +14,6 @@ export interface RectangleInterface {
   ry: number;
   cx: number;
   cy: number;
-  color: string;
-  type: ShapeType;
   getX: () => number;
   setX: (x: number) => this;
   getY: () => number;
@@ -24,12 +22,9 @@ export interface RectangleInterface {
   setWidth: (width: number) => this;
   getHeight: () => number;
   setHeight: (height: number) => this;
-  getId: () => number;
-  getColor: () => string;
-  setColor: (color: string) => this;
 }
 
-export class Rectangle implements RectangleInterface {
+export class Rectangle extends BaseModel implements RectangleInterface {
   id: number;
   x: number;
   y: number;
@@ -39,8 +34,6 @@ export class Rectangle implements RectangleInterface {
   height: number;
   rx: number;
   ry: number;
-  color: string;
-  type: ShapeType; // assigned in constructor
 
   constructor(
     id: number,
@@ -52,6 +45,12 @@ export class Rectangle implements RectangleInterface {
     ry: number = 0,
     color: string = DEFAULT_RECT_COLOR,
   ) {
+    super({
+      id,
+      type: SHAPE_TYPES.rectangle,
+      name: SHAPE_TYPES.rectangle,
+      color,
+    });
     this.id = id;
     this.x = x;
     this.y = y;
@@ -59,8 +58,6 @@ export class Rectangle implements RectangleInterface {
     this.height = height;
     this.rx = rx;
     this.ry = ry;
-    this.color = color;
-    this.type = RECTANGLE;
 
     this.cx = x + width / 2;
     this.cy = y + height / 2;
@@ -99,19 +96,6 @@ export class Rectangle implements RectangleInterface {
 
   setHeight(height: number) {
     this.height = height;
-    return this;
-  }
-
-  getId() {
-    return this.id;
-  }
-
-  getColor() {
-    return this.color;
-  }
-
-  setColor(color: string) {
-    this.color = color;
     return this;
   }
 }

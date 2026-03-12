@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { storeToRefs } from "pinia";
 import { useObjectsStore } from "../store/objects";
+import ObjectCard from "./ObjectCard.vue";
 
 const objectsStore = useObjectsStore();
 const { objects } = storeToRefs(objectsStore);
@@ -11,7 +12,12 @@ const { objects } = storeToRefs(objectsStore);
     <div class="sidebar-container">
       <ul>
         <li v-for="object in objects">
-          <h2>{{ object.type }}</h2>
+          <ObjectCard
+            :name="object.name"
+            :type="object.type"
+            :id="object.id"
+            :color="object.color"
+          />
         </li>
       </ul>
     </div>
