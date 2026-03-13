@@ -1,13 +1,21 @@
 import { defineStore } from "pinia";
 import { ref } from "vue";
 
+export const INITIAL_WIDTH = 800;
+export const INITIAL_HEIGHT = 450;
+export const FULL_WIDTH = 1920;
+
 type CanvasDimensions = {
   width: number;
   height: number;
 };
 
 export const useCanvasStore = defineStore("canvas", () => {
-  const dimensions = ref<CanvasDimensions>({ width: 800, height: 450 });
+  const dimensions = ref<CanvasDimensions>({
+    width: INITIAL_HEIGHT,
+    height: INITIAL_HEIGHT,
+  });
+  const scale = ref<number>(FULL_WIDTH / INITIAL_HEIGHT);
 
   // Adjust the dimensions of a canvas
   // - Will be useful for defining custom project size
@@ -29,13 +37,14 @@ export const useCanvasStore = defineStore("canvas", () => {
 
   // Resize the whole canvas by a scale
   // Will be used with wheel button mainly
-  const resize = (scale: number) => {
-    if (!scale) {
+  const resize = (newScale: number) => {
+    if (!newScale) {
       return;
     }
 
-    dimensions.value.width *= scale;
-    dimensions.value.height *= scale;
+    dimensions.value.width *= newScale;
+    dimensions.value.height *= newScale;
+    scale.value = newScale;
   };
 
   return {
