@@ -12,10 +12,11 @@ type CanvasDimensions = {
 
 export const useCanvasStore = defineStore("canvas", () => {
   const dimensions = ref<CanvasDimensions>({
-    width: INITIAL_HEIGHT,
+    width: INITIAL_WIDTH,
     height: INITIAL_HEIGHT,
   });
-  const scale = ref<number>(FULL_WIDTH / INITIAL_HEIGHT);
+  // If scale is 1, then current viewport is 800x450, if it is 1600x900, it will be 2, etc.
+  const scale = ref<number>(1);
 
   // Adjust the dimensions of a canvas
   // - Will be useful for defining custom project size
@@ -35,20 +36,23 @@ export const useCanvasStore = defineStore("canvas", () => {
     dimensions.value.height = height as number;
   };
 
-  // Resize the whole canvas by a scale
+  // Resize the whole canvas by a scale (essentially the same as zooming in)
   // Will be used with wheel button mainly
-  const resize = (newScale: number) => {
-    if (!newScale) {
+  const resize = (newScaleVal: number) => {
+    if (!newScaleVal) {
       return;
     }
 
-    dimensions.value.width *= newScale;
-    dimensions.value.height *= newScale;
+    const newScale = scale.value + newScaleVal;
+    dimensions.value.width = INITIAL_WIDTH * newScale;
+    dimensions.value.height = INITIAL_HEIGHT * newScale;
+
     scale.value = newScale;
   };
 
   return {
     dimensions,
+    scale,
     setDimensions,
     resize,
   };
