@@ -5,6 +5,7 @@ import ObjectCard from "./ObjectCard.vue";
 
 const objectsStore = useObjectsStore();
 const { objects } = storeToRefs(objectsStore);
+const { setSelectedObject } = objectsStore;
 </script>
 
 <template>
@@ -18,6 +19,7 @@ const { objects } = storeToRefs(objectsStore);
             :id="object.id"
             :color="object.color"
             :key="object.id + object.type"
+            @click="setSelectedObject(object.id)"
           />
         </li>
       </ul>
