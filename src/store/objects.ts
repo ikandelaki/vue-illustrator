@@ -1,9 +1,10 @@
+import { useSelectedShapeStore } from "./selectedShape";
 import { useCanvasStore } from "./canvas";
 import Triangle, {
   DEFAULT_TRIANGLE_WIDTH,
   TriangleInterface,
 } from "./../model/Triangle";
-import { defineStore } from "pinia";
+import { defineStore, storeToRefs } from "pinia";
 import { computed, ref } from "vue";
 import Circle, { CircleInterface } from "../model/Circle";
 import Rectangle, {
@@ -34,12 +35,14 @@ export const useObjectsStore = defineStore("objects", () => {
   const selectedObjectId = ref<number | null>(null);
   const selectedObjectType = ref<ShapeType | null>(null);
   const contextMenuStore = useContextMenuStore();
+  const selectedShapeStore = useSelectedShapeStore();
   const {
     setContextMenuLocation,
     setIsContextMenuOpened,
     setSelectedMenuItemIndex,
   } = contextMenuStore;
   const canvasStore = useCanvasStore();
+  const { selectedShape } = storeToRefs(selectedShapeStore);
 
   /**
    * Get the selected object (could be circle or rectangle)
@@ -260,6 +263,23 @@ export const useObjectsStore = defineStore("objects", () => {
     objects.value[id as number].name = value;
   };
 
+  const handleCreateObject = (event: MouseEvent): void => {
+    if (selectedShape.value === SHAPE_TYPES.circle) {
+      createObject(CIRCLE, event);
+      return;
+    }
+
+    if (selectedShape.value === SHAPE_TYPES.rectangle) {
+      createObject(RECTANGLE, event);
+      return;
+    }
+
+    if (selectedShape.value === SHAPE_TYPES.triangle) {
+      createObject(TRIANGLE, event);
+      return;
+    }
+  };
+
   /**
    * Get circles from objects
    */
@@ -298,6 +318,7 @@ export const useObjectsStore = defineStore("objects", () => {
     deSelectObject,
     deleteObject,
     setObjectName,
+    handleCreateObject,
   };
 });
 
