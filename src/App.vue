@@ -1,5 +1,10 @@
 <script setup lang="ts">
-import { defineAsyncComponent } from "vue";
+import {
+  defineAsyncComponent,
+  onMounted,
+  onUnmounted,
+  useTemplateRef,
+} from "vue";
 import Loader from "./components/Loader.vue";
 import Header from "./components/Header.vue";
 import Sidebar from "./components/Sidebar.vue";
@@ -16,10 +21,19 @@ const ContextMenu = defineAsyncComponent({
   delay: 200,
 });
 
-const { createObject } = useObjectsStore();
+const canvasRef = useTemplateRef("canvas");
+
+const objectsStore = useObjectsStore();
+const { createObject } = objectsStore;
+
 const selectedShapeStore = useSelectedShapeStore();
 const { setSelectedShape } = selectedShapeStore;
+
+const canvasStore = useCanvasStore();
+const { resize } = canvasStore;
+
 const { selectedShape } = storeToRefs(selectedShapeStore);
+const { scale } = storeToRefs(canvasStore);
 
 const handleCreateObject = (event: MouseEvent): void => {
   if (selectedShape.value === SHAPE_TYPES.circle) {
@@ -56,19 +70,34 @@ const handleCreateObject = (event: MouseEvent): void => {
 //   }
 // };
 
-// onMounted(() => {
-//   window.addEventListener("click", handleOutsideClick);
-// });
+const setupGlobalListeners = (event: WheelEvent) => {
+  event.preventDefault();
 
-// onUnmounted(() => {
-//   window.removeEventListener("click", handleOutsideClick);
-// });
-const canvasStore = useCanvasStore();
+  if (!event.ctrlKey && !event.metaKey) {
+    return;
+  }
+
+  const deltaY = event.deltaY;
+  const direction = Math.sign(deltaY);
+  const scale = 0.1;
+
+  resize(direction * scale);
+
+  console.log(">> sign", direction);
+};
+
+onMounted(() => {
+  canvasRef.value!.addEventListener("wheel", setupGlobalListeners);
+});
+
+onUnmounted(() => {
+  canvasRef.value!.removeEventListener("wheel", setupGlobalListeners);
+});
 </script>
 
 <template>
   <Header :selectedShape="selectedShape" @select-shape="setSelectedShape" />
-  <div class="canvas">
+  <div class="canvas" ref="canvas">
     <svg
       @click="handleCreateObject"
       :width="canvasStore.dimensions.width"
