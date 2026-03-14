@@ -32,7 +32,7 @@ const { objects } = storeToRefs(objectsStore);
   top: 0;
   width: 400px;
   height: 100%;
-  background-color: #212529;
+  background-color: var(--main-black);
 
   &-container {
     margin-block-start: var(--header-total-height);

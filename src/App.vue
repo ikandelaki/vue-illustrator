@@ -103,7 +103,7 @@ onUnmounted(() => {
       :width="canvasStore.dimensions.width"
       :height="canvasStore.dimensions.height"
     >
-      <foreignObject x="0" y="40%" width="100%" height="200">
+      <foreignObject x="0" y="40%" :width="scale * 100 + '%'" height="200">
         <p class="canvas-details">
           Click on the canvas to draw a shape. click on a shape to select it.
           <br />
@@ -127,20 +127,22 @@ onUnmounted(() => {
 
 <style lang="scss" scoped>
 svg {
-  background-color: #eee;
+  background-color: #fff;
+  border: 1px solid var(--main-black);
 }
 
 .canvas {
-  width: 100%;
+  width: calc(100% - var(--sidebar-expanded-width));
   height: 100vh;
   display: flex;
   align-items: center;
   justify-content: center;
+  background-color: var(--mid-gray);
 
   &-details {
     text-align: center;
     padding: 0 50px;
-    color: #bbb;
+    color: var(--light-gray);
 
     -webkit-user-select: none; /* Safari */
     -moz-user-select: none; /* Firefox */
@@ -152,7 +154,7 @@ svg {
 
 .shape {
   fill: #fff;
-  stroke: #212529;
+  stroke: var(--main-black);
   stroke-width: 1;
 
   &.selected {
