@@ -36,7 +36,7 @@ export const useCanvasStore = defineStore("canvas", () => {
     dimensions.value.height = height as number;
   };
 
-  // Resize the whole canvas by a scale
+  // Resize the whole canvas by a scale (essentially the same as zooming in)
   // Will be used with wheel button mainly
   const resize = (newScaleVal: number) => {
     if (!newScaleVal) {
@@ -44,8 +44,6 @@ export const useCanvasStore = defineStore("canvas", () => {
     }
 
     const newScale = scale.value + newScaleVal;
-    console.log(">> newScale", newScale);
-    console.log(">> newScaleVal", newScaleVal);
     dimensions.value.width = INITIAL_WIDTH * newScale;
     dimensions.value.height = INITIAL_HEIGHT * newScale;
 
