@@ -1,4 +1,4 @@
-export const DEFAULT_MODEL_COLOR = "#ffffff";
+export const DEFAULT_MODEL_COLOR = "#EEEEEE";
 
 export interface BaseModelInterface {
   id: number;
@@ -25,7 +25,7 @@ export default class BaseModel implements BaseModelInterface {
     name,
   }: {
     id: number;
-    color: string;
+    color?: string;
     type: string;
     name: string;
   }) {

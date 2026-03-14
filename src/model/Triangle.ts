@@ -2,7 +2,6 @@ import { SHAPE_TYPES } from "../types/ShapeTypes";
 import BaseModel, { BaseModelInterface } from "./Base";
 
 export const DEFAULT_TRIANGLE_WIDTH = 50;
-export const DEFAULT_TRIANGLE_COLOR = "#ffffff";
 
 export interface TriangleInterface extends BaseModelInterface {
   x1: number;

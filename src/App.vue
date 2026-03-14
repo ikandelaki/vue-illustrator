@@ -71,53 +71,71 @@ const handleCreateObject = (event: MouseEvent): void => {
 // };
 
 const setupGlobalListeners = (event: WheelEvent) => {
-  event.preventDefault();
+  if (!event.target?.closest(".canvas-container")) {
+    return;
+  }
 
+  console.log(
+    '>> event.target?.closest("canvas-container"))',
+    event.target?.closest("canvas-container"),
+  );
   if (!event.ctrlKey && !event.metaKey) {
     return;
   }
 
+  event.preventDefault();
   const deltaY = event.deltaY;
   const direction = Math.sign(deltaY);
   const scale = 0.1;
 
-  resize(direction * scale);
-
-  console.log(">> sign", direction);
+  resize(-direction * scale);
 };
 
 onMounted(() => {
-  canvasRef.value!.addEventListener("wheel", setupGlobalListeners);
+  document.addEventListener("wheel", setupGlobalListeners, { passive: false });
 });
 
 onUnmounted(() => {
-  canvasRef.value!.removeEventListener("wheel", setupGlobalListeners);
+  document.removeEventListener("wheel", setupGlobalListeners);
 });
 </script>
 
 <template>
   <Header :selectedShape="selectedShape" @select-shape="setSelectedShape" />
-  <div class="canvas" ref="canvas">
-    <svg
-      @click="handleCreateObject"
-      :width="canvasStore.dimensions.width"
-      :height="canvasStore.dimensions.height"
-      :viewBox="
-        '0 0 ' +
-        canvasStore.dimensions.width +
-        ' ' +
-        canvasStore.dimensions.height
-      "
+  <div class="canvas-container">
+    <div
+      class="canvas"
+      ref="canvas"
+      :style="{
+        width: `${canvasStore.dimensions.width}px`,
+        height: `${canvasStore.dimensions.height}px`,
+      }"
     >
-      <foreignObject x="0" y="40%" :width="scale * 100 + '%'" height="200">
-        <p class="canvas-details">
-          Click on the canvas to draw a shape. click on a shape to select it.
-          <br />
-          Left-click on a shape to adjust its properties
-        </p>
-      </foreignObject>
-      <Objects />
-    </svg>
+      <svg
+        @click="handleCreateObject"
+        :viewBox="
+          '0 0 ' +
+          canvasStore.dimensions.width / scale +
+          ' ' +
+          canvasStore.dimensions.height / scale
+        "
+      >
+        <foreignObject
+          x="0"
+          y="50%"
+          width="100%"
+          height="200"
+          class="canvas-details_container"
+        >
+          <p class="canvas-details">
+            Click on the canvas to draw a shape. click on a shape to select it.
+            <br />
+            Left-click on a shape to adjust its properties
+          </p>
+        </foreignObject>
+        <Objects />
+      </svg>
+    </div>
   </div>
   <ContextMenu />
   <Sidebar />
@@ -138,12 +156,11 @@ svg {
 }
 
 .canvas {
-  width: calc(100% - var(--sidebar-expanded-width));
   height: 100vh;
+  position: absolute;
   display: flex;
   align-items: center;
   justify-content: center;
-  background-color: var(--mid-gray);
 
   &-details {
     text-align: center;
@@ -155,6 +172,19 @@ svg {
     -ms-user-select: none; /* IE 10+ */
     user-select: none; /* Standard syntax */
     cursor: default;
+
+    &_container {
+      pointer-events: none;
+    }
+  }
+
+  &-container {
+    width: calc(100% - var(--sidebar-expanded-width));
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: var(--mid-gray);
   }
 }
 

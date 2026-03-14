@@ -2,7 +2,6 @@ import { SHAPE_TYPES } from "../types/ShapeTypes";
 import BaseModel, { BaseModelInterface } from "./Base";
 
 export const DEFAULT_CIRCLE_RADIUS: number = 50;
-export const DEFAULT_CIRCLE_COLOR: string = "#ffffff";
 
 export interface CircleInterface extends BaseModelInterface {
   cx: number;
@@ -27,7 +26,7 @@ export class Circle extends BaseModel implements CircleInterface {
     cx: number,
     cy: number,
     radius: number = DEFAULT_CIRCLE_RADIUS,
-    color: string = DEFAULT_CIRCLE_COLOR,
+    color?: string,
   ) {
     super({ id, color, type: SHAPE_TYPES.circle, name: SHAPE_TYPES.circle });
 

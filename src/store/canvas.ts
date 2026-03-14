@@ -44,7 +44,13 @@ export const useCanvasStore = defineStore("canvas", () => {
     }
 
     const newScale = scale.value + newScaleVal;
-    dimensions.value.width = INITIAL_WIDTH * newScale;
+    const newWidth = INITIAL_WIDTH * newScale;
+
+    if (newWidth <= 100) {
+      return;
+    }
+
+    dimensions.value.width = newWidth;
     dimensions.value.height = INITIAL_HEIGHT * newScale;
 
     scale.value = newScale;

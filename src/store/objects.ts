@@ -1,3 +1,4 @@
+import { useCanvasStore } from "./canvas";
 import Triangle, {
   DEFAULT_TRIANGLE_WIDTH,
   TriangleInterface,
@@ -38,6 +39,7 @@ export const useObjectsStore = defineStore("objects", () => {
     setIsContextMenuOpened,
     setSelectedMenuItemIndex,
   } = contextMenuStore;
+  const canvasStore = useCanvasStore();
 
   /**
    * Get the selected object (could be circle or rectangle)
@@ -150,7 +152,15 @@ export const useObjectsStore = defineStore("objects", () => {
   const createObject = (shapeType: ShapeType, event: MouseEvent): void => {
     deSelectObject(); // Deselect current selection
 
-    const { clientX, clientY } = event;
+    // we need to get clicked X and Y relative to the parent SVG element.
+    const { offsetX, offsetY } = event;
+
+    // Calculate X and y.
+    // - We need to devide actual offsetX and offsetY by the current canvas scale
+    // -- because canvas has its own viewBox property, so dimensions need adjustments
+    const clientX = offsetX / canvasStore.scale;
+    const clientY = offsetY / canvasStore.scale;
+
     const id = Math.max(...Object.keys(objects.value).map(Number), 0) + 1;
 
     if (shapeType === SHAPE_TYPES.circle) {
