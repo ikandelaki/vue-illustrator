@@ -102,6 +102,12 @@ onUnmounted(() => {
       @click="handleCreateObject"
       :width="canvasStore.dimensions.width"
       :height="canvasStore.dimensions.height"
+      :viewBox="
+        '0 0 ' +
+        canvasStore.dimensions.width +
+        ' ' +
+        canvasStore.dimensions.height
+      "
     >
       <foreignObject x="0" y="40%" :width="scale * 100 + '%'" height="200">
         <p class="canvas-details">
