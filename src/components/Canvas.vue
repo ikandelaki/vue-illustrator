@@ -19,6 +19,16 @@ const transform = computed(() => {
   return `translate(${canvasStore.transform.x}px, ${canvasStore.transform.y}px) scale(${canvasStore.scale})`;
 });
 
+const gridSize = computed(() => 40 * canvasStore.scale);
+
+const gridOffsetX = computed(() => {
+  return canvasStore.transform.x % gridSize.value;
+});
+
+const gridOffsetY = computed(() => {
+  return canvasStore.transform.y % gridSize.value;
+});
+
 const onWheel = (event: WheelEvent) => {
   if (!canvasContainer.value || (!event.ctrlKey && !event.metaKey)) return;
 
@@ -37,8 +47,8 @@ const onWheel = (event: WheelEvent) => {
 
 onMounted(() => {
   const { width, height } = canvasContainer.value!.getBoundingClientRect();
-  const centerX = (width - INITIAL_WIDTH) / 2;
-  const centerY = (height - INITIAL_HEIGHT) / 2;
+  const centerX = (width - INITIAL_WIDTH * canvasStore.scale) / 2;
+  const centerY = (height - INITIAL_HEIGHT * canvasStore.scale) / 2;
 
   setTransform(centerX, centerY);
 });
@@ -76,9 +86,32 @@ onMounted(() => {
           <p class="canvas-details">
             Click on the canvas to draw a shape. click on a shape to select it.
             <br />
-            Left-click on a shape to adjust its properties
+            Right-click on a shape to adjust its properties
           </p>
         </foreignObject>
+        <defs>
+          <pattern
+            id="grid"
+            :width="gridSize"
+            :height="gridSize"
+            patternUnits="userSpaceOnUse"
+          >
+            <path
+              :d="`M ${gridSize} 0 L 0 0 0 ${gridSize}`"
+              fill="none"
+              stroke="#e5e5e5"
+              stroke-width="1"
+            />
+          </pattern>
+        </defs>
+
+        <rect
+          :x="-100000 + gridOffsetX"
+          :y="-100000 + gridOffsetY"
+          width="200000"
+          height="200000"
+          fill="url(#grid)"
+        />
         <Objects />
       </svg>
     </div>
@@ -118,14 +151,12 @@ svg {
   }
 
   &-container {
-    // width: calc(100% - var(--sidebar-expanded-width));
-    // height: calc(100vh - var(--header-total-height));
-    height: 100vh;
-    width: 100%;
+    width: calc(100% - var(--sidebar-expanded-width));
+    height: calc(100vh - var(--header-total-height));
     position: relative;
     overflow: hidden;
     background-color: var(--mid-gray);
-    // margin-block-start: var(--header-total-height);
+    margin-block-start: var(--header-total-height);
 
     &.cursor-grab {
       cursor: grab;
