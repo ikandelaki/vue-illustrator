@@ -17,6 +17,7 @@ export const useCanvasStore = defineStore("canvas", () => {
   });
   // If scale is 1, then current viewport is 800x450, if it is 1600x900, it will be 2, etc.
   const scale = ref<number>(1);
+  const offset = ref<{ x: number; y: number }>({ x: 0, y: 0 });
 
   // Adjust the dimensions of a canvas
   // - Will be useful for defining custom project size
@@ -56,10 +57,17 @@ export const useCanvasStore = defineStore("canvas", () => {
     scale.value = newScale;
   };
 
+  const setOffset = (x: number, y: number) => {
+    offset.value.x = x;
+    offset.value.y = y;
+  };
+
   return {
     dimensions,
     scale,
     setDimensions,
     resize,
+    offset,
+    setOffset,
   };
 });

@@ -29,11 +29,9 @@ const { setSelectedObject } = objectsStore;
 
 <style scoped lang="scss">
 .sidebar {
-  position: absolute;
-  right: 0;
-  top: 0;
   width: 400px;
-  height: 100%;
+  height: 100vh;
+  overflow: auto;
   background-color: var(--main-black);
 
   &-container {

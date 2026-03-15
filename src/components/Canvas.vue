@@ -13,6 +13,8 @@ const { handleCreateObject } = useObjectsStore();
       :style="{
         width: `${canvasStore.dimensions.width}px`,
         height: `${canvasStore.dimensions.height}px`,
+        transform: `translate(${canvasStore.offset.x}px, ${canvasStore.offset.y}px) scale(${canvasStore.scale})`,
+        transformOrigin: 'center center',
       }"
     >
       <svg
@@ -74,11 +76,14 @@ svg {
 
   &-container {
     width: calc(100% - var(--sidebar-expanded-width));
-    min-height: 100vh;
+    overflow: auto;
+    position: relative;
+    height: calc(100vh - var(--header-total-height));
     display: flex;
     align-items: center;
     justify-content: center;
     background-color: var(--mid-gray);
+    margin-block-start: var(--header-total-height);
   }
 }
 </style>

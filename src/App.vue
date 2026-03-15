@@ -49,9 +49,11 @@ onUnmounted(() => {
 
 <template>
   <Header :selectedShape="selectedShape" @select-shape="setSelectedShape" />
-  <Canvas />
+  <div class="main">
+    <Canvas />
+    <Sidebar />
+  </div>
   <ContextMenu />
-  <Sidebar />
 </template>
 
 <style>
@@ -63,6 +65,10 @@ onUnmounted(() => {
 </style>
 
 <style lang="scss" scoped>
+.main {
+  display: flex;
+}
+
 svg {
   background-color: #fff;
   border: 1px solid var(--main-black);
