@@ -4,6 +4,9 @@ import { ref } from "vue";
 export const INITIAL_WIDTH = 800;
 export const INITIAL_HEIGHT = 450;
 export const FULL_WIDTH = 1920;
+export const MIN_SCALE = 0.1;
+export const MAX_SCALE = 5;
+export const SCALE_STEP = 0.1;
 
 type CanvasDimensions = {
   width: number;
@@ -39,27 +42,25 @@ export const useCanvasStore = defineStore("canvas", () => {
 
   // Resize the whole canvas by a scale (essentially the same as zooming in)
   // Will be used with wheel button mainly
-  const resize = (newScaleVal: number, mouseX: number, mouseY: number) => {
-    if (!newScaleVal) {
-      return;
-    }
-
+  const resize = (delta: number, mouseX: number, mouseY: number) => {
     const oldScale = scale.value;
-    const newScale = Math.max(0.1, Math.min(scale.value + newScaleVal, 5));
+    const newScale = Math.min(MAX_SCALE, Math.max(MIN_SCALE, oldScale + delta));
 
-    // Calculate how far the mouse is from the current top-left of the canvas
-    const dx = mouseX - offset.value.x;
-    const dy = mouseY - offset.value.y;
+    if (newScale === oldScale) return;
 
-    // Convert that distance into "Canvas Space" (unscaled coordinates)
-    const canvasSpaceX = dx / oldScale;
-    const canvasSpaceY = dy / oldScale;
+    // Which canvas-space point is currently under the mouse?
+    // mouseX = canvasX * oldScale + offset.x
+    const canvasX = (mouseX - offset.value.x) / oldScale;
+    const canvasY = (mouseY - offset.value.y) / oldScale;
 
     scale.value = newScale;
 
-    // Adjust offsets so the point under the mouse stays under the mous
-    offset.value.x = mouseX - canvasSpaceX * newScale;
-    offset.value.y = mouseY - canvasSpaceY * newScale;
+    // Recompute offset so that same canvas point lands back under the mouse:
+    // mouseX = canvasX * newScale + newOffset.x
+    offset.value = {
+      x: mouseX - canvasX * newScale,
+      y: mouseY - canvasY * newScale,
+    };
   };
 
   const setOffset = (x: number, y: number) => {

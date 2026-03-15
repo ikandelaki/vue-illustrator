@@ -14,8 +14,6 @@ const { isSpacePressed, startDrag } = useCanvasMove();
     <div
       class="canvas"
       :style="{
-        width: `${canvasStore.dimensions.width}px`,
-        height: `${canvasStore.dimensions.height}px`,
         transform: `translate(${canvasStore.offset.x}px, ${canvasStore.offset.y}px) scale(${canvasStore.scale})`,
         transformOrigin: '0 0',
       }"

@@ -4,7 +4,7 @@ import Loader from "./components/Loader.vue";
 import Header from "./components/Header.vue";
 import Sidebar from "./components/Sidebar.vue";
 import { useSelectedShapeStore } from "./store/selectedShape";
-import { useCanvasStore } from "./store/canvas";
+import { SCALE_STEP, useCanvasStore } from "./store/canvas";
 import { storeToRefs } from "pinia";
 import Canvas from "./components/Canvas.vue";
 
@@ -21,41 +21,41 @@ const { resize } = useCanvasStore();
 
 const { selectedShape } = storeToRefs(selectedShapeStore);
 
-const setupGlobalListeners = (event: WheelEvent) => {
+const onWheel = (event: WheelEvent) => {
   const el = event.target as HTMLElement;
-  const container = el.closest(".canvas-container");
-  if (!container) {
-    return;
-  }
 
-  if (!event.ctrlKey && !event.metaKey) {
-    return;
-  }
+  // Only act inside our canvas-container
+  const container = el.closest<HTMLElement>(".canvas-container");
+  if (!container) return;
 
+  // Only intercept pinch/ctrl+scroll
+  if (!event.ctrlKey && !event.metaKey) return;
   event.preventDefault();
-  const deltaY = event.deltaY;
-  const direction = Math.sign(deltaY);
-  const scale = 0.1;
 
-  const isInsideCanvas = el.closest(".canvas");
-  if (isInsideCanvas) {
-    resize(-direction * scale, event.offsetX, event.offsetY);
-    return;
+  const delta = -Math.sign(event.deltaY) * SCALE_STEP;
+
+  // All coordinates normalised to container-local space
+  const rect = container.getBoundingClientRect();
+  const mouseX = event.clientX - rect.left;
+  const mouseY = event.clientY - rect.top;
+
+  const onCanvas = !!el.closest(".canvas");
+
+  if (onCanvas) {
+    // Zoom anchored to the cursor
+    resize(delta, mouseX, mouseY);
+  } else {
+    // Zoom anchored to the visual center of the container
+    resize(delta, rect.width / 2, rect.height / 2);
   }
-
-  const { left, width, top, height } = container.getBoundingClientRect();
-  const centerX = width / 2;
-  const centerY = height / 2;
-
-  resize(-direction * scale, centerX, centerY);
 };
 
 onMounted(() => {
-  document.addEventListener("wheel", setupGlobalListeners, { passive: false });
+  document.addEventListener("wheel", onWheel, { passive: false });
 });
 
 onUnmounted(() => {
-  document.removeEventListener("wheel", setupGlobalListeners);
+  document.removeEventListener("wheel", onWheel);
 });
 </script>
 

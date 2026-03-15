@@ -155,27 +155,31 @@ export const useObjectsStore = defineStore("objects", () => {
   const createObject = (shapeType: ShapeType, event: MouseEvent): void => {
     deSelectObject(); // Deselect current selection
 
-    // we need to get clicked X and Y relative to the parent SVG element.
-    const { offsetX, offsetY } = event;
+    const container = (event.target as HTMLElement).closest<HTMLElement>(
+      ".canvas-container",
+    )!;
+    const rect = container.getBoundingClientRect();
 
-    // Calculate X and y.
-    // - We need to devide actual offsetX and offsetY by the current canvas scale
-    // -- because canvas has its own viewBox property, so dimensions need adjustments
-    const clientX = offsetX / canvasStore.scale;
-    const clientY = offsetY / canvasStore.scale;
+    // 1. Convert to container-local coords
+    const mouseX = event.clientX - rect.left;
+    const mouseY = event.clientY - rect.top;
+
+    // 2. Invert the full canvas transform: translate(offset) scale(scale)
+    const canvasX = (mouseX - canvasStore.offset.x) / canvasStore.scale;
+    const canvasY = (mouseY - canvasStore.offset.y) / canvasStore.scale;
 
     const id = Math.max(...Object.keys(objects.value).map(Number), 0) + 1;
 
     if (shapeType === SHAPE_TYPES.circle) {
-      const circle = new Circle(id, clientX, clientY);
+      const circle = new Circle(id, canvasX, canvasY);
       objects.value[id] = circle;
 
       return;
     }
 
     if (shapeType === SHAPE_TYPES.rectangle) {
-      const x = clientX - DEFAULT_RECT_WIDTH / 2;
-      const y = clientY - DEFAULT_RECT_HEIGHT / 2;
+      const x = canvasX - DEFAULT_RECT_WIDTH / 2;
+      const y = canvasY - DEFAULT_RECT_HEIGHT / 2;
       const rectangle = new Rectangle(id, x, y);
       objects.value[id] = rectangle;
 
@@ -183,8 +187,8 @@ export const useObjectsStore = defineStore("objects", () => {
     }
 
     if (shapeType === SHAPE_TYPES.triangle) {
-      const x1 = clientX;
-      const y1 = clientY;
+      const x1 = canvasX;
+      const y1 = canvasY;
       const triangle = new Triangle(
         id,
         x1,
