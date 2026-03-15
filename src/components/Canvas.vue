@@ -1,23 +1,64 @@
 <script setup lang="ts">
-import { INITIAL_HEIGHT, INITIAL_WIDTH, useCanvasStore } from "../store/canvas";
+import {
+  INITIAL_HEIGHT,
+  INITIAL_WIDTH,
+  useCanvasStore,
+  ZOOM_SENSITIVITY,
+} from "../store/canvas";
 import { useObjectsStore } from "../store/objects";
 import Objects from "./Objects.vue";
 import { useCanvasMove } from "../composables/useCanvasMove";
+import { computed, onMounted, useTemplateRef } from "vue";
 const canvasStore = useCanvasStore();
 const { handleCreateObject } = useObjectsStore();
 
+const { zoom, setTransform } = useCanvasStore();
 const { isSpacePressed, startDrag } = useCanvasMove();
+const canvasContainer = useTemplateRef("canvasContainer");
+const transform = computed(() => {
+  return `translate(${canvasStore.transform.x}px, ${canvasStore.transform.y}px) scale(${canvasStore.scale})`;
+});
+
+const onWheel = (event: WheelEvent) => {
+  if (!canvasContainer.value || (!event.ctrlKey && !event.metaKey)) return;
+
+  event.preventDefault();
+
+  const zoomFactor = -Math.sign(event.deltaY) * ZOOM_SENSITIVITY;
+
+  const { left, top } = canvasContainer.value.getBoundingClientRect();
+
+  const mouseX = event.clientX - left;
+  const mouseY = event.clientY - top;
+
+  // Zoom anchored to the cursor
+  zoom(zoomFactor, mouseX, mouseY);
+};
+
+onMounted(() => {
+  const { width, height } = canvasContainer.value!.getBoundingClientRect();
+  const centerX = (width - INITIAL_WIDTH) / 2;
+  const centerY = (height - INITIAL_HEIGHT) / 2;
+
+  setTransform(centerX, centerY);
+});
 </script>
 
 <template>
-  <div class="canvas-container" :class="{ 'cursor-grab': isSpacePressed }">
+  <div
+    id="screen"
+    class="canvas-container"
+    :class="{ 'cursor-grab': isSpacePressed }"
+    @wheel.prevent="onWheel"
+    ref="canvasContainer"
+  >
     <div
+      id="world"
       class="canvas"
       :style="{
         width: `${INITIAL_WIDTH}px`,
         height: `${INITIAL_HEIGHT}px`,
-        transform: `translate(${canvasStore.offset.x}px, ${canvasStore.offset.y}px) scale(${canvasStore.scale})`,
-        transformOrigin: '0 0',
+        transform: transform,
       }"
       @mousedown="startDrag"
     >
@@ -54,8 +95,9 @@ svg {
 }
 
 .canvas {
-  height: 100vh;
   position: absolute;
+  left: 0;
+  top: 0;
   transform-origin: 0 0;
   will-change: transform;
 
@@ -76,15 +118,14 @@ svg {
   }
 
   &-container {
-    width: calc(100% - var(--sidebar-expanded-width));
-    overflow: auto;
+    // width: calc(100% - var(--sidebar-expanded-width));
+    // height: calc(100vh - var(--header-total-height));
+    height: 100vh;
+    width: 100%;
     position: relative;
-    height: calc(100vh - var(--header-total-height));
-    display: flex;
-    align-items: center;
-    justify-content: center;
+    overflow: hidden;
     background-color: var(--mid-gray);
-    margin-block-start: var(--header-total-height);
+    // margin-block-start: var(--header-total-height);
 
     &.cursor-grab {
       cursor: grab;

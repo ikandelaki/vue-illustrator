@@ -33,6 +33,7 @@ const { setSelectedObject } = objectsStore;
   height: 100vh;
   overflow: auto;
   background-color: var(--main-black);
+  display: none;
 
   &-container {
     margin-block-start: var(--header-total-height);

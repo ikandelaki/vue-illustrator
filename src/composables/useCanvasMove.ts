@@ -6,7 +6,7 @@ import { SHAPE_TYPES } from "../types/ShapeTypes";
 export const useCanvasMove = () => {
   const canvasStore = useCanvasStore();
   const { setSelectedShape } = useSelectedShapeStore();
-  const { setOffset } = canvasStore;
+  const { setTransform } = canvasStore;
 
   const isSpacePressed = ref<boolean>(false);
   const isDragging = ref<boolean>(false);
@@ -33,7 +33,7 @@ export const useCanvasMove = () => {
     const deltaX = event.clientX - startMousePos.x;
     const deltaY = event.clientY - startMousePos.y;
 
-    setOffset(startOffset.x + deltaX, startOffset.y + deltaY);
+    setTransform(startOffset.x + deltaX, startOffset.y + deltaY);
   };
 
   const stopDrag = () => {
@@ -50,8 +50,8 @@ export const useCanvasMove = () => {
     isDragging.value = true;
     startMousePos.x = event.clientX;
     startMousePos.y = event.clientY;
-    startOffset.x = canvasStore.offset.x;
-    startOffset.y = canvasStore.offset.y;
+    startOffset.x = canvasStore.transform.x;
+    startOffset.y = canvasStore.transform.y;
   };
 
   onMounted(() => {

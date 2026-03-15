@@ -155,16 +155,6 @@ export const useObjectsStore = defineStore("objects", () => {
   const createObject = (shapeType: ShapeType, event: MouseEvent): void => {
     deSelectObject(); // Deselect current selection
 
-    const container = (event.target as HTMLElement).closest<HTMLElement>(
-      ".canvas-container",
-    )!;
-    const rect = container.getBoundingClientRect();
-
-    // 1. Convert to container-local coords
-    const mouseX = event.clientX - rect.left;
-    const mouseY = event.clientY - rect.top;
-    console.log(">> event", event);
-
     // 2. Invert the full canvas transform: translate(offset) scale(scale)
     const canvasX = event.offsetX;
     const canvasY = event.offsetY;

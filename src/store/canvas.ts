@@ -6,7 +6,7 @@ export const INITIAL_HEIGHT = 450;
 export const FULL_WIDTH = 1920;
 export const MIN_SCALE = 0.1;
 export const MAX_SCALE = 5;
-export const SCALE_STEP = 0.1;
+export const ZOOM_SENSITIVITY = 0.1;
 
 type CanvasDimensions = {
   width: number;
@@ -20,7 +20,7 @@ export const useCanvasStore = defineStore("canvas", () => {
   });
   // If scale is 1, then current viewport is 800x450, if it is 1600x900, it will be 2, etc.
   const scale = ref<number>(1);
-  const offset = ref<{ x: number; y: number }>({ x: 0, y: 0 });
+  const transform = ref<{ x: number; y: number }>({ x: 0, y: 0 });
 
   // Adjust the dimensions of a canvas
   // - Will be useful for defining custom project size
@@ -49,38 +49,32 @@ export const useCanvasStore = defineStore("canvas", () => {
 
   // Resize the whole canvas by a scale (essentially the same as zooming in)
   // Will be used with wheel button mainly
-  const resize = (delta: number, mouseX: number, mouseY: number) => {
+  const zoom = (factor: number, mouseX: number, mouseY: number) => {
     const oldScale = scale.value;
-    const newScale = Math.min(MAX_SCALE, Math.max(MIN_SCALE, oldScale + delta));
+    let newScale = oldScale + factor;
 
-    if (newScale === oldScale) return;
+    newScale = Math.min(MAX_SCALE, Math.max(MIN_SCALE, newScale));
 
-    // Which canvas-space point is currently under the mouse?
-    // mouseX = canvasX * oldScale + offset.x
-    const canvasX = (mouseX - offset.value.x) / oldScale;
-    const canvasY = (mouseY - offset.value.y) / oldScale;
+    const worldX = (mouseX - transform.value.x) / oldScale;
+    const worldY = (mouseY - transform.value.y) / oldScale;
 
-    setScale(newScale);
+    transform.value.x = mouseX - worldX * newScale;
+    transform.value.y = mouseY - worldY * newScale;
 
-    // Recompute offset so that same canvas point lands back under the mouse:
-    // mouseX = canvasX * newScale + newOffset.x
-    offset.value = {
-      x: mouseX - canvasX * newScale,
-      y: mouseY - canvasY * newScale,
-    };
+    scale.value = newScale;
   };
 
-  const setOffset = (x: number, y: number) => {
-    offset.value.x = x;
-    offset.value.y = y;
+  const setTransform = (x: number, y: number) => {
+    transform.value.x = x;
+    transform.value.y = y;
   };
 
   return {
     dimensions,
     scale,
     setDimensions,
-    resize,
-    offset,
-    setOffset,
+    zoom,
+    transform,
+    setTransform,
   };
 });
