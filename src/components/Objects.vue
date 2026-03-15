@@ -7,9 +7,11 @@ import { useDragElement } from "../composables/mouse";
 import ShapeResizer from "./ShapeResizer.vue";
 import { getObjectCenterPosition } from "../utils/math";
 import { shapeComponents } from "../store/objects";
+import { useCanvasStore } from "../store/canvas";
 
 const objectsStore = useObjectsStore();
 const selectedShapeStore = useSelectedShapeStore();
+const canvasStore = useCanvasStore();
 const { setSelectedObject, updateSelectedObjectPosition, selectObject } =
   objectsStore;
 const { objects, selectedObjectId, selectedObject } = storeToRefs(objectsStore);
@@ -31,8 +33,8 @@ const calculateStartXAndYWithOffset = (
 
   if (object.type === SHAPE_TYPES.circle) {
     return {
-      startX: event.clientX - x,
-      startY: event.clientY - y,
+      startX: event.clientX / canvasStore.scale - x,
+      startY: event.clientY / canvasStore.scale - y,
     };
   }
 
@@ -43,20 +45,19 @@ const calculateStartXAndYWithOffset = (
 };
 
 const handleShapeMove = (event: PointerEvent, objectId: number) => {
-  // 1. Ensure this is the selected object
   if (objectId !== selectedObjectId.value || !selectedObject.value) return;
 
-  // 2. Calculate the "Grab Offset" (to prevent the shape from jumping to the mouse)
+  // Calculate the "Grab Offset" (to prevent the shape from jumping to the mouse)
   const { startX, startY } = calculateStartXAndYWithOffset(
     event,
     selectedObject.value,
   );
 
   const onPointerMove = (moveEvent: PointerEvent) => {
-    // 3. Update position based on global mouse movement minus the grab offset
+    // Update position based on global mouse movement minus the grab offset
     updateSelectedObjectPosition(
-      moveEvent.clientX - startX,
-      moveEvent.clientY - startY,
+      moveEvent.clientX / canvasStore.scale - startX,
+      moveEvent.clientY / canvasStore.scale - startY,
     );
   };
 
