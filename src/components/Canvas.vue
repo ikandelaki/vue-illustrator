@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { useCanvasStore } from "../store/canvas";
+import { INITIAL_HEIGHT, INITIAL_WIDTH, useCanvasStore } from "../store/canvas";
 import { useObjectsStore } from "../store/objects";
 import Objects from "./Objects.vue";
 import { useCanvasMove } from "../composables/useCanvasMove";
@@ -14,6 +14,8 @@ const { isSpacePressed, startDrag } = useCanvasMove();
     <div
       class="canvas"
       :style="{
+        width: `${INITIAL_WIDTH}px`,
+        height: `${INITIAL_HEIGHT}px`,
         transform: `translate(${canvasStore.offset.x}px, ${canvasStore.offset.y}px) scale(${canvasStore.scale})`,
         transformOrigin: '0 0',
       }"
@@ -21,7 +23,7 @@ const { isSpacePressed, startDrag } = useCanvasMove();
     >
       <svg
         @click="handleCreateObject"
-        :viewBox="`0 0 ${canvasStore.dimensions.width} ${canvasStore.dimensions.height}`"
+        :viewBox="`0 0 ${INITIAL_WIDTH} ${INITIAL_HEIGHT}`"
       >
         <foreignObject
           x="0"

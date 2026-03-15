@@ -163,10 +163,11 @@ export const useObjectsStore = defineStore("objects", () => {
     // 1. Convert to container-local coords
     const mouseX = event.clientX - rect.left;
     const mouseY = event.clientY - rect.top;
+    console.log(">> event", event);
 
     // 2. Invert the full canvas transform: translate(offset) scale(scale)
-    const canvasX = (mouseX - canvasStore.offset.x) / canvasStore.scale;
-    const canvasY = (mouseY - canvasStore.offset.y) / canvasStore.scale;
+    const canvasX = event.offsetX;
+    const canvasY = event.offsetY;
 
     const id = Math.max(...Object.keys(objects.value).map(Number), 0) + 1;
 
