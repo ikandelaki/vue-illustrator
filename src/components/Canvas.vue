@@ -2,29 +2,28 @@
 import { useCanvasStore } from "../store/canvas";
 import { useObjectsStore } from "../store/objects";
 import Objects from "./Objects.vue";
+import { useCanvasMove } from "../composables/useCanvasMove";
 const canvasStore = useCanvasStore();
 const { handleCreateObject } = useObjectsStore();
+
+const { isSpacePressed, startDrag } = useCanvasMove();
 </script>
 
 <template>
-  <div class="canvas-container">
+  <div class="canvas-container" :class="{ 'cursor-grab': isSpacePressed }">
     <div
       class="canvas"
       :style="{
         width: `${canvasStore.dimensions.width}px`,
         height: `${canvasStore.dimensions.height}px`,
         transform: `translate(${canvasStore.offset.x}px, ${canvasStore.offset.y}px) scale(${canvasStore.scale})`,
-        transformOrigin: 'center center',
+        transformOrigin: '0 0',
       }"
+      @mousedown="startDrag"
     >
       <svg
         @click="handleCreateObject"
-        :viewBox="
-          '0 0 ' +
-          canvasStore.dimensions.width / canvasStore.scale +
-          ' ' +
-          canvasStore.dimensions.height / canvasStore.scale
-        "
+        :viewBox="`0 0 ${canvasStore.dimensions.width} ${canvasStore.dimensions.height}`"
       >
         <foreignObject
           x="0"
@@ -49,14 +48,16 @@ const { handleCreateObject } = useObjectsStore();
 svg {
   background-color: #fff;
   border: 1px solid var(--main-black);
+  width: 100%;
+  height: 100%;
+  display: block;
 }
 
 .canvas {
   height: 100vh;
   position: absolute;
-  display: flex;
-  align-items: center;
-  justify-content: center;
+  transform-origin: 0 0;
+  will-change: transform;
 
   &-details {
     text-align: center;
@@ -84,6 +85,14 @@ svg {
     justify-content: center;
     background-color: var(--mid-gray);
     margin-block-start: var(--header-total-height);
+
+    &.cursor-grab {
+      cursor: grab;
+
+      &:active {
+        cursor: grabbing;
+      }
+    }
   }
 }
 </style>

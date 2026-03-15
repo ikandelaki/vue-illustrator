@@ -22,7 +22,9 @@ const { resize } = useCanvasStore();
 const { selectedShape } = storeToRefs(selectedShapeStore);
 
 const setupGlobalListeners = (event: WheelEvent) => {
-  if (!event.target?.closest(".canvas-container")) {
+  const el = event.target as HTMLElement;
+  const container = el.closest(".canvas-container");
+  if (!container) {
     return;
   }
 
@@ -35,7 +37,17 @@ const setupGlobalListeners = (event: WheelEvent) => {
   const direction = Math.sign(deltaY);
   const scale = 0.1;
 
-  resize(-direction * scale);
+  const isInsideCanvas = el.closest(".canvas");
+  if (isInsideCanvas) {
+    resize(-direction * scale, event.offsetX, event.offsetY);
+    return;
+  }
+
+  const { left, width, top, height } = container.getBoundingClientRect();
+  const centerX = width / 2;
+  const centerY = height / 2;
+
+  resize(-direction * scale, centerX, centerY);
 };
 
 onMounted(() => {

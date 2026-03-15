@@ -39,22 +39,27 @@ export const useCanvasStore = defineStore("canvas", () => {
 
   // Resize the whole canvas by a scale (essentially the same as zooming in)
   // Will be used with wheel button mainly
-  const resize = (newScaleVal: number) => {
+  const resize = (newScaleVal: number, mouseX: number, mouseY: number) => {
     if (!newScaleVal) {
       return;
     }
 
-    const newScale = scale.value + newScaleVal;
-    const newWidth = INITIAL_WIDTH * newScale;
+    const oldScale = scale.value;
+    const newScale = Math.max(0.1, Math.min(scale.value + newScaleVal, 5));
 
-    if (newWidth <= 100) {
-      return;
-    }
+    // Calculate how far the mouse is from the current top-left of the canvas
+    const dx = mouseX - offset.value.x;
+    const dy = mouseY - offset.value.y;
 
-    dimensions.value.width = newWidth;
-    dimensions.value.height = INITIAL_HEIGHT * newScale;
+    // Convert that distance into "Canvas Space" (unscaled coordinates)
+    const canvasSpaceX = dx / oldScale;
+    const canvasSpaceY = dy / oldScale;
 
     scale.value = newScale;
+
+    // Adjust offsets so the point under the mouse stays under the mous
+    offset.value.x = mouseX - canvasSpaceX * newScale;
+    offset.value.y = mouseY - canvasSpaceY * newScale;
   };
 
   const setOffset = (x: number, y: number) => {
