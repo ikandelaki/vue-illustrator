@@ -39,8 +39,8 @@ const calculateStartXAndYWithOffset = (
   }
 
   return {
-    startX: event.clientX - x,
-    startY: event.clientY - y,
+    startX: event.clientX / canvasStore.scale - x,
+    startY: event.clientY / canvasStore.scale - y,
   };
 };
 
