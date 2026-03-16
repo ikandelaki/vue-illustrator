@@ -1,6 +1,10 @@
 <script setup lang="ts">
 import { ShapeType, SHAPE_TYPES } from "../types/ShapeTypes";
 import CursorIcon from "./CursorIcon.vue";
+import { useSelectedShapeStore } from "../store/selectedShape";
+import { storeToRefs } from "pinia";
+const selectedShapeStore = useSelectedShapeStore();
+const { selectedShape } = storeToRefs(selectedShapeStore);
 
 const emit = defineEmits<{
   (e: "select-shape", value: ShapeType): void;
@@ -8,6 +12,10 @@ const emit = defineEmits<{
 
 const selectShape = (shape: ShapeType) => {
   emit("select-shape", shape);
+};
+
+const isSelected = (shape: ShapeType) => {
+  return selectedShape.value === SHAPE_TYPES[shape];
 };
 </script>
 
@@ -19,6 +27,7 @@ const selectShape = (shape: ShapeType) => {
     <div class="shape-selector_shapes">
       <button
         class="circle"
+        :class="{ isSelected: isSelected(SHAPE_TYPES.circle) }"
         @click="selectShape(SHAPE_TYPES.circle)"
         aria-label="Select a circle"
       >
@@ -26,6 +35,7 @@ const selectShape = (shape: ShapeType) => {
       </button>
       <button
         class="rectangle"
+        :class="{ isSelected: isSelected(SHAPE_TYPES.rectangle) }"
         @click="selectShape(SHAPE_TYPES.rectangle)"
         aria-label="Select a rectangle"
       >
@@ -33,6 +43,7 @@ const selectShape = (shape: ShapeType) => {
       </button>
       <button
         class="triangle"
+        :class="{ isSelected: isSelected(SHAPE_TYPES.triangle) }"
         @click="selectShape(SHAPE_TYPES.triangle)"
         aria-label="Select a triangle"
       >

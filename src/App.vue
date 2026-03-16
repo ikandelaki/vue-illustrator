@@ -6,6 +6,7 @@ import Sidebar from "./components/Sidebar.vue";
 import { useSelectedShapeStore } from "./store/selectedShape";
 import { storeToRefs } from "pinia";
 import Canvas from "./components/Canvas.vue";
+import { useKeyDown } from "./composables/useKeyDown";
 
 const ContextMenu = defineAsyncComponent({
   loader: () => import("./components/ContextMenu.vue"),
@@ -17,6 +18,8 @@ const selectedShapeStore = useSelectedShapeStore();
 const { setSelectedShape } = selectedShapeStore;
 
 const { selectedShape } = storeToRefs(selectedShapeStore);
+
+useKeyDown();
 </script>
 
 <template>
