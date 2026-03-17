@@ -8,6 +8,7 @@ import { calculateDistance, getObjectCenterPosition } from "../utils/math";
 import { useDragElement } from "../composables/mouse";
 import { RectangleInterface } from "../model/Rectangle";
 import { TriangleInterface } from "../model/Triangle";
+import { useCanvasStore } from "../store/canvas";
 
 const OFFSET_LENGTH = 0;
 
@@ -19,8 +20,10 @@ const isResizing = ref<boolean>(false);
 const prevPointerX = ref<number>(0);
 const prevPointerY = ref<number>(0);
 const objectsStore = useObjectsStore();
+const canvasStore = useCanvasStore();
 const { selectedObjectId, selectedObject } = storeToRefs(objectsStore);
 const { setSelectedObjectRadius } = objectsStore;
+const { scale, transform } = storeToRefs(canvasStore);
 
 // Bounding box corners derived from shape geometry
 const bbox = computed(() => {
@@ -133,6 +136,10 @@ const resize = (event: MouseEvent, anchorId: string) => {
   if (selectedObject.value.type === SHAPE_TYPES.circle) {
     const circle = selectedObject.value as CircleInterface;
 
+    if (prevDistance === 0) {
+      return;
+    }
+
     const newRadius = (currentDistance / prevDistance) * circle.radius;
     setSelectedObjectRadius(Math.max(1, newRadius));
   }
@@ -154,17 +161,17 @@ const resize = (event: MouseEvent, anchorId: string) => {
     const triangle = selectedObject.value as TriangleInterface;
 
     // Determine the scale factor (prevent division by zero)
-    const scale = prevDistance !== 0 ? currentDistance / prevDistance : 1;
+    const ratio = prevDistance !== 0 ? currentDistance / prevDistance : 1;
 
     // Scale each point relative to the center
-    triangle.x1 = centerX + (triangle.x1 - centerX) * scale;
-    triangle.y1 = centerY + (triangle.y1 - centerY) * scale;
+    triangle.x1 = centerX + (triangle.x1 - centerX) * ratio;
+    triangle.y1 = centerY + (triangle.y1 - centerY) * ratio;
 
-    triangle.x2 = centerX + (triangle.x2 - centerX) * scale;
-    triangle.y2 = centerY + (triangle.y2 - centerY) * scale;
+    triangle.x2 = centerX + (triangle.x2 - centerX) * ratio;
+    triangle.y2 = centerY + (triangle.y2 - centerY) * ratio;
 
-    triangle.x3 = centerX + (triangle.x3 - centerX) * scale;
-    triangle.y3 = centerY + (triangle.y3 - centerY) * scale;
+    triangle.x3 = centerX + (triangle.x3 - centerX) * ratio;
+    triangle.y3 = centerY + (triangle.y3 - centerY) * ratio;
   }
 
   // Based on the similar triangle relativity formula

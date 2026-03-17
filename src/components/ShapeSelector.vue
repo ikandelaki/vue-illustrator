@@ -21,12 +21,16 @@ const isSelected = (shape: ShapeType) => {
 
 <template>
   <div class="shape-selector">
-    <button @click="selectShape(SHAPE_TYPES.cursor)">
+    <button
+      class="object cursor"
+      :class="{ isSelected: isSelected(SHAPE_TYPES.cursor) }"
+      @click="selectShape(SHAPE_TYPES.cursor)"
+    >
       <CursorIcon />
     </button>
     <div class="shape-selector_shapes">
       <button
-        class="circle"
+        class="object circle"
         :class="{ isSelected: isSelected(SHAPE_TYPES.circle) }"
         @click="selectShape(SHAPE_TYPES.circle)"
         aria-label="Select a circle"
@@ -34,7 +38,7 @@ const isSelected = (shape: ShapeType) => {
         <span></span>
       </button>
       <button
-        class="rectangle"
+        class="object rectangle"
         :class="{ isSelected: isSelected(SHAPE_TYPES.rectangle) }"
         @click="selectShape(SHAPE_TYPES.rectangle)"
         aria-label="Select a rectangle"
@@ -42,7 +46,7 @@ const isSelected = (shape: ShapeType) => {
         <span></span>
       </button>
       <button
-        class="triangle"
+        class="object triangle"
         :class="{ isSelected: isSelected(SHAPE_TYPES.triangle) }"
         @click="selectShape(SHAPE_TYPES.triangle)"
         aria-label="Select a triangle"
@@ -97,6 +101,25 @@ const isSelected = (shape: ShapeType) => {
     background-color: #fff;
     clip-path: polygon(0 0, 0% 100%, 100% 100%);
     border: 1px solid #000;
+  }
+
+  .object {
+    padding: 4px;
+    transition: all 300ms cubic-bezier(1, 0, 0, 1);
+
+    &.isSelected {
+      background-color: #087f5b;
+    }
+
+    &.cursor {
+      &.isSelected {
+        background-color: unset;
+
+        path {
+          fill: #087f5b;
+        }
+      }
+    }
   }
 }
 </style>
