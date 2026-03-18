@@ -9,6 +9,7 @@ import { useDragElement } from "../composables/mouse";
 import { RectangleInterface } from "../model/Rectangle";
 import { TriangleInterface } from "../model/Triangle";
 import { useCanvasStore } from "../store/canvas";
+import { useScreenToWorld } from "../composables/useScreenToWorld";
 
 const OFFSET_LENGTH = 0;
 
@@ -97,8 +98,9 @@ const anchors = computed(() => {
 
 const startResize = (event: MouseEvent, anchorId: string) => {
   isResizing.value = true;
-  prevPointerX.value = event.clientX;
-  prevPointerY.value = event.clientY;
+  const { x, y } = useScreenToWorld(event.clientX, event.clientY);
+  prevPointerX.value = x;
+  prevPointerY.value = y;
 
   const onMouseMove = (moveEvent: MouseEvent) => resize(moveEvent, anchorId);
   const onMouseUp = () => (isResizing.value = false);
@@ -108,8 +110,10 @@ const startResize = (event: MouseEvent, anchorId: string) => {
 
 const resize = (event: MouseEvent, anchorId: string) => {
   const anchor = anchors.value.find((anchor) => anchor.id === anchorId);
-  const currentX = event.clientX;
-  const currentY = event.clientY;
+  const { x: currentX, y: currentY } = useScreenToWorld(
+    event.clientX,
+    event.clientY,
+  );
 
   if (!isResizing.value || !anchor || !selectedObject.value) {
     return;

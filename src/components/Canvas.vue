@@ -125,7 +125,7 @@ svg {
     position: relative;
     overflow: hidden;
     background-color: var(--mid-gray);
-    margin-block-start: var(--header-total-height);
+    // margin-block-start: var(--header-total-height);
 
     &.cursor-grab {
       cursor: grab;
