@@ -3,6 +3,12 @@ import { useCanvasStore } from "../store/canvas";
 import { useSelectedShapeStore } from "../store/selectedShape";
 import { SHAPE_TYPES } from "../types/ShapeTypes";
 
+/**
+ * Handles canvas move. Usually done by pressing space + click + move mouse
+ * This composable sets up listeners and transforms the canvas based on the movement.
+ *
+ * @returns
+ */
 export const useCanvasMove = () => {
   const canvasStore = useCanvasStore();
   const { setSelectedShape } = useSelectedShapeStore();

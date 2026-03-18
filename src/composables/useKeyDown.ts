@@ -2,6 +2,14 @@ import { onMounted, onUnmounted } from "vue";
 import { useSelectedShapeStore } from "../store/selectedShape";
 import { SHAPE_TYPES } from "../types/ShapeTypes";
 
+/**
+ * Run specific functions during keyDown event.
+ *
+ * "KeyV": Set selected shape to cursor, which allows to move the object, resize, etc.
+ * "KeyC": Set selected shape to a Circle.
+ * "KeyR": Set selected shape to a Rectangle.
+ * "KeyT": Set selected shape to a Triangle.
+ */
 export const useKeyDown = () => {
   const { setSelectedShape } = useSelectedShapeStore();
   const handleKeyDown = (event: KeyboardEvent) => {
