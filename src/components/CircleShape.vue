@@ -8,12 +8,14 @@ const { object, selected } = defineProps<{
 </script>
 
 <template>
-  <circle
-    class="shape circle"
-    :cx="object.getCx()"
-    :cy="object.getCy()"
-    :r="object.getRadius()"
-    :class="[{ selected: selected }, $attrs.class]"
-    :style="{ fill: object.getColor() }"
-  />
+  <g>
+    <circle
+      class="shape circle"
+      :cx="object.getCx()"
+      :cy="object.getCy()"
+      :r="object.getRadius()"
+      :class="[{ selected: selected }, $attrs.class]"
+      :style="{ fill: object.getColor() }"
+    />
+  </g>
 </template>

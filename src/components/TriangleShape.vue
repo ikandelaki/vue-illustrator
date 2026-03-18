@@ -12,5 +12,7 @@ const points = computed(() => {
 </script>
 
 <template>
-  <polygon :points="points" :fill="object.color" />
+  <g>
+    <polygon :points="points" :fill="object.color" />
+  </g>
 </template>
