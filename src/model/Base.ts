@@ -1,15 +1,24 @@
+import { getObjectCenterPosition } from "../utils/math";
+
 export const DEFAULT_MODEL_COLOR = "#EEEEEE";
+
+type TransformType = {
+  rotate?: number;
+};
 
 export interface BaseModelInterface {
   id: number;
   color: string;
   type: string;
   name: string;
+  transform: TransformType;
   getName(): string;
   getType(): string;
   getColor(): string;
   getId(): number;
   setColor(color: string): BaseModelInterface;
+  setTransform({ rotate }: TransformType): BaseModelInterface;
+  getTransform(): string | null;
 }
 
 export default class BaseModel implements BaseModelInterface {
@@ -17,6 +26,7 @@ export default class BaseModel implements BaseModelInterface {
   color: string;
   type: string;
   name: string;
+  transform: TransformType = {};
 
   constructor({
     id,
@@ -58,5 +68,23 @@ export default class BaseModel implements BaseModelInterface {
 
     this.color = color;
     return this;
+  }
+
+  setTransform({ rotate }: TransformType): this {
+    if (rotate) {
+      this.transform.rotate = rotate;
+    }
+
+    return this;
+  }
+
+  getTransform(): string | null {
+    if (!this.transform.rotate) {
+      return null;
+    }
+
+    const { x, y } = getObjectCenterPosition(this);
+
+    return `rotate(${this.transform.rotate}, ${x}, ${y})`;
   }
 }

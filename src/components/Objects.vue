@@ -73,6 +73,7 @@ const handleShapeMove = (event: PointerEvent, objectId: number) => {
     :key="object.getId()"
     :object="object"
     :selected="selectedObjectId === object.getId()"
+    :transform="object.getTransform()"
     class="shape"
     @click="handleShapeClick(object.getId())"
     @pointerdown="handleShapeMove($event, object.getId())"
