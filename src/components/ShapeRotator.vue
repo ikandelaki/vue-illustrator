@@ -9,6 +9,7 @@ import {
   getObjectCenterPosition,
   isPointInsideBbox,
 } from "../utils/math";
+import { useDragElement } from "../composables/mouse";
 
 const ROTATION_ZONE = 100;
 
@@ -18,10 +19,11 @@ const rotationRef = useTemplateRef("rotationRef");
 
 const isRotationCursor = ref<boolean>(false);
 const mousePos = ref<{ x: number; y: number }>({ x: 0, y: 0 });
-const mouseRotation = ref<number>(0);
 
 const { bbox: shapeResizerBbox } = useBbox();
 const { bbox } = useBbox(ROTATION_ZONE);
+
+let lastAngle = 0;
 
 // Calculate if the point is inside the rotation zone:
 // Zone is a place around the element, not inside it
@@ -34,10 +36,7 @@ const isInRotationZone = (x: number, y: number) => {
 const handlePointerMove = (moveEvent: MouseEvent) => {
   const { x, y } = useScreenToWorld(moveEvent.clientX, moveEvent.clientY);
 
-  mousePos.value = {
-    x,
-    y,
-  };
+  mousePos.value = { x, y };
 
   isInRotationZone(x, y)
     ? (isRotationCursor.value = true)
@@ -72,6 +71,43 @@ const handleMouseLeave = (event: MouseEvent) => {
   rotationRef.value?.removeEventListener("pointermove", handlePointerMove);
 };
 
+const handleMouseDown = (event: MouseEvent) => {
+  if (!isRotationCursor.value) {
+    return;
+  }
+
+  // ✅ seed lastAngle from the mousedown position, not stale module-level value
+  const cx = shapeResizerBbox.value.x + shapeResizerBbox.value.width / 2;
+  const cy = shapeResizerBbox.value.y + shapeResizerBbox.value.height / 2;
+  const { x: startX, y: startY } = useScreenToWorld(
+    event.clientX,
+    event.clientY,
+  );
+  lastAngle = findAngleBetweenPoints(cx, cy, startX, startY);
+
+  const rotate = (moveEvent: MouseEvent) => {
+    const cx = shapeResizerBbox.value.x + shapeResizerBbox.value.width / 2;
+    const cy = shapeResizerBbox.value.y + shapeResizerBbox.value.height / 2;
+
+    const { x, y } = useScreenToWorld(moveEvent.clientX, moveEvent.clientY);
+
+    const angle = findAngleBetweenPoints(cx, cy, x, y);
+    let delta = angle - lastAngle;
+
+    // Wrap delta to [-180, 180] to avoid jumps crossing ±180°
+    if (delta > 180) delta -= 360;
+    if (delta < -180) delta += 360;
+
+    lastAngle = angle;
+
+    selectedObject.value?.setTransform({
+      rotate: (selectedObject.value?.transform.rotate || 0) + delta,
+    });
+  };
+
+  useDragElement(rotate);
+};
+
 const angle = computed(() => {
   const cx = shapeResizerBbox.value.x + shapeResizerBbox.value.width / 2;
   const cy = shapeResizerBbox.value.y + shapeResizerBbox.value.height / 2;
@@ -100,6 +136,7 @@ const cursorTransform = computed(
       stroke-dasharray="1, 2"
       @mouseenter="handleMouseEnter"
       @mouseleave="handleMouseLeave"
+      @mousedown="handleMouseDown"
       ref="rotationRef"
     />
   </g>

@@ -20,16 +20,6 @@ const { setSelectedObject, updateSelectedObjectPosition, selectObject } =
 const { objects, selectedObjectId, selectedObject } = storeToRefs(objectsStore);
 const { selectedShape } = storeToRefs(selectedShapeStore);
 
-const objectRefs = ref(new Map());
-
-const setRef = (el: HTMLElement, id: number) => {
-  if (!el || !id) {
-    return null;
-  }
-
-  objectRefs.value.set(id, el);
-};
-
 const handleShapeClick = (id: number) => {
   if (selectedShape.value !== SHAPE_TYPES.cursor) {
     return;
@@ -89,7 +79,6 @@ const handleShapeMove = (event: PointerEvent, objectId: number) => {
     :object="object"
     :selected="selectedObjectId === object.getId()"
     :transform="object.getTransform()"
-    :ref="(el: HTMLElement) => setRef(el, object.getId())"
     :id="object.getId()"
     class="shape"
     @click="handleShapeClick(object.getId())"

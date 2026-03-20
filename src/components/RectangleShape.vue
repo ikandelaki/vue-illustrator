@@ -5,8 +5,6 @@ const { object, selected } = defineProps<{
   object: RectangleInterface;
   selected?: boolean;
 }>();
-
-object.setTransform({ rotate: 45 });
 </script>
 
 <template>

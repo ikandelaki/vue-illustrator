@@ -72,7 +72,9 @@ export const isPointInsideBbox = (x: number, y: number, bbox: BboxType) => {
 };
 
 /**
- * Find the angle between three points, centered around B point
+ * Find the angle between three points
+ * - cx and cy are the coordinates of the center point
+ * - px and py are the coordinates from which point we want the angle to be calculated
  *
  * @param a
  * @param b
@@ -80,29 +82,10 @@ export const isPointInsideBbox = (x: number, y: number, bbox: BboxType) => {
  * @param convertToDegrees
  */
 export const findAngleBetweenPoints = (
-  a: Point,
-  b: Point,
-  c: Point,
-  convertToDegrees = false,
+  cx: number,
+  cy: number,
+  px: number,
+  py: number,
 ) => {
-  // Calculate the vectors BA and BC
-  var ba = { x: a.x - b.x, y: a.y - b.y };
-  var bc = { x: c.x - b.x, y: c.y - b.y };
-
-  // Use Math.atan2() to find the angle of each vector relative to the x-axis
-  var angleBa = Math.atan2(ba.y, ba.x);
-  var angleBc = Math.atan2(bc.y, bc.x);
-
-  // Calculate the difference between the angles
-  var angleDiff = angleBc - angleBa;
-
-  // Normalize the angle difference to the range (-PI, PI]
-  while (angleDiff <= -Math.PI) angleDiff += 2 * Math.PI;
-  while (angleDiff > Math.PI) angleDiff -= 2 * Math.PI;
-
-  if (convertToDegrees) {
-    return angleDiff * (180 / Math.PI);
-  }
-
-  return angleDiff; // Angle in radians
+  return Math.atan2(py - cy, px - cx) * (180 / Math.PI);
 };

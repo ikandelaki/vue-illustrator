@@ -37,8 +37,8 @@ export const useBbox = (offsetLength: number = 0) => {
       return {
         x: rectangle.x - offsetLength,
         y: rectangle.y - offsetLength,
-        width: rectangle.width,
-        height: rectangle.height,
+        width: rectangle.width + offsetLength * 2,
+        height: rectangle.height + offsetLength * 2,
       };
     }
 
