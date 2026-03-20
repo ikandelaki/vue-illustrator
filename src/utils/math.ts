@@ -11,6 +11,11 @@ type BboxType = {
   height: number;
 };
 
+type Point = {
+  x: number;
+  y: number;
+};
+
 export const calculateDistance = (
   x1: number,
   y1: number,
@@ -64,4 +69,40 @@ export const isPointInsideBbox = (x: number, y: number, bbox: BboxType) => {
     y > bbox.y &&
     y < bbox.y + bbox.height
   );
+};
+
+/**
+ * Find the angle between three points, centered around B point
+ *
+ * @param a
+ * @param b
+ * @param c
+ * @param convertToDegrees
+ */
+export const findAngleBetweenPoints = (
+  a: Point,
+  b: Point,
+  c: Point,
+  convertToDegrees = false,
+) => {
+  // Calculate the vectors BA and BC
+  var ba = { x: a.x - b.x, y: a.y - b.y };
+  var bc = { x: c.x - b.x, y: c.y - b.y };
+
+  // Use Math.atan2() to find the angle of each vector relative to the x-axis
+  var angleBa = Math.atan2(ba.y, ba.x);
+  var angleBc = Math.atan2(bc.y, bc.x);
+
+  // Calculate the difference between the angles
+  var angleDiff = angleBc - angleBa;
+
+  // Normalize the angle difference to the range (-PI, PI]
+  while (angleDiff <= -Math.PI) angleDiff += 2 * Math.PI;
+  while (angleDiff > Math.PI) angleDiff -= 2 * Math.PI;
+
+  if (convertToDegrees) {
+    return angleDiff * (180 / Math.PI);
+  }
+
+  return angleDiff; // Angle in radians
 };

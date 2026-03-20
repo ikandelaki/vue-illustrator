@@ -4,16 +4,21 @@ import { useObjectsStore } from "../store/objects";
 import { useBbox } from "../composables/useBbox";
 import { computed, CSSProperties, ref, Teleport, useTemplateRef } from "vue";
 import { useScreenToWorld } from "../composables/useScreenToWorld";
-import { isPointInsideBbox } from "../utils/math";
+import {
+  findAngleBetweenPoints,
+  getObjectCenterPosition,
+  isPointInsideBbox,
+} from "../utils/math";
 
 const ROTATION_ZONE = 100;
 
 const objectsStore = useObjectsStore();
-const { selectedObjectId } = storeToRefs(objectsStore);
+const { selectedObjectId, selectedObject } = storeToRefs(objectsStore);
 const rotationRef = useTemplateRef("rotationRef");
 
 const isRotationCursor = ref<boolean>(false);
 const mousePos = ref<{ x: number; y: number }>({ x: 0, y: 0 });
+const mouseRotation = ref<number>(0);
 
 const { bbox: shapeResizerBbox } = useBbox();
 const { bbox } = useBbox(ROTATION_ZONE);
@@ -28,6 +33,7 @@ const isInRotationZone = (x: number, y: number) => {
 
 const handlePointerMove = (moveEvent: MouseEvent) => {
   const { x, y } = useScreenToWorld(moveEvent.clientX, moveEvent.clientY);
+
   mousePos.value = {
     x,
     y,
@@ -66,15 +72,17 @@ const handleMouseLeave = (event: MouseEvent) => {
   rotationRef.value?.removeEventListener("pointermove", handlePointerMove);
 };
 
-const customCursorStyle = computed<CSSProperties>(() => ({
-  position: "fixed",
-  left: `${mousePos.value.x}px`,
-  top: `${mousePos.value.y}px`,
-  zIndex: 9999,
-}));
+const angle = computed(() => {
+  const cx = shapeResizerBbox.value.x + shapeResizerBbox.value.width / 2;
+  const cy = shapeResizerBbox.value.y + shapeResizerBbox.value.height / 2;
+  return (
+    Math.atan2(mousePos.value.y - cy, mousePos.value.x - cx) * (180 / Math.PI)
+  );
+});
 
 const cursorTransform = computed(
-  () => `translate(${mousePos.value.x - 16}, ${mousePos.value.y - 16})`,
+  () =>
+    `translate(${mousePos.value.x - 16}, ${mousePos.value.y - 16}) rotate(${angle.value - 60})`,
 );
 </script>
 <template>
