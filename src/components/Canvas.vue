@@ -10,11 +10,14 @@ import Objects from "./Objects.vue";
 import { useCanvasMove } from "../composables/useCanvasMove";
 import { computed, onMounted, useTemplateRef } from "vue";
 import Grid from "./Grid.vue";
-const canvasStore = useCanvasStore();
-const { handleCreateObject } = useObjectsStore();
 
+const canvasStore = useCanvasStore();
+const objectsStore = useObjectsStore();
+
+const { handleCreateObject } = objectsStore;
 const { zoom, setTransform } = useCanvasStore();
 const { isSpacePressed, startDrag } = useCanvasMove();
+
 const canvasContainer = useTemplateRef("canvasContainer");
 const transform = computed(() => {
   return `translate(${canvasStore.transform.x}px, ${canvasStore.transform.y}px) scale(${canvasStore.scale})`;

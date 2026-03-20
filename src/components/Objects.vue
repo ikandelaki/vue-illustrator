@@ -8,6 +8,9 @@ import ShapeResizer from "./ShapeResizer.vue";
 import { getObjectCenterPosition } from "../utils/math";
 import { shapeComponents } from "../store/objects";
 import { useCanvasStore } from "../store/canvas";
+import ShapeRotator from "./ShapeRotator.vue";
+import { ref } from "vue";
+import ShapeActions from "./ShapeActions.vue";
 
 const objectsStore = useObjectsStore();
 const selectedShapeStore = useSelectedShapeStore();
@@ -16,6 +19,16 @@ const { setSelectedObject, updateSelectedObjectPosition, selectObject } =
   objectsStore;
 const { objects, selectedObjectId, selectedObject } = storeToRefs(objectsStore);
 const { selectedShape } = storeToRefs(selectedShapeStore);
+
+const objectRefs = ref(new Map());
+
+const setRef = (el: HTMLElement, id: number) => {
+  if (!el || !id) {
+    return null;
+  }
+
+  objectRefs.value.set(id, el);
+};
 
 const handleShapeClick = (id: number) => {
   if (selectedShape.value !== SHAPE_TYPES.cursor) {
@@ -67,6 +80,8 @@ const handleShapeMove = (event: PointerEvent, objectId: number) => {
 </script>
 
 <template>
+  <!-- Important! First render the shape actions and then the objects to make the objects always sit on top of the shape actions -->
+  <ShapeActions />
   <component
     v-for="object in objects"
     :is="shapeComponents[object.type] || null"
@@ -74,12 +89,13 @@ const handleShapeMove = (event: PointerEvent, objectId: number) => {
     :object="object"
     :selected="selectedObjectId === object.getId()"
     :transform="object.getTransform()"
+    :ref="(el: HTMLElement) => setRef(el, object.getId())"
+    :id="object.getId()"
     class="shape"
     @click="handleShapeClick(object.getId())"
     @pointerdown="handleShapeMove($event, object.getId())"
     @contextmenu.prevent="selectObject($event, object.getId(), object.type)"
   />
-  <ShapeResizer />
 </template>
 
 <style>

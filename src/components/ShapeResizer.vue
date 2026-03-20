@@ -8,10 +8,8 @@ import { calculateDistance, getObjectCenterPosition } from "../utils/math";
 import { useDragElement } from "../composables/mouse";
 import { RectangleInterface } from "../model/Rectangle";
 import { TriangleInterface } from "../model/Triangle";
-import { useCanvasStore } from "../store/canvas";
 import { useScreenToWorld } from "../composables/useScreenToWorld";
-
-const OFFSET_LENGTH = 0;
+import { useBbox } from "../composables/useBbox";
 
 defineEmits<{
   resize: [anchorId: string, event: MouseEvent];
@@ -21,67 +19,11 @@ const isResizing = ref<boolean>(false);
 const prevPointerX = ref<number>(0);
 const prevPointerY = ref<number>(0);
 const objectsStore = useObjectsStore();
-const canvasStore = useCanvasStore();
 const { selectedObjectId, selectedObject } = storeToRefs(objectsStore);
 const { setSelectedObjectRadius } = objectsStore;
-const { scale, transform } = storeToRefs(canvasStore);
 
 // Bounding box corners derived from shape geometry
-const bbox = computed(() => {
-  if (!selectedObject.value) {
-    return {
-      x: 0,
-      y: 0,
-      width: 0,
-      height: 0,
-    };
-  }
-
-  if (selectedObject.value.type === SHAPE_TYPES.circle) {
-    const circle = selectedObject.value as CircleInterface;
-
-    return {
-      x: circle.cx - circle.radius - OFFSET_LENGTH,
-      y: circle.cy - circle.radius - OFFSET_LENGTH,
-      width: (circle.radius + OFFSET_LENGTH) * 2,
-      height: (circle.radius + OFFSET_LENGTH) * 2,
-    };
-  }
-
-  if (selectedObject.value.type === SHAPE_TYPES.rectangle) {
-    const rectangle = selectedObject.value as RectangleInterface;
-
-    return {
-      x: rectangle.x - OFFSET_LENGTH,
-      y: rectangle.y - OFFSET_LENGTH,
-      width: rectangle.width,
-      height: rectangle.height,
-    };
-  }
-
-  if (selectedObject.value.type === SHAPE_TYPES.triangle) {
-    const tri = selectedObject.value as TriangleInterface;
-
-    const minX = Math.min(tri.x1, tri.x2, tri.x3);
-    const maxX = Math.max(tri.x1, tri.x2, tri.x3);
-    const minY = Math.min(tri.y1, tri.y2, tri.y3);
-    const maxY = Math.max(tri.y1, tri.y2, tri.y3);
-
-    return {
-      x: minX - OFFSET_LENGTH,
-      y: minY - OFFSET_LENGTH,
-      width: maxX - minX + OFFSET_LENGTH * 2,
-      height: maxY - minY + OFFSET_LENGTH * 2,
-    };
-  }
-
-  return {
-    x: 0,
-    y: 0,
-    width: 0,
-    height: 0,
-  };
-});
+const { bbox } = useBbox();
 
 const anchors = computed(() => {
   if (!bbox.value) {
