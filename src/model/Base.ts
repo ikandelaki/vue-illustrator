@@ -18,7 +18,7 @@ export interface BaseModelInterface {
   getId(): number;
   setColor(color: string): BaseModelInterface;
   setTransform({ rotate }: TransformType): BaseModelInterface;
-  getTransform(): string | null;
+  getTransform(): string;
 }
 
 export default class BaseModel implements BaseModelInterface {
@@ -78,9 +78,9 @@ export default class BaseModel implements BaseModelInterface {
     return this;
   }
 
-  getTransform(): string | null {
+  getTransform(): string {
     if (!this.transform.rotate) {
-      return null;
+      return "";
     }
 
     const { x, y } = getObjectCenterPosition(this);

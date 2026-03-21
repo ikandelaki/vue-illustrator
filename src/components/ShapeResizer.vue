@@ -126,7 +126,10 @@ const resize = (event: MouseEvent, anchorId: string) => {
 };
 </script>
 <template>
-  <template v-if="selectedObjectId && bbox.width">
+  <g
+    v-if="selectedObjectId && bbox.width"
+    :transform="selectedObject?.getTransform()"
+  >
     <rect
       class="selection-box"
       :x="bbox.x"
@@ -151,7 +154,7 @@ const resize = (event: MouseEvent, anchorId: string) => {
       stroke-width="1"
       @mousedown="startResize($event, anchor.id)"
     />
-  </template>
+  </g>
 </template>
 
 <style scoped>
