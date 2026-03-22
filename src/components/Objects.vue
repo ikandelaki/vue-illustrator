@@ -4,12 +4,9 @@ import { ShapeObject, useObjectsStore } from "../store/objects";
 import { SHAPE_TYPES } from "../types/ShapeTypes";
 import { useSelectedShapeStore } from "../store/selectedShape";
 import { useDragElement } from "../composables/mouse";
-import ShapeResizer from "./ShapeResizer.vue";
 import { getObjectCenterPosition } from "../utils/math";
 import { shapeComponents } from "../store/objects";
 import { useCanvasStore } from "../store/canvas";
-import ShapeRotator from "./ShapeRotator.vue";
-import { ref } from "vue";
 import ShapeActions from "./ShapeActions.vue";
 
 const objectsStore = useObjectsStore();

@@ -6,7 +6,7 @@ import { useScreenToWorld } from "./useScreenToWorld";
 import { useObjectsStore } from "../store/objects";
 import { storeToRefs } from "pinia";
 
-const ROTATION_ZONE = 100;
+const ROTATION_ZONE = 200;
 
 export const useShapeRotate = (
   elementRef: Readonly<
@@ -18,7 +18,7 @@ export const useShapeRotate = (
   const isRotationCursor = ref<boolean>(false);
   const mousePos = ref<{ x: number; y: number }>({ x: 0, y: 0 });
 
-  const { bbox: shapeResizerBbox } = useBbox();
+  const { bbox: shapeResizerBbox } = useBbox(10);
   const { bbox } = useBbox(ROTATION_ZONE);
 
   let lastAngle = 0;
@@ -118,7 +118,7 @@ export const useShapeRotate = (
 
   const cursorTransform = computed(
     () =>
-      `translate(${mousePos.value.x - 16}, ${mousePos.value.y - 16}) rotate(${angle.value - 60})`,
+      `translate(${mousePos.value.x}, ${mousePos.value.y}) rotate(${angle.value - 60})`,
   );
 
   return {
