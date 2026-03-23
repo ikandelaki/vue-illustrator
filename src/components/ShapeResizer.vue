@@ -23,7 +23,7 @@ const { selectedObjectId, selectedObject } = storeToRefs(objectsStore);
 const { setSelectedObjectRadius } = objectsStore;
 
 // Bounding box corners derived from shape geometry
-const { bbox } = useBbox(20);
+const { bbox } = useBbox();
 
 const anchors = computed(() => {
   if (!bbox.value) {

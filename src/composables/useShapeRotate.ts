@@ -65,7 +65,7 @@ export const useShapeRotate = (
    *
    * @param event
    */
-  const handleMouseLeave = (event: MouseEvent) => {
+  const handleMouseLeave = () => {
     isRotationCursor.value = false;
 
     elementRef.value?.removeEventListener("pointermove", handlePointerMove);
@@ -76,7 +76,6 @@ export const useShapeRotate = (
       return;
     }
 
-    // ✅ seed lastAngle from the mousedown position, not stale module-level value
     const cx = shapeResizerBbox.value.x + shapeResizerBbox.value.width / 2;
     const cy = shapeResizerBbox.value.y + shapeResizerBbox.value.height / 2;
     const { x: startX, y: startY } = useScreenToWorld(
@@ -95,8 +94,13 @@ export const useShapeRotate = (
       let delta = angle - lastAngle;
 
       // Wrap delta to [-180, 180] to avoid jumps crossing ±180°
-      if (delta > 180) delta -= 360;
-      if (delta < -180) delta += 360;
+      if (delta > 180) {
+        delta -= 360;
+      }
+
+      if (delta < -180) {
+        delta += 360;
+      }
 
       lastAngle = angle;
 
@@ -116,10 +120,9 @@ export const useShapeRotate = (
     );
   });
 
-  const cursorTransform = computed(
-    () =>
-      `translate(${mousePos.value.x}, ${mousePos.value.y}) rotate(${angle.value - 60})`,
-  );
+  const cursorTransform = computed(() => {
+    return `translate(${mousePos.value.x}, ${mousePos.value.y}) rotate(${angle.value - 60})`;
+  });
 
   return {
     isRotationCursor,
