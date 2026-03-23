@@ -1,4 +1,9 @@
+import { useTemplateRef } from "vue";
 import { useCanvasStore } from "../store/canvas";
+
+const canvasRef = useTemplateRef("canvasContainer");
+const { x: canvasX = 0, y: canvasY = 50 } =
+  canvasRef.value?.getBoundingClientRect() || {};
 
 /**
  * Transform screen X and Y coordinates (event.clientX and event.clientY) into svg world X and X coordinates
@@ -14,8 +19,8 @@ export const useScreenToWorld = (
 ): { x: number; y: number } => {
   const store = useCanvasStore();
 
-  const x = (clientX - store.transform.x) / store.scale;
-  const y = (clientY - store.transform.y) / store.scale;
+  const x = (clientX - store.transform.x - canvasX) / store.scale;
+  const y = (clientY - store.transform.y - canvasY) / store.scale;
 
   return { x, y };
 };
