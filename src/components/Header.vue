@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { ShapeType } from "../types/ShapeTypes";
+import GlobalConfig from "./GlobalConfig.vue";
 import ShapeSelector from "./ShapeSelector.vue";
 
 defineEmits<{
@@ -14,6 +15,7 @@ defineProps<{
 <template>
   <div class="header-container">
     <ShapeSelector @select-shape="$emit('select-shape', $event)" />
+    <GlobalConfig />
   </div>
 </template>
 
