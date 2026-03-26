@@ -1,6 +1,7 @@
 import { defineStore } from "pinia";
 import { ref } from "vue";
 
+export const DEFAULT_SIZE = 50;
 export const MIN_SIZE = 1;
 export const MAX_SIZE = 1000;
 

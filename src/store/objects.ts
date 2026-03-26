@@ -24,6 +24,7 @@ import { getObjectCenterPosition } from "../utils/math";
 import CircleShape from "../components/CircleShape.vue";
 import RectangleShape from "../components/RectangleShape.vue";
 import TriangleShape from "../components/TriangleShape.vue";
+import { useGlobalStore } from "./global";
 
 export type ShapeObject =
   | CircleInterface
@@ -41,8 +42,9 @@ export const useObjectsStore = defineStore("objects", () => {
     setIsContextMenuOpened,
     setSelectedMenuItemIndex,
   } = contextMenuStore;
-  const canvasStore = useCanvasStore();
+  const globalStore = useGlobalStore();
   const { selectedShape } = storeToRefs(selectedShapeStore);
+  const { size } = storeToRefs(globalStore);
 
   /**
    * Get the selected object (could be circle or rectangle)
@@ -162,7 +164,7 @@ export const useObjectsStore = defineStore("objects", () => {
     const id = Math.max(...Object.keys(objects.value).map(Number), 0) + 1;
 
     if (shapeType === SHAPE_TYPES.circle) {
-      const circle = new Circle(id, canvasX, canvasY);
+      const circle = new Circle(id, canvasX, canvasY, size.value);
       objects.value[id] = circle;
 
       return;
@@ -171,7 +173,7 @@ export const useObjectsStore = defineStore("objects", () => {
     if (shapeType === SHAPE_TYPES.rectangle) {
       const x = canvasX - DEFAULT_RECT_WIDTH / 2;
       const y = canvasY - DEFAULT_RECT_HEIGHT / 2;
-      const rectangle = new Rectangle(id, x, y);
+      const rectangle = new Rectangle(id, x, y, size.value, size.value);
       objects.value[id] = rectangle;
 
       return;
@@ -184,10 +186,10 @@ export const useObjectsStore = defineStore("objects", () => {
         id,
         x1,
         y1,
-        x1 + DEFAULT_TRIANGLE_WIDTH,
+        x1 + size.value,
         y1,
         x1,
-        y1 + DEFAULT_TRIANGLE_WIDTH,
+        y1 + size.value,
       );
       objects.value[id] = triangle;
     }
