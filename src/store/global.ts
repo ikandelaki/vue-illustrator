@@ -7,6 +7,7 @@ export const MAX_SIZE = 1000;
 
 export const useGlobalStore = defineStore("global", () => {
   const size = ref<number>(50);
+  const color = ref<string>('#ffffff');
 
   const setSize = (val: number) => {
     if (val < MIN_SIZE || val > MAX_SIZE) {
@@ -19,8 +20,19 @@ export const useGlobalStore = defineStore("global", () => {
     size.value = val;
   };
 
+  const setColor = (val: string) => {
+	  if (!val) {
+	  	console.error("Color should be a proper string");
+		return;
+	  }
+
+	  color.value = val;
+  }
+
   return {
     size,
     setSize,
+	color,
+	setColor
   };
 });

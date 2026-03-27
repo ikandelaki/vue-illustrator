@@ -1,12 +1,15 @@
 <script setup lang="ts">
 import { ComputedRef } from "vue";
 
-defineProps<{ value: ComputedRef<string> }>();
+const props = defineProps<{
+	value: ComputedRef<string>,
+	title?: string 
+}>();
 defineEmits<{ (e: "update:value", value?: string): () => void }>();
 </script>
 <template>
   <div class="context-menu_color">
-    <p>Choose the color:</p>
+	<p>{{ title }}</p>
     <input
       id="color-picker"
       type="color"

@@ -1,10 +1,11 @@
 <script setup lang="ts">
 import { storeToRefs } from "pinia";
 import { useGlobalStore } from "../store/global";
+import ColorInput from "./ColorInput.vue";
 
 const globalStore = useGlobalStore();
-const { size } = storeToRefs(globalStore);
-const { setSize } = globalStore;
+const { size, color } = storeToRefs(globalStore);
+const { setSize, setColor } = globalStore;
 
 const handleSizeChange = (e: Event) => {
   const val = e.currentTarget?.value;
@@ -15,6 +16,15 @@ const handleSizeChange = (e: Event) => {
 
   setSize(Number(val));
 };
+
+const handleColorChange = (e: Event) => {
+	const val = e.currentTarget?.value;
+	if (!val) {
+		return;
+	}
+
+	setColor(val);
+}
 </script>
 
 <template>
@@ -31,6 +41,9 @@ const handleSizeChange = (e: Event) => {
         @input="handleSizeChange"
       />
     </div>
+	<div class="color">
+		<ColorInput :value="value" @update:value="handleColorChange" />
+	</div>
   </div>
 </template>
 

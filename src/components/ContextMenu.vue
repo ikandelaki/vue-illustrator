@@ -38,7 +38,9 @@ const menuItems = computed(() => {
     {
       name: "Color",
       child: ColorInput,
-      props: {},
+      props: {
+	  	title: "Choose the color:"
+	  },
       value: selectedObjectColor,
       setValue: setSelectedObjectColor,
     },
