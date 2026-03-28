@@ -2,6 +2,7 @@ import { useTemplateRef } from "vue";
 import { useCanvasStore } from "../store/canvas";
 
 const canvasRef = useTemplateRef("canvasContainer");
+
 const { x: canvasX = 0, y: canvasY = 50 } =
   canvasRef.value?.getBoundingClientRect() || {};
 

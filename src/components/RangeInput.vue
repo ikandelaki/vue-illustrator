@@ -1,41 +1,39 @@
 <script setup lang="ts">
-import { ComputedRef } from 'vue';
-
-defineProps<{ value: ComputedRef<number> }>()
+defineProps<{ value: number }>();
 
 defineEmits<{
-    (e: 'update:value', value?: number): () => void
-}>()
-
+  (e: "update:value", value?: number): () => void;
+}>();
 </script>
 
 <template>
-    <div class="context-menu_header">
-        <p>Adjust the radius of a selected circle</p>
-      </div>
-      <div class="context-menu_range">
-        <div class="range-input">
-          <span>1</span>
-          <input type="range"
-            min="1"
-            max="1000"
-            step="1"
-            :value="value.value"
-            @input="$emit('update:value', $event?.target?.value)"
-          />
-          <span>1000</span>
-        </div>
-        <div class="selected-value">
-          <span>Current: </span>
-          <input
-            id="circle-radius"
-            name="circle-radius"
-            type="number"
-            :value="value.value"
-            @input="$emit('update:value', $event?.target?.value)"
-            min="1"
-            max="1000"
-          />
-        </div>
+  <div class="context-menu_header">
+    <p>Adjust the radius of a selected circle</p>
+  </div>
+  <div class="context-menu_range">
+    <div class="range-input">
+      <span>1</span>
+      <input
+        type="range"
+        min="1"
+        max="1000"
+        step="1"
+        :value="value"
+        @input="$emit('update:value', $event?.target?.value)"
+      />
+      <span>1000</span>
     </div>
+    <div class="selected-value">
+      <span>Current: </span>
+      <input
+        id="circle-radius"
+        name="circle-radius"
+        type="number"
+        :value="value"
+        @input="$emit('update:value', $event?.target?.value)"
+        min="1"
+        max="1000"
+      />
+    </div>
+  </div>
 </template>

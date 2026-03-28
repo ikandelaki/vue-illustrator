@@ -18,13 +18,13 @@ const handleSizeChange = (e: Event) => {
 };
 
 const handleColorChange = (e: Event) => {
-	const val = e.currentTarget?.value;
-	if (!val) {
-		return;
-	}
+  const val = e.currentTarget?.value;
+  if (!val) {
+    return;
+  }
 
-	setColor(val);
-}
+  setColor(val);
+};
 </script>
 
 <template>
@@ -41,9 +41,9 @@ const handleColorChange = (e: Event) => {
         @input="handleSizeChange"
       />
     </div>
-	<div class="color">
-		<ColorInput :value="value" @update:value="handleColorChange" />
-	</div>
+    <div class="color">
+      <ColorInput :value="color" @update:value="handleColorChange" />
+    </div>
   </div>
 </template>
 

@@ -39,9 +39,9 @@ const menuItems = computed(() => {
       name: "Color",
       child: ColorInput,
       props: {
-	  	title: "Choose the color:"
-	  },
-      value: selectedObjectColor,
+        title: "Choose the color:",
+      },
+      value: selectedObjectColor.value,
       setValue: setSelectedObjectColor,
     },
   ];
@@ -52,7 +52,7 @@ const menuItems = computed(() => {
       name: "Radius",
       child: RangeInput,
       props: {},
-      value: selectedObjectRadius,
+      value: selectedObjectRadius.value,
       setValue: setSelectedObjectRadius,
     });
   }
