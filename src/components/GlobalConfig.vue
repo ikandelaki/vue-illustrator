@@ -17,8 +17,7 @@ const handleSizeChange = (e: Event) => {
   setSize(Number(val));
 };
 
-const handleColorChange = (e: Event) => {
-  const val = e.currentTarget?.value;
+const handleColorChange = (val?: string) => {
   if (!val) {
     return;
   }
