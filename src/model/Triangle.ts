@@ -31,8 +31,8 @@ export class Triangle extends BaseModel implements TriangleInterface {
     y2: number,
     x3: number,
     y3: number,
-    width?: number,
     color?: string,
+    width?: number,
   ) {
     super({
       id,

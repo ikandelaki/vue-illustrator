@@ -44,7 +44,7 @@ export const useObjectsStore = defineStore("objects", () => {
   } = contextMenuStore;
   const globalStore = useGlobalStore();
   const { selectedShape } = storeToRefs(selectedShapeStore);
-  const { size } = storeToRefs(globalStore);
+  const { size, color } = storeToRefs(globalStore);
 
   /**
    * Get the selected object (could be circle or rectangle)
@@ -164,7 +164,7 @@ export const useObjectsStore = defineStore("objects", () => {
     const id = Math.max(...Object.keys(objects.value).map(Number), 0) + 1;
 
     if (shapeType === SHAPE_TYPES.circle) {
-      const circle = new Circle(id, canvasX, canvasY, size.value);
+      const circle = new Circle(id, canvasX, canvasY, size.value, color.value);
       objects.value[id] = circle;
 
       return;
@@ -173,7 +173,14 @@ export const useObjectsStore = defineStore("objects", () => {
     if (shapeType === SHAPE_TYPES.rectangle) {
       const x = canvasX - DEFAULT_RECT_WIDTH / 2;
       const y = canvasY - DEFAULT_RECT_HEIGHT / 2;
-      const rectangle = new Rectangle(id, x, y, size.value, size.value);
+      const rectangle = new Rectangle(
+        id,
+        x,
+        y,
+        size.value,
+        size.value,
+        color.value,
+      );
       objects.value[id] = rectangle;
 
       return;
@@ -190,6 +197,7 @@ export const useObjectsStore = defineStore("objects", () => {
         y1,
         x1,
         y1 + size.value,
+        color.value,
       );
       objects.value[id] = triangle;
     }

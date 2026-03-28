@@ -41,9 +41,9 @@ export class Rectangle extends BaseModel implements RectangleInterface {
     y: number,
     width: number = DEFAULT_RECT_WIDTH,
     height: number = DEFAULT_RECT_HEIGHT,
+    color: string,
     rx: number = 0,
     ry: number = 0,
-    color?: string,
   ) {
     super({
       id,

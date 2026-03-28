@@ -46,9 +46,12 @@ const handleColorChange = (val?: string) => {
   </div>
 </template>
 
-<style scoped lang="scss">
+<style lang="scss">
 .global-config {
   margin-inline-start: 16px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
 
   .size {
     display: flex;
@@ -72,6 +75,26 @@ const handleColorChange = (val?: string) => {
       &::placeholder {
         color: var(--light-gray);
         font-family: "Fredoka", sans-serif;
+      }
+    }
+  }
+
+  .context-menu {
+    &_color {
+      margin-block-start: 0;
+
+      input {
+        border: 1px solid #ffffff;
+        cursor: pointer;
+
+        &::-webkit-color-swatch-wrapper {
+          padding: 0;
+          border: none;
+        }
+
+        &::-webkit-color-swatch {
+          border: none;
+        }
       }
     }
   }
