@@ -1,6 +1,6 @@
 import { useCanvasStore } from "../store/canvas";
 
-export const CANVAS_OFFSET_TOP = 50;
+export const CANVAS_OFFSET_TOP = 80;
 
 /**
  * Transform screen X and Y coordinates (event.clientX and event.clientY) into svg world X and X coordinates

@@ -28,8 +28,7 @@ const handleColorChange = (val?: string) => {
 
 <template>
   <div class="global-config">
-    <div class="size">
-      <h4>size</h4>
+    <div class="control size">
       <input
         name="size"
         type="number"
@@ -39,9 +38,11 @@ const handleColorChange = (val?: string) => {
         :value="size"
         @input="handleSizeChange"
       />
+      <h4>size</h4>
     </div>
-    <div class="color">
+    <div class="control color">
       <ColorInput :value="color" @update:value="handleColorChange" />
+      <h4>color</h4>
     </div>
   </div>
 </template>
@@ -53,16 +54,20 @@ const handleColorChange = (val?: string) => {
   align-items: center;
   gap: 8px;
 
-  .size {
+  .control {
     display: flex;
+    flex-direction: column;
     align-items: center;
+    justify-content: center;
     gap: 8px;
 
     h4 {
       color: #ffffff;
       height: 100%;
     }
+  }
 
+  .size {
     input {
       background: none;
       border: none;

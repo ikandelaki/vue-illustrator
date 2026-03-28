@@ -1,6 +1,6 @@
 /* src/assets/styles/main.css or within a <style> tag in a .vue file */
 :root {
-  --header-total-height: 50px;
+  --header-total-height: 80px;
   --sidebar-expanded-width: 400px;
   --sidebar-width: 50px;
   --main-black: #212529;
