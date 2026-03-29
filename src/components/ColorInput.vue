@@ -1,6 +1,4 @@
 <script setup lang="ts">
-import { ComputedRef } from "vue";
-
 const props = defineProps<{
   value: string;
   title?: string;
