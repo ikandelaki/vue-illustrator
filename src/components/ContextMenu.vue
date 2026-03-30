@@ -6,6 +6,7 @@ import { storeToRefs } from "pinia";
 import RangeInput from "./RangeInput.vue";
 import ColorInput from "./ColorInput.vue";
 import { useContextMenuStore } from "../store/contextMenu";
+import OpacityInput from "./OpacityInput.vue";
 
 const contextMenuStore = useContextMenuStore();
 const objectsStore = useObjectsStore();
@@ -14,10 +15,12 @@ const {
   selectedObjectColor,
   selectedObjectType,
   selectedObjectId,
+  selectedObjectOpacity,
 } = storeToRefs(objectsStore);
 const {
   setSelectedObjectRadius,
   setSelectedObjectColor,
+  setSelectedObjectOpacity,
   selectObject,
   deleteObject,
 } = objectsStore;
@@ -43,6 +46,13 @@ const menuItems = computed(() => {
       },
       value: selectedObjectColor.value,
       setValue: setSelectedObjectColor,
+    },
+    {
+      name: "Opacity",
+      child: OpacityInput,
+      props: {},
+      value: selectedObjectOpacity.value,
+      setValue: setSelectedObjectOpacity,
     },
   ];
 

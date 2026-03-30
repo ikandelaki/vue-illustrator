@@ -18,7 +18,7 @@ const { object, selected } = defineProps<{
       :width="object.getWidth()"
       :height="object.getHeight()"
       :class="{ selected: selected }"
-      :style="{ fill: object.getColor() }"
+      :style="{ fill: object.getColor(), opacity: object.opacity }"
     />
   </g>
 </template>

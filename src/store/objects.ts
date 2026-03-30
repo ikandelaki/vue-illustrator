@@ -305,6 +305,27 @@ export const useObjectsStore = defineStore("objects", () => {
     ) as Record<number, RectangleInterface>;
   });
 
+  const selectedObjectOpacity = computed(() => {
+    if (!selectedObjectId.value || !selectedObject.value) {
+      return 1;
+    }
+
+    return selectedObject.value.opacity;
+  });
+
+  const setSelectedObjectOpacity = (val: number) => {
+    if (val > 1 || val < 0) {
+      console.error("Opacity can not be more than 100 or less than 0");
+      return;
+    }
+
+    if (!selectedObject.value) {
+      return;
+    }
+
+    selectedObject.value.opacity = val;
+  };
+
   return {
     objects,
     circles,
@@ -324,6 +345,8 @@ export const useObjectsStore = defineStore("objects", () => {
     deleteObject,
     setObjectName,
     handleCreateObject,
+    selectedObjectOpacity,
+    setSelectedObjectOpacity,
   };
 });
 

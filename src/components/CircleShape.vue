@@ -15,7 +15,7 @@ const { object, selected } = defineProps<{
       :cy="object.getCy()"
       :r="object.getRadius()"
       :class="[{ selected: selected }, $attrs.class]"
-      :style="{ fill: object.getColor() }"
+      :style="{ fill: object.getColor(), opacity: object.opacity }"
     />
   </g>
 </template>

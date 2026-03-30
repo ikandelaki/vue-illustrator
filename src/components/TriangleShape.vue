@@ -13,6 +13,10 @@ const points = computed(() => {
 
 <template>
   <g>
-    <polygon :points="points" :fill="object.color" />
+    <polygon
+      :points="points"
+      :fill="object.color"
+      :style="{ opacity: object.opacity }"
+    />
   </g>
 </template>

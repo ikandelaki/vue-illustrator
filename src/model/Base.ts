@@ -11,6 +11,7 @@ export interface BaseModelInterface {
   color: string;
   type: string;
   name: string;
+  opacity: number;
   transform: TransformType;
   getName(): string;
   getType(): string;
@@ -26,6 +27,7 @@ export default class BaseModel implements BaseModelInterface {
   color: string;
   type: string;
   name: string;
+  opacity: number = 100;
   transform: TransformType = {};
 
   constructor({
