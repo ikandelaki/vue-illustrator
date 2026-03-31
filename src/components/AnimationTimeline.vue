@@ -322,14 +322,13 @@ const progressPercent = computed(
 .timeline-body {
   display: flex;
   flex: 1;
-  overflow: hidden;
+  max-height: 200px;
+  overflow-x: hidden;
+  overflow-y: auto;
 }
 
 /* Labels column */
 .labels-col {
-  display: flex;
-  flex-direction: column;
-  flex-shrink: 0;
   border-right: 1px solid #2a2a3e;
   background: #0e0e1a;
   z-index: 20;
@@ -377,12 +376,12 @@ const progressPercent = computed(
 /* Scrollable track area */
 .timeline-tracks-scroll {
   flex: 1;
-  overflow-x: auto;
-  overflow-y: hidden;
+  overflow: auto;
   position: relative;
   cursor: crosshair;
   scrollbar-width: thin;
   scrollbar-color: #2a2a3e transparent;
+  height: 100%;
 }
 
 .timeline-tracks-scroll::-webkit-scrollbar {
