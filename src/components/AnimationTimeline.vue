@@ -42,9 +42,10 @@ const formatDuration = (s: number) => {
   return m > 0 ? `${m}:${String(sec).padStart(2, "0")}` : `${sec}s`;
 };
 
-const progressPercent = computed(
-  () => (currentTime.value / duration.value) * 100,
-);
+const progressPercent = computed(() => {
+  console.log(">> ", (currentTime.value / duration.value) * 100);
+  return (currentTime.value / duration.value) * 100;
+});
 
 console.log(">> selectedObjectTracks", selectedObjectTracks.value);
 </script>

@@ -6,7 +6,10 @@ const { currentTime, zoom, xToTime } = useTimeline();
 
 const isDragging = ref(false);
 
-const x = computed(() => currentTime.value * zoom.value);
+const x = computed(() => {
+  console.log(">> currentTime.value", currentTime.value * zoom.value);
+  return currentTime.value * zoom.value;
+});
 
 const formatTime = (secs: number): string => {
   const m = Math.floor(secs / 60);
