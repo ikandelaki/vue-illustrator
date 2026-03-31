@@ -1,3 +1,4 @@
+import { useTracksStore } from "../store/animation";
 import { ref, computed, onUnmounted } from "vue";
 import type { TimelineTrack } from "../types/timeline";
 import { useObjectsStore } from "../store/objects";
@@ -14,20 +15,9 @@ export function useTimeline() {
   const zoom = ref(80); // pixels per second
   const isPlaying = ref(false);
   const objectsStore = useObjectsStore();
+  const tracksStore = useTracksStore();
   const { selectedObjectId } = storeToRefs(objectsStore);
-
-  // HashMap (object id => object keyframe data)
-  const tracks = ref<Record<number, TimelineTrack[]>>({
-    1: [
-      {
-        name: "Color",
-        keyframes: [
-          { id: 1, time: 0 },
-          { id: 2, time: 2.5 },
-        ],
-      },
-    ],
-  });
+  const { tracks } = storeToRefs(tracksStore);
 
   const selectedObjectTracks = computed(() => {
     if (!selectedObjectId.value) {
@@ -101,29 +91,53 @@ export function useTimeline() {
   };
 
   // Keyframe manipulation
-  const addKeyframe = (trackId: number, time: number) => {
-    const track = tracks.value.find((t) => t.id === trackId);
+  const addKeyframe = (time: number, type: string) => {
+    if (!selectedObjectId.value) {
+      return;
+    }
+
+    const track = tracks.value[selectedObjectId.value]?.find(
+      (track) => track.name === type,
+    );
     if (!track) return;
+
     const id = Date.now();
     track.keyframes.push({ id, time: parseFloat(time.toFixed(3)) });
     track.keyframes.sort((a, b) => a.time - b.time);
   };
 
-  const removeKeyframe = (trackId: number, keyframeId: number) => {
-    const track = tracks.value.find((t) => t.id === trackId);
-    if (!track) return;
+  const removeKeyframe = (keyframeId: number, type: string) => {
+    if (!selectedObjectId.value) {
+      return;
+    }
+
+    const track = tracks.value[selectedObjectId.value]?.find(
+      (track) => track.name === type,
+    );
+    if (!track) {
+      return;
+    }
+
     track.keyframes = track.keyframes.filter((k) => k.id !== keyframeId);
   };
 
-  const moveKeyframe = (
-    trackId: number,
-    keyframeId: number,
-    newTime: number,
-  ) => {
-    const track = tracks.value[trackId];
-    if (!track) return;
+  const moveKeyframe = (keyframeId: number, newTime: number, type: string) => {
+    if (!selectedObjectId.value) {
+      return;
+    }
+
+    const track = tracks.value[selectedObjectId.value]?.find(
+      (track) => track.name === type,
+    );
+    if (!track) {
+      return;
+    }
+
     const kf = track.keyframes.find((k) => k.id === keyframeId);
-    if (!kf) return;
+    if (!kf) {
+      return;
+    }
+
     kf.time = Math.max(
       0,
       Math.min(duration.value, parseFloat(newTime.toFixed(3))),

@@ -1,3 +1,4 @@
+import { useTracksStore } from "./animation";
 import { useSelectedShapeStore } from "./selectedShape";
 import { useCanvasStore } from "./canvas";
 import Triangle, {
@@ -37,6 +38,7 @@ export const useObjectsStore = defineStore("objects", () => {
   const selectedObjectType = ref<ShapeType | null>(null);
   const contextMenuStore = useContextMenuStore();
   const selectedShapeStore = useSelectedShapeStore();
+  const tracksStore = useTracksStore();
   const {
     setContextMenuLocation,
     setIsContextMenuOpened,
@@ -45,6 +47,7 @@ export const useObjectsStore = defineStore("objects", () => {
   const globalStore = useGlobalStore();
   const { selectedShape } = storeToRefs(selectedShapeStore);
   const { size, color } = storeToRefs(globalStore);
+  const { initTracksForObject } = tracksStore;
 
   /**
    * Get the selected object (could be circle or rectangle)
@@ -166,6 +169,7 @@ export const useObjectsStore = defineStore("objects", () => {
     if (shapeType === SHAPE_TYPES.circle) {
       const circle = new Circle(id, canvasX, canvasY, size.value, color.value);
       objects.value[id] = circle;
+      initTracksForObject(circle);
 
       return;
     }
@@ -182,6 +186,7 @@ export const useObjectsStore = defineStore("objects", () => {
         color.value,
       );
       objects.value[id] = rectangle;
+      initTracksForObject(rectangle);
 
       return;
     }
@@ -200,6 +205,7 @@ export const useObjectsStore = defineStore("objects", () => {
         color.value,
       );
       objects.value[id] = triangle;
+      initTracksForObject(triangle);
     }
   };
 

@@ -1,57 +1,57 @@
 <script setup lang="ts">
-import { ref } from 'vue'
-import { useTimeline } from '../composables/useTimeline'
-import type { Keyframe } from '../types/timeline'
+import { ref } from "vue";
+import { useTimeline } from "../composables/useTimeline";
+import type { Keyframe } from "../types/timeline";
 
 const props = defineProps<{
-  keyframe: Keyframe
-  trackId: number
-  trackColor: string
-}>()
+  keyframe: Keyframe;
+  trackColor?: string;
+  type: string;
+}>();
 
 const emit = defineEmits<{
-  dragstart: [keyframeId: number]
-  dragend:   [keyframeId: number]
-}>()
+  dragstart: [keyframeId: number];
+  dragend: [keyframeId: number];
+}>();
 
-const { moveKeyframe, xToTime, zoom, removeKeyframe } = useTimeline()
+const { moveKeyframe, zoom, removeKeyframe } = useTimeline();
 
-const isDragging  = ref(false)
-const isHovered   = ref(false)
-const dragStartX  = ref(0)
-const dragStartTime = ref(0)
+const isDragging = ref(false);
+const isHovered = ref(false);
+const dragStartX = ref(0);
+const dragStartTime = ref(0);
 
 const onMousedown = (e: MouseEvent) => {
-  if (e.button === 2) return // right-click handled separately
-  e.stopPropagation()
-  isDragging.value    = true
-  dragStartX.value    = e.clientX
-  dragStartTime.value = props.keyframe.time
-  emit('dragstart', props.keyframe.id)
+  if (e.button === 2) return; // right-click handled separately
+  e.stopPropagation();
+  isDragging.value = true;
+  dragStartX.value = e.clientX;
+  dragStartTime.value = props.keyframe.time;
+  emit("dragstart", props.keyframe.id);
 
   const onMousemove = (e: MouseEvent) => {
-    if (!isDragging.value) return
-    const dx      = e.clientX - dragStartX.value
-    const dtSecs  = dx / zoom.value
-    const newTime = dragStartTime.value + dtSecs
-    moveKeyframe(props.trackId, props.keyframe.id, newTime)
-  }
+    if (!isDragging.value) return;
+    const dx = e.clientX - dragStartX.value;
+    const dtSecs = dx / zoom.value;
+    const newTime = dragStartTime.value + dtSecs;
+    moveKeyframe(props.keyframe.id, newTime, props.type);
+  };
 
   const onMouseup = () => {
-    isDragging.value = false
-    emit('dragend', props.keyframe.id)
-    window.removeEventListener('mousemove', onMousemove)
-    window.removeEventListener('mouseup', onMouseup)
-  }
+    isDragging.value = false;
+    emit("dragend", props.keyframe.id);
+    window.removeEventListener("mousemove", onMousemove);
+    window.removeEventListener("mouseup", onMouseup);
+  };
 
-  window.addEventListener('mousemove', onMousemove)
-  window.addEventListener('mouseup', onMouseup)
-}
+  window.addEventListener("mousemove", onMousemove);
+  window.addEventListener("mouseup", onMouseup);
+};
 
 const onContextMenu = (e: MouseEvent) => {
-  e.preventDefault()
-  removeKeyframe(props.trackId, props.keyframe.id)
-}
+  e.preventDefault();
+  removeKeyframe(props.keyframe.id, props.type);
+};
 </script>
 
 <template>
@@ -73,10 +73,7 @@ const onContextMenu = (e: MouseEvent) => {
         transform="translate(1,1.5)"
       />
       <!-- outer diamond -->
-      <polygon
-        class="diamond-outer"
-        points="7,1 13,7 7,13 1,7"
-      />
+      <polygon class="diamond-outer" points="7,1 13,7 7,13 1,7" />
       <!-- inner highlight -->
       <polygon
         class="diamond-inner"
@@ -91,11 +88,11 @@ const onContextMenu = (e: MouseEvent) => {
 
 <style scoped>
 .keyframe-marker {
-  position:   absolute;
-  top:        50%;
-  transform:  translate(-50%, -50%);
-  cursor:     grab;
-  z-index:    10;
+  position: absolute;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  cursor: grab;
+  z-index: 10;
   line-height: 0;
   transition: filter 0.12s ease;
 }
@@ -112,7 +109,7 @@ const onContextMenu = (e: MouseEvent) => {
 }
 
 .diamond-outer {
-  fill:   var(--track-color, #f0b429);
+  fill: var(--track-color, #f0b429);
   stroke: color-mix(in srgb, var(--track-color, #f0b429) 40%, #000);
   stroke-width: 1px;
   transition: fill 0.12s ease;

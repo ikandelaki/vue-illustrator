@@ -29,14 +29,6 @@ const scrollEl = ref<HTMLElement | null>(null);
 // Click on ruler / track area to seek
 const onScrollAreaClick = (e: MouseEvent) => {
   if (!scrollEl.value) return;
-  // Only seek on direct clicks (not keyframe drags)
-  const target = e.target as HTMLElement;
-  if (
-    target.closest(".keyframe-marker") ||
-    target.closest(".pointer-head") ||
-    target.closest(".pointer-line")
-  )
-    return;
 
   const rect = scrollEl.value.getBoundingClientRect();
   const x = e.clientX - rect.left + scrollEl.value.scrollLeft;
@@ -53,6 +45,8 @@ const formatDuration = (s: number) => {
 const progressPercent = computed(
   () => (currentTime.value / duration.value) * 100,
 );
+
+console.log(">> selectedObjectTracks", selectedObjectTracks.value);
 </script>
 
 <template>
@@ -168,7 +162,7 @@ const progressPercent = computed(
         <div class="label-ruler-gutter" />
         <!-- track labels -->
         <div
-          v-for="(track, key) in selectedObjectTracks"
+          v-for="(track, key) of selectedObjectTracks"
           :key="key"
           class="track-label"
         >
@@ -234,6 +228,7 @@ const progressPercent = computed(
     sans-serif;
   color: #c4c4d4;
   user-select: none;
+  max-width: 100%;
 }
 
 /* Transport */

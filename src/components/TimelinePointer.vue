@@ -74,7 +74,6 @@ const onMousedown = (e: MouseEvent) => {
 
 .pointer-head {
   position: relative;
-  left: -1px;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -83,6 +82,7 @@ const onMousedown = (e: MouseEvent) => {
   pointer-events: all;
   cursor: ew-resize;
   user-select: none;
+  z-index: 1;
 }
 
 .pointer-time {
@@ -105,7 +105,6 @@ const onMousedown = (e: MouseEvent) => {
 .pointer-line {
   position: absolute;
   top: 0;
-  left: 50%;
   transform: translateX(-50%);
   width: 2px;
   height: 100%;
