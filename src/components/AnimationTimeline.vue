@@ -6,7 +6,7 @@ import TimelineTrack from "./TimelineTrack.vue";
 import TimelinePointer from "./TimelinePointer.vue";
 
 const {
-  tracks,
+  selectedObjectTracks,
   currentTime,
   duration,
   zoom,
@@ -167,8 +167,12 @@ const progressPercent = computed(
         <!-- ruler gutter -->
         <div class="label-ruler-gutter" />
         <!-- track labels -->
-        <div v-for="track in tracks" :key="track.id" class="track-label">
-          <span class="label-dot" :style="{ background: track.color }" />
+        <div
+          v-for="(track, key) in selectedObjectTracks"
+          :key="key"
+          class="track-label"
+        >
+          <span class="label-dot" style="background: #ffffff" />
           <span class="label-name">{{ track.name }}</span>
         </div>
       </div>
@@ -188,7 +192,11 @@ const progressPercent = computed(
 
           <!-- Track rows -->
           <div class="tracks-rows">
-            <div v-for="track in tracks" :key="track.id" class="track-row">
+            <div
+              v-for="(track, key) in selectedObjectTracks"
+              :key="key"
+              class="track-row"
+            >
               <TimelineTrack :track="track" />
             </div>
           </div>
