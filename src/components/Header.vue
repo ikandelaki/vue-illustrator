@@ -99,7 +99,7 @@ defineProps<{
 /* we will explain what these classes do next! */
 .v-enter-active,
 .v-leave-active {
-  transition: max-height 0.5s ease;
+  transition: max-height 0.5s ease-in-out;
 }
 
 .v-enter-from,
@@ -107,8 +107,8 @@ defineProps<{
   max-height: 0;
 }
 
-.v-enter-from,
-.v-leave-to {
-  max-height: 500px;
+.v-enter-to,
+.v-leave-from {
+  max-height: 500px; /* An arbitrarily large height */
 }
 </style>
