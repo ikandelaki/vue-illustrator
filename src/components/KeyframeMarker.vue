@@ -2,6 +2,7 @@
 import { ref } from "vue";
 import { useTimeline } from "../composables/useTimeline";
 import type { Keyframe } from "../types/timeline";
+import KeyframeIcon from "./KeyframeIcon.vue";
 
 const props = defineProps<{
   keyframe: Keyframe;
@@ -14,12 +15,15 @@ const emit = defineEmits<{
   dragend: [keyframeId: number];
 }>();
 
-const { moveKeyframe, zoom, removeKeyframe } = useTimeline();
+const { moveKeyframe, zoom, removeKeyframe, updateKeyframeValue } =
+  useTimeline();
 
 const isDragging = ref(false);
 const isHovered = ref(false);
 const dragStartX = ref(0);
 const dragStartTime = ref(0);
+const isEditing = ref(false);
+const editValue = ref(String(props.keyframe.value ?? ""));
 
 const onMousedown = (e: MouseEvent) => {
   if (e.button === 2) return; // right-click handled separately
@@ -52,6 +56,27 @@ const onContextMenu = (e: MouseEvent) => {
   e.preventDefault();
   removeKeyframe(props.keyframe.id, props.type);
 };
+
+const onDoubleClick = () => {
+  isEditing.value = true;
+  editValue.value = String(props.keyframe.value ?? "");
+};
+
+const saveValue = () => {
+  const parsedValue = isNaN(Number(editValue.value))
+    ? editValue.value
+    : Number(editValue.value);
+  updateKeyframeValue(props.keyframe.id, props.type, parsedValue);
+  isEditing.value = false;
+};
+
+const onKeyDown = (e: KeyboardEvent) => {
+  if (e.key === "Enter") {
+    saveValue();
+  } else if (e.key === "Escape") {
+    isEditing.value = false;
+  }
+};
 </script>
 
 <template>
@@ -63,30 +88,14 @@ const onContextMenu = (e: MouseEvent) => {
     @mouseenter="isHovered = true"
     @mouseleave="isHovered = false"
     @contextmenu="onContextMenu"
-    :title="`${keyframe.time.toFixed(2)}s — right-click to delete`"
+    @dblclick="onDoubleClick"
+    :title="`${keyframe.time.toFixed(2)}s — right-click to delete, double-click to edit`"
   >
-    <svg width="14" height="14" viewBox="0 0 14 14" overflow="visible">
-      <!-- drop shadow -->
-      <polygon
-        points="7,1 13,7 7,13 1,7"
-        fill="rgba(0,0,0,0.4)"
-        transform="translate(1,1.5)"
-      />
-      <!-- outer diamond -->
-      <polygon class="diamond-outer" points="7,1 13,7 7,13 1,7" />
-      <!-- inner highlight -->
-      <polygon
-        class="diamond-inner"
-        points="7,3.5 10.5,7 7,10.5 3.5,7"
-        fill="none"
-        stroke="rgba(255,255,255,0.3)"
-        stroke-width="1"
-      />
-    </svg>
+    <KeyframeIcon />
   </div>
 </template>
 
-<style scoped>
+<style>
 .keyframe-marker {
   position: absolute;
   top: 50%;
@@ -97,25 +106,39 @@ const onContextMenu = (e: MouseEvent) => {
   transition: filter 0.12s ease;
 }
 
-.keyframe-marker:hover .diamond-outer,
-.keyframe-marker.hovered .diamond-outer {
-  filter: brightness(1.35);
-}
-
 .keyframe-marker.dragging {
   cursor: grabbing;
   filter: drop-shadow(0 0 5px var(--track-color));
   z-index: 20;
 }
 
-.diamond-outer {
-  fill: var(--track-color, #f0b429);
-  stroke: color-mix(in srgb, var(--track-color, #f0b429) 40%, #000);
-  stroke-width: 1px;
-  transition: fill 0.12s ease;
+.edit-dialog {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background: #1e1e2e;
+  border: 2px solid #3730a3;
+  border-radius: 6px;
+  padding: 8px;
+  z-index: 1000;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.5);
 }
 
-.keyframe-marker:hover .diamond-outer {
-  fill: color-mix(in srgb, var(--track-color, #f0b429) 80%, #fff);
+.edit-input {
+  background: #2a2a3e;
+  border: 1px solid #3730a3;
+  color: #e2e2ff;
+  padding: 6px 8px;
+  border-radius: 4px;
+  font-size: 12px;
+  min-width: 100px;
+  font-family: "JetBrains Mono", "Fira Code", monospace;
+}
+
+.edit-input:focus {
+  outline: none;
+  border-color: #6366f1;
+  box-shadow: 0 0 8px rgba(99, 102, 241, 0.4);
 }
 </style>

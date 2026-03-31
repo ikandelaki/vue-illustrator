@@ -97,6 +97,30 @@ export function useTimeline() {
     track.keyframes.sort((a, b) => a.time - b.time);
   };
 
+  const updateKeyframeValue = (
+    keyframeId: number,
+    type: string,
+    value: string | number,
+  ) => {
+    if (!selectedObjectId.value) {
+      return;
+    }
+
+    const track = tracks.value[selectedObjectId.value]?.find(
+      (track) => track.name === type,
+    );
+    if (!track) {
+      return;
+    }
+
+    const kf = track.keyframes.find((k) => k.id === keyframeId);
+    if (!kf) {
+      return;
+    }
+
+    kf.value = value;
+  };
+
   // Cleanup
   onUnmounted(() => {
     cleanup();
@@ -126,6 +150,7 @@ export function useTimeline() {
     addKeyframe,
     removeKeyframe,
     moveKeyframe,
+    updateKeyframeValue,
     selectedObjectTracks,
   };
 }

@@ -4,6 +4,7 @@ import { useTimeline } from "../composables/useTimeline";
 import TimelineRuler from "./TimelineRuler.vue";
 import TimelineTrack from "./TimelineTrack.vue";
 import TimelinePointer from "./TimelinePointer.vue";
+import KeyframeIcon from "./KeyframeIcon.vue";
 
 const {
   selectedObjectTracks,
@@ -18,6 +19,7 @@ const {
   zoomOut,
   handleWheelZoom,
   xToTime,
+  addKeyframe,
 } = useTimeline();
 
 // Label column width
@@ -166,6 +168,12 @@ const progressPercent = computed(
         >
           <span class="label-dot" style="background: #ffffff" />
           <span class="label-name">{{ track.name }}</span>
+          <button
+            class="label-add-keyframe"
+            @click="() => addKeyframe(currentTime, track.name)"
+          >
+            <KeyframeIcon />
+          </button>
         </div>
       </div>
 
@@ -356,6 +364,14 @@ const progressPercent = computed(
   text-overflow: ellipsis;
   white-space: nowrap;
   color: #b0b0c8;
+}
+
+.label-add-keyframe {
+  margin-left: auto;
+  cursor: pointer;
+  background: none;
+  border: none;
+  outline: none;
 }
 
 /* Scrollable track area */

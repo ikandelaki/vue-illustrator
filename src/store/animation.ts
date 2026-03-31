@@ -15,6 +15,7 @@ export const useTracksStore = defineStore("tracks", () => {
     keyframes: [] = [],
     defaultValue?: string | number,
   ) => {
+    // Initialize first keyframe with the default value
     if (!keyframes?.length) {
       return {
         name,
@@ -34,7 +35,19 @@ export const useTracksStore = defineStore("tracks", () => {
     ];
 
     if (object.type === SHAPE_TYPES.circle) {
-      defaultTracks.push(getTrack("Radius", [], object.radius));
+      defaultTracks.push(getTrack("Radius", [], (object as any).getRadius?.()));
+    }
+
+    if (object.type === SHAPE_TYPES.rectangle) {
+      defaultTracks.push(getTrack("Width", [], (object as any).getWidth?.()));
+      defaultTracks.push(getTrack("Height", [], (object as any).getHeight?.()));
+      defaultTracks.push(getTrack("X", [], (object as any).getX?.()));
+      defaultTracks.push(getTrack("Y", [], (object as any).getY?.()));
+    }
+
+    if (object.type === SHAPE_TYPES.triangle) {
+      defaultTracks.push(getTrack("X", [], (object as any).getX?.()));
+      defaultTracks.push(getTrack("Y", [], (object as any).getY?.()));
     }
 
     tracks.value[object.id] = defaultTracks;
