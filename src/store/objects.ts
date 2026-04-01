@@ -121,6 +121,7 @@ export const useObjectsStore = defineStore("objects", () => {
 
     const radius = Math.min(value, 1000);
     (obj as CircleInterface).setRadius(radius);
+    setKeyframe(radius, "radius", obj.id);
   };
 
   /**
