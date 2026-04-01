@@ -10,44 +10,62 @@ export const useTracksStore = defineStore("tracks", () => {
 
   const setTracks = (type: string, keyframe: number) => {};
 
+  /**
+   *
+   * @param name - Frontend name displayed in animation tracks playback
+   * @param keyframes - Actual keyframes, containing timestamps and updated values
+   * @param defaultValue - Initial value after creating an object
+   * @param propName - Property to animate!! so for color the value will be 'fill', for opacity 'opacity', etc.
+   * @returns
+   */
   const getTrack = (
     name: string,
     keyframes: [] = [],
+    propName: string,
     defaultValue?: string | number,
   ) => {
     // Initialize first keyframe with the default value
     if (!keyframes?.length) {
       return {
         name,
+        propName,
         keyframes: [{ id: 1, time: 0, value: defaultValue }],
       };
     }
+
     return {
       name,
       keyframes,
+      propName,
     };
   };
 
   const initTracksForObject = (object: ShapeObject) => {
     const defaultTracks = [
-      getTrack("Color", [], object.color),
-      getTrack("Opacity", [], object.opacity),
+      getTrack("Color", [], "color", object.color),
+      getTrack("Opacity", [], "opacity", object.opacity),
     ];
 
     if (object.type === SHAPE_TYPES.circle) {
-      defaultTracks.push(getTrack("Radius", [], (object as any).getRadius?.()));
+      defaultTracks.push(
+        getTrack("Radius", [], "radius", (object as any).getRadius?.()),
+      );
     }
 
     if (object.type === SHAPE_TYPES.rectangle) {
-      defaultTracks.push(getTrack("Width", [], (object as any).getWidth?.()));
-      defaultTracks.push(getTrack("Height", [], (object as any).getHeight?.()));
-      defaultTracks.push(getTrack("X", [], (object as any).getX?.()));
-      defaultTracks.push(getTrack("Y", [], (object as any).getY?.()));
+      defaultTracks.push(
+        getTrack("Width", [], "width", (object as any).getWidth?.()),
+      );
+      defaultTracks.push(
+        getTrack("Height", [], "height", (object as any).getHeight?.()),
+      );
+      defaultTracks.push(getTrack("X", [], "x", (object as any).getX?.()));
+      defaultTracks.push(getTrack("Y", [], "y", (object as any).getY?.()));
     }
 
     if (object.type === SHAPE_TYPES.triangle) {
-      defaultTracks.push(getTrack("X", [], (object as any).getX?.()));
-      defaultTracks.push(getTrack("Y", [], (object as any).getY?.()));
+      defaultTracks.push(getTrack("X", [], "x", (object as any).getX?.()));
+      defaultTracks.push(getTrack("Y", [], "y", (object as any).getY?.()));
     }
 
     tracks.value[object.id] = defaultTracks;

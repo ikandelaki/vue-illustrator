@@ -10,6 +10,7 @@ import Objects from "./Objects.vue";
 import { useCanvasMove } from "../composables/useCanvasMove";
 import { computed, onMounted, useTemplateRef } from "vue";
 import Grid from "./Grid.vue";
+import { useAnimation } from "../composables/useAnimation";
 
 const canvasStore = useCanvasStore();
 const objectsStore = useObjectsStore();
@@ -46,6 +47,8 @@ onMounted(() => {
 
   setTransform(centerX, centerY);
 });
+
+useAnimation();
 </script>
 
 <template>

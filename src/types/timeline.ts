@@ -6,6 +6,7 @@ export interface Keyframe {
 
 export interface TimelineTrack {
   name: string;
+  propName: string;
   keyframes: Keyframe[];
 }
 

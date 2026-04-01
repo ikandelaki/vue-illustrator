@@ -133,6 +133,7 @@ export function useTimeline() {
     value: string | number,
     type: string,
     objectId: number,
+    time: number,
   ) => {
     const track = tracks.value[objectId]?.find(
       (track) => track.name.toLowerCase() === type.toLowerCase(),
@@ -142,8 +143,9 @@ export function useTimeline() {
       return null;
     }
 
+    const timestamp = parseFloat((time ?? currentTime.value ?? 0).toFixed(3));
     const currentTimeKeyframe = track.keyframes.find(
-      (keyframe) => keyframe.time === currentTime.value,
+      (keyframe) => keyframe.time === timestamp,
     );
 
     if (currentTimeKeyframe) {
