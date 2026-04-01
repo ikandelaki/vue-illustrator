@@ -1,10 +1,6 @@
 import { useTracksStore } from "./animation";
 import { useSelectedShapeStore } from "./selectedShape";
-import { useCanvasStore } from "./canvas";
-import Triangle, {
-  DEFAULT_TRIANGLE_WIDTH,
-  TriangleInterface,
-} from "./../model/Triangle";
+import Triangle, { TriangleInterface } from "./../model/Triangle";
 import { defineStore, storeToRefs } from "pinia";
 import { computed, ref } from "vue";
 import Circle, { CircleInterface } from "../model/Circle";
@@ -26,6 +22,7 @@ import CircleShape from "../components/CircleShape.vue";
 import RectangleShape from "../components/RectangleShape.vue";
 import TriangleShape from "../components/TriangleShape.vue";
 import { useGlobalStore } from "./global";
+import { useTimeline } from "../composables/useTimeline";
 
 export type ShapeObject =
   | CircleInterface
@@ -48,6 +45,42 @@ export const useObjectsStore = defineStore("objects", () => {
   const { selectedShape } = storeToRefs(selectedShapeStore);
   const { size, color } = storeToRefs(globalStore);
   const { initTracksForObject } = tracksStore;
+  const { setKeyframe } = useTimeline();
+  // const timelineStore = useTimelineStore();
+  // const { currentTime } = storeToRefs(timelineStore);
+
+  // /**
+  //  * Set a keyframe for the animation track
+  //  */
+  // const setKeyframe = (value: string | number, type: string) => {
+  //   if (!selectedObjectId.value) {
+  //     return;
+  //   }
+
+  //   const track = tracksStore.tracks[selectedObjectId.value]?.find(
+  //     (t) => t.name.toLowerCase() === type.toLowerCase(),
+  //   );
+
+  //   if (!track) {
+  //     return;
+  //   }
+
+  //   const currentTimeKeyframe = track.keyframes.find(
+  //     (keyframe) => keyframe.time === currentTime.value,
+  //   );
+
+  //   if (currentTimeKeyframe) {
+  //     currentTimeKeyframe.value = value;
+  //   } else {
+  //     const id = Date.now();
+  //     track.keyframes.push({
+  //       id,
+  //       time: parseFloat(currentTime.value.toFixed(3)),
+  //       value,
+  //     });
+  //     track.keyframes.sort((a, b) => a.time - b.time);
+  //   }
+  // };
 
   /**
    * Get the selected object (could be circle or rectangle)
@@ -116,6 +149,7 @@ export const useObjectsStore = defineStore("objects", () => {
     }
 
     obj.setColor(value);
+    setKeyframe(value, "color", selectedObjectId.value);
   };
 
   /**

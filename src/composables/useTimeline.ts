@@ -1,6 +1,5 @@
 import { useTracksStore } from "../store/animation";
 import { computed, onUnmounted } from "vue";
-import type { TimelineTrack } from "../types/timeline";
 import { useObjectsStore } from "../store/objects";
 import { useTimelineStore } from "../store/timeline";
 import { storeToRefs } from "pinia";
@@ -42,30 +41,45 @@ export function useTimeline() {
   const xToTime = (x: number): number =>
     Math.max(0, Math.min(duration.value, x / zoom.value));
 
-  // Keyframe manipulation
-  const addKeyframe = (time: number, type: string) => {
-    if (!selectedObjectId.value) {
+  const getSelectedObjectTrack = (type: string, objectId?: number) => {
+    const id = objectId || selectedObjectId?.value;
+    if (!id) {
+      return null;
+    }
+
+    const track = tracks.value[id]?.find(
+      (track) => track.name.toLowerCase() === type.toLowerCase(),
+    );
+
+    if (!track) {
+      return null;
+    }
+
+    return track;
+  };
+
+  // Add a new keyframe on a specified time
+  const addKeyframe = (
+    time: number,
+    type: string,
+    value: string | number = "",
+    objectId?: number,
+  ) => {
+    const track = getSelectedObjectTrack(type, objectId);
+
+    if (!track) {
       return;
     }
 
-    const track = tracks.value[selectedObjectId.value]?.find(
-      (track) => track.name === type,
-    );
-    if (!track) return;
-
     const id = Date.now();
-    track.keyframes.push({ id, time: parseFloat(time.toFixed(3)) });
+    track.keyframes.push({ id, time: parseFloat(time.toFixed(3)), value });
     track.keyframes.sort((a, b) => a.time - b.time);
   };
 
+  // Remove a keyframe of a selected object based on keyframeId and type (color, opacity, etc.)
   const removeKeyframe = (keyframeId: number, type: string) => {
-    if (!selectedObjectId.value) {
-      return;
-    }
+    const track = getSelectedObjectTrack(type);
 
-    const track = tracks.value[selectedObjectId.value]?.find(
-      (track) => track.name === type,
-    );
     if (!track) {
       return;
     }
@@ -73,14 +87,10 @@ export function useTimeline() {
     track.keyframes = track.keyframes.filter((k) => k.id !== keyframeId);
   };
 
+  // Move a keyframe of a selected object to a new time
   const moveKeyframe = (keyframeId: number, newTime: number, type: string) => {
-    if (!selectedObjectId.value) {
-      return;
-    }
+    const track = getSelectedObjectTrack(type);
 
-    const track = tracks.value[selectedObjectId.value]?.find(
-      (track) => track.name === type,
-    );
     if (!track) {
       return;
     }
@@ -97,18 +107,15 @@ export function useTimeline() {
     track.keyframes.sort((a, b) => a.time - b.time);
   };
 
+  // Update a keyframe value of a selected object based on keyframe id and type
   const updateKeyframeValue = (
     keyframeId: number,
     type: string,
     value: string | number,
+    objectId?: number,
   ) => {
-    if (!selectedObjectId.value) {
-      return;
-    }
+    const track = getSelectedObjectTrack(type, objectId);
 
-    const track = tracks.value[selectedObjectId.value]?.find(
-      (track) => track.name === type,
-    );
     if (!track) {
       return;
     }
@@ -119,6 +126,31 @@ export function useTimeline() {
     }
 
     kf.value = value;
+  };
+
+  // Create or Update a current selected object keyframe based on value and type
+  const setKeyframe = (
+    value: string | number,
+    type: string,
+    objectId: number,
+  ) => {
+    const track = tracks.value[objectId]?.find(
+      (track) => track.name.toLowerCase() === type.toLowerCase(),
+    );
+
+    if (!track) {
+      return null;
+    }
+
+    const currentTimeKeyframe = track.keyframes.find(
+      (keyframe) => keyframe.time === currentTime.value,
+    );
+
+    if (currentTimeKeyframe) {
+      updateKeyframeValue(currentTimeKeyframe.id, type, value, objectId);
+    }
+
+    addKeyframe(currentTime.value, type, value, objectId);
   };
 
   // Cleanup
@@ -151,6 +183,7 @@ export function useTimeline() {
     removeKeyframe,
     moveKeyframe,
     updateKeyframeValue,
+    setKeyframe,
     selectedObjectTracks,
   };
 }
