@@ -69,7 +69,8 @@ defineProps<{
 
   &-expand-button {
     position: absolute;
-    inset-block-end: -18px;
+    inset-block-end: 0;
+    transform: translateY(50%);
     width: 36px;
     height: 36px;
     background: none;

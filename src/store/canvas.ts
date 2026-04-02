@@ -19,7 +19,7 @@ export const useCanvasStore = defineStore("canvas", () => {
     height: INITIAL_HEIGHT,
   });
   // If scale is 1, then current viewport is 800x450, if it is 1600x900, it will be 2, etc.
-  const scale = ref<number>(0.8);
+  const scale = ref<number>(0.7);
   const transform = ref<{ x: number; y: number }>({ x: 0, y: 0 });
 
   // Adjust the dimensions of a canvas
