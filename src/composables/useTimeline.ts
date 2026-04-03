@@ -71,7 +71,8 @@ export function useTimeline() {
       return;
     }
 
-    const id = Date.now();
+    const lastKeyframe = track.keyframes.at(-1);
+    const id = lastKeyframe ? lastKeyframe.id + 1 : 1;
     track.keyframes.push({ id, time: parseFloat(time.toFixed(3)), value });
     track.keyframes.sort((a, b) => a.time - b.time);
   };
@@ -150,6 +151,7 @@ export function useTimeline() {
 
     if (currentTimeKeyframe) {
       updateKeyframeValue(currentTimeKeyframe.id, type, value, objectId);
+      return;
     }
 
     addKeyframe(currentTime.value, type, value, objectId);
