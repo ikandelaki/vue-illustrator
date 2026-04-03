@@ -104,7 +104,10 @@ export const useAnimation = () => {
       const tracks = objectKeyframes.value[id];
 
       const currentObject = objects.value[id];
+
       tracks.map((track) => {
+        // TODO: no need to map over every keyframe, just need to update object properties whenever currentTime changes
+        // it should not be a loop
         track.keyframes.forEach((keyframe) => {
           if (!keyframe.value) {
             return;
