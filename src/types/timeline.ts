@@ -1,7 +1,7 @@
 export interface Keyframe {
   id: number;
   time: number; // in seconds
-  value?: string | number; // value for this keyframe (color, opacity, radius, etc.)
+  value: string | number; // value for this keyframe (color, opacity, radius, etc.)
 }
 
 export interface TimelineTrack {
