@@ -108,33 +108,53 @@ export const useAnimation = () => {
       tracks.map((track) => {
         // TODO: no need to map over every keyframe, just need to update object properties whenever currentTime changes
         // it should not be a loop
-        track.keyframes.forEach((keyframe) => {
-          if (!keyframe.value) {
-            return;
-          }
+        if (!track.keyframes?.length) {
+          return;
+        }
 
-          const prevKeyframe = track.keyframes.find(
-            (kf) => kf.id === keyframe.id - 1,
-          );
+        const candidateNextKeyframes = track.keyframes.filter(
+          (kf) => kf.time > currentTime.value,
+        );
+        const candidateNextKeyframeTimes = candidateNextKeyframes.map(
+          (kf) => kf.time,
+        );
+        const nextKeyframeTime = Math.min(...candidateNextKeyframeTimes);
+        const nextKeyframe = track.keyframes.find(
+          (kf) => kf.time === nextKeyframeTime,
+        );
 
-          if (!prevKeyframe?.value) {
-            return;
-          }
+        if (!nextKeyframe?.value) {
+          return;
+        }
 
-          const lastKeyframeTime = track.keyframes.at(-1)?.time;
+        const candidatePrevKeyframes = track.keyframes.filter(
+          (kf) => kf.time < currentTime.value,
+        );
+        const candidatePrevKeyframeTimes = candidatePrevKeyframes.map(
+          (kf) => kf.time,
+        );
+        const prevKeyframeTime = Math.max(...candidatePrevKeyframeTimes);
+        const prevKeyframe = track.keyframes.find(
+          (kf) => kf.time === prevKeyframeTime,
+        );
 
-          // Exit if current time is already past the last keyframe, so no more animation
-          if (!lastKeyframeTime || currentTime.value > lastKeyframeTime) {
-            return;
-          }
+        if (!prevKeyframe?.value) {
+          return;
+        }
 
-          gsap.set(currentObject, {
-            [track.propName]: calculateKeyframeValueAtCurrentTime(
-              keyframe,
-              prevKeyframe,
-              currentTime,
-            ),
-          });
+        const lastKeyframeTime = track.keyframes.at(-1)?.time;
+
+        // Exit if current time is already past the last keyframe, so no more animation
+        if (!lastKeyframeTime || currentTime.value > lastKeyframeTime) {
+          return;
+        }
+
+        gsap.set(currentObject, {
+          [track.propName]: calculateKeyframeValueAtCurrentTime(
+            nextKeyframe,
+            prevKeyframe,
+            currentTime,
+          ),
         });
       });
     });

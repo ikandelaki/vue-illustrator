@@ -27,7 +27,7 @@ export default class BaseModel implements BaseModelInterface {
   color: string;
   type: string;
   name: string;
-  opacity: number = 100;
+  opacity: number = 1;
   transform: TransformType = {};
 
   constructor({

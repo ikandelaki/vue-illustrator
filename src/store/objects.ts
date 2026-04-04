@@ -89,7 +89,7 @@ export const useObjectsStore = defineStore("objects", () => {
 
     const radius = Math.min(value, 1000);
     (obj as CircleInterface).setRadius(radius);
-    setKeyframe(radius, "radius", obj.id);
+    setKeyframe(radius, "radius", obj.id, currentTime.value);
   };
 
   /**
@@ -328,11 +328,17 @@ export const useObjectsStore = defineStore("objects", () => {
       return;
     }
 
-    if (!selectedObject.value) {
+    if (!selectedObjectId.value || !selectedObject.value) {
       return;
     }
 
-    selectedObject.value.opacity = val;
+    selectedObject.value.opacity = Number(val);
+    setKeyframe(
+      Number(val),
+      "opacity",
+      selectedObjectId.value,
+      currentTime.value,
+    );
   };
 
   return {
