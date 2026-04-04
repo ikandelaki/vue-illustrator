@@ -78,6 +78,7 @@ export const useAnimation = () => {
 
     if (typeof keyframe.value === "number") {
       // Percentage of how far current time pointer is compared to prev key frame time and next keyframe time
+      // TODO: something goes wrong here when prev values is much bigger than keyframe value.
       const delta = Number(keyframe.value) - Number(prevKeyframe.value);
 
       return Number(prevKeyframe.value) + delta * ratio;
@@ -106,8 +107,6 @@ export const useAnimation = () => {
       const currentObject = objects.value[id];
 
       tracks.map((track) => {
-        // TODO: no need to map over every keyframe, just need to update object properties whenever currentTime changes
-        // it should not be a loop
         if (!track.keyframes?.length) {
           return;
         }
