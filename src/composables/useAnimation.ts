@@ -10,18 +10,18 @@ export const useAnimation = () => {
   const timelineStore = useTimelineStore();
   const tracksStore = useTracksStore();
   const { isPlaying, currentTime } = storeToRefs(timelineStore);
-  const { tracks: objectKeyframes } = storeToRefs(tracksStore);
+  const { keyframeObjects } = storeToRefs(tracksStore);
   const objectsStore = useObjectsStore();
   const { objects } = storeToRefs(objectsStore);
 
   watch(isPlaying, () => {
-    if (!isPlaying.value || !objectKeyframes.value) {
+    if (!isPlaying.value || !keyframeObjects.value) {
       return;
     }
 
-    Object.keys(objectKeyframes.value).map((objectId: string) => {
+    Object.keys(keyframeObjects.value).map((objectId: string) => {
       const id = Number(objectId);
-      const tracks = objectKeyframes.value[id];
+      const tracks = keyframeObjects.value[id];
 
       const currentObject = objects.value[id];
       tracks.map((track) => {
@@ -72,9 +72,11 @@ export const useAnimation = () => {
     prevKeyframe: Keyframe,
     currentTime: Ref<number>,
   ) => {
-    const ratio =
+    const ratio = Math.max(
+      0.01,
       (currentTime.value - prevKeyframe.time) /
-      (keyframe.time - prevKeyframe.time);
+        (keyframe.time - prevKeyframe.time),
+    );
 
     if (typeof keyframe.value === "number") {
       // Percentage of how far current time pointer is compared to prev key frame time and next keyframe time
@@ -100,9 +102,9 @@ export const useAnimation = () => {
       return;
     }
 
-    Object.keys(objectKeyframes.value).map((objectId: string) => {
+    Object.keys(keyframeObjects.value).map((objectId: string) => {
       const id = Number(objectId);
-      const tracks = objectKeyframes.value[id];
+      const tracks = keyframeObjects.value[id];
 
       const currentObject = objects.value[id];
 
@@ -145,6 +147,17 @@ export const useAnimation = () => {
 
         // Exit if current time is already past the last keyframe, so no more animation
         if (!lastKeyframeTime || currentTime.value > lastKeyframeTime) {
+          return;
+        }
+
+        const keyframeExists = track.keyframes.find(
+          (kf) => kf.time === currentTime.value,
+        );
+        if (keyframeExists) {
+          gsap.set(currentObject, {
+            [track.propName]: keyframeExists.value,
+          });
+
           return;
         }
 

@@ -6,7 +6,7 @@ import { SHAPE_TYPES } from "../types/ShapeTypes";
 
 export const useTracksStore = defineStore("tracks", () => {
   // Hashmap of object id => object keyframe data
-  const tracks = ref<Record<number, TimelineTrack[]>>({});
+  const keyframeObjects = ref<Record<number, TimelineTrack[]>>({});
 
   const setTracks = (type: string, keyframe: number) => {};
 
@@ -68,11 +68,11 @@ export const useTracksStore = defineStore("tracks", () => {
       defaultTracks.push(getTrack("Y", [], "y", (object as any).getY?.()));
     }
 
-    tracks.value[object.id] = defaultTracks;
+    keyframeObjects.value[object.id] = defaultTracks;
   };
 
   return {
-    tracks,
+    keyframeObjects,
     setTracks,
     initTracksForObject,
   };

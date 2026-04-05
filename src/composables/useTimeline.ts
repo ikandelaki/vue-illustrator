@@ -13,7 +13,7 @@ export function useTimeline() {
 
   // State from stores (now shared across all instances)
   const { selectedObjectId } = storeToRefs(objectsStore);
-  const { tracks } = storeToRefs(tracksStore);
+  const { keyframeObjects } = storeToRefs(tracksStore);
   const { currentTime, duration, zoom, isPlaying } = storeToRefs(timelineStore);
   const {
     play,
@@ -31,7 +31,7 @@ export function useTimeline() {
       return null;
     }
 
-    return tracks.value[selectedObjectId.value];
+    return keyframeObjects.value[selectedObjectId.value];
   });
 
   // Derived
@@ -47,7 +47,7 @@ export function useTimeline() {
       return null;
     }
 
-    const track = tracks.value[id]?.find(
+    const track = keyframeObjects.value[id]?.find(
       (track) => track.name.toLowerCase() === type.toLowerCase(),
     );
 
@@ -65,14 +65,23 @@ export function useTimeline() {
     value: string | number = "",
     objectId?: number,
   ) => {
+    const objId = objectId ?? selectedObjectId.value;
     const track = getSelectedObjectTrack(type, objectId);
 
-    if (!track) {
+    if (!track || !objId) {
       return;
     }
 
-    const lastKeyframe = track.keyframes.at(-1);
-    const id = lastKeyframe ? lastKeyframe.id + 1 : 1;
+    const lastKeyframeId = Math.max(...track.keyframes.map((kf) => kf.id));
+    const id = lastKeyframeId ? lastKeyframeId + 1 : 1;
+    const existingKeyframeIndex = track.keyframes.findIndex(
+      (kf) => kf.id === id,
+    );
+
+    if (existingKeyframeIndex !== -1) {
+      return;
+    }
+
     track.keyframes.push({ id, time: parseFloat(time.toFixed(3)), value });
     track.keyframes.sort((a, b) => a.time - b.time);
   };
@@ -81,7 +90,7 @@ export function useTimeline() {
   const removeKeyframe = (keyframeId: number, type: string) => {
     const track = getSelectedObjectTrack(type);
 
-    if (!track) {
+    if (!track || !selectedObjectId.value) {
       return;
     }
 
@@ -115,9 +124,10 @@ export function useTimeline() {
     value: string | number,
     objectId?: number,
   ) => {
+    const objId = objectId ?? selectedObjectId.value;
     const track = getSelectedObjectTrack(type, objectId);
 
-    if (!track) {
+    if (!track || !objId) {
       return;
     }
 
@@ -136,7 +146,7 @@ export function useTimeline() {
     objectId: number,
     time: number,
   ) => {
-    const track = tracks.value[objectId]?.find(
+    const track = keyframeObjects.value[objectId]?.find(
       (track) => track.name.toLowerCase() === type.toLowerCase(),
     );
 
@@ -168,7 +178,7 @@ export function useTimeline() {
     duration,
     zoom,
     isPlaying,
-    tracks,
+    keyframeObjects,
     totalWidth,
     // converters
     timeToX,
