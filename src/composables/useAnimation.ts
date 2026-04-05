@@ -14,27 +14,6 @@ export const useAnimation = () => {
   const objectsStore = useObjectsStore();
   const { objects } = storeToRefs(objectsStore);
 
-  watch(isPlaying, () => {
-    if (!isPlaying.value || !keyframeObjects.value) {
-      return;
-    }
-
-    Object.keys(keyframeObjects.value).map((objectId: string) => {
-      const id = Number(objectId);
-      const tracks = keyframeObjects.value[id];
-
-      const currentObject = objects.value[id];
-      tracks.map((track) => {
-        track.keyframes.map((keyframe) => {
-          gsap.to(currentObject, {
-            [track.propName]: keyframe?.value,
-            duration: keyframe.time,
-          });
-        });
-      });
-    });
-  });
-
   // Transform the color hex values into numbers for calculation
   const parseColor = (hex: string) => {
     return {
@@ -98,10 +77,6 @@ export const useAnimation = () => {
   // Immediately calculate and set object styles at a currentTime value.
   // This is used whenever the user manually changes current time - like draggin the time pointer, or clicking on a timeline
   watch(currentTime, () => {
-    if (isPlaying.value) {
-      return;
-    }
-
     Object.keys(keyframeObjects.value).map((objectId: string) => {
       const id = Number(objectId);
       const tracks = keyframeObjects.value[id];
