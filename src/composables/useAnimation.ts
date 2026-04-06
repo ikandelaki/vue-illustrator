@@ -5,6 +5,10 @@ import { useTimelineStore } from "../store/timeline";
 import gsap from "gsap";
 import { Ref, watch } from "vue";
 import { Keyframe } from "../types/timeline";
+import {
+  getClosestNextKeyframe,
+  getClosestPrevKeyframe,
+} from "../utils/keyframe";
 
 export const useAnimation = () => {
   const timelineStore = useTimelineStore();
@@ -88,32 +92,12 @@ export const useAnimation = () => {
           return;
         }
 
-        const candidateNextKeyframes = track.keyframes.filter(
-          (kf) => kf.time > currentTime.value,
-        );
-        const candidateNextKeyframeTimes = candidateNextKeyframes.map(
-          (kf) => kf.time,
-        );
-        const nextKeyframeTime = Math.min(...candidateNextKeyframeTimes);
-        const nextKeyframe = track.keyframes.find(
-          (kf) => kf.time === nextKeyframeTime,
-        );
-
+        const nextKeyframe = getClosestNextKeyframe(track, currentTime.value);
         if (!nextKeyframe?.value) {
           return;
         }
 
-        const candidatePrevKeyframes = track.keyframes.filter(
-          (kf) => kf.time < currentTime.value,
-        );
-        const candidatePrevKeyframeTimes = candidatePrevKeyframes.map(
-          (kf) => kf.time,
-        );
-        const prevKeyframeTime = Math.max(...candidatePrevKeyframeTimes);
-        const prevKeyframe = track.keyframes.find(
-          (kf) => kf.time === prevKeyframeTime,
-        );
-
+        const prevKeyframe = getClosestPrevKeyframe(track, currentTime.value);
         if (!prevKeyframe?.value) {
           return;
         }

@@ -5,6 +5,7 @@ import TimelineRuler from "./TimelineRuler.vue";
 import TimelineTrack from "./TimelineTrack.vue";
 import TimelinePointer from "./TimelinePointer.vue";
 import KeyframeIcon from "./KeyframeIcon.vue";
+import ChevronIcon from "./ChevronIcon.vue";
 
 const {
   selectedObjectTracks,
@@ -20,10 +21,13 @@ const {
   handleWheelZoom,
   xToTime,
   addKeyframe,
+  jumpToNextKeyframe,
+  jumpToPrevKeyframe,
+  selectedObjectId,
 } = useTimeline();
 
 // Label column width
-const LABEL_WIDTH = 160;
+const LABEL_WIDTH = 200;
 
 // Scrollable tracks area ref (passed to pointer for drag calc)
 const scrollEl = ref<HTMLElement | null>(null);
@@ -168,12 +172,26 @@ const progressPercent = computed(
         >
           <span class="label-dot" style="background: #ffffff" />
           <span class="label-name">{{ track.name }}</span>
-          <button
-            class="label-add-keyframe"
-            @click="() => addKeyframe(currentTime, track.name)"
-          >
-            <KeyframeIcon />
-          </button>
+          <div class="controls">
+            <button
+              class="keyframe-jump"
+              @click="jumpToPrevKeyframe(track.name, selectedObjectId!.value)"
+            >
+              <
+            </button>
+            <button
+              class="keyframe-jump"
+              @click="jumpToNextKeyframe(track.name, selectedObjectId!.value)"
+            >
+              >
+            </button>
+            <button
+              class="label-add-keyframe"
+              @click="() => addKeyframe(currentTime, track.name)"
+            >
+              <KeyframeIcon />
+            </button>
+          </div>
         </div>
       </div>
 
@@ -219,7 +237,7 @@ const progressPercent = computed(
   </div>
 </template>
 
-<style scoped>
+<style scoped lang="scss">
 /* Root */
 .timeline {
   display: flex;
@@ -366,7 +384,6 @@ const progressPercent = computed(
 }
 
 .label-add-keyframe {
-  margin-left: auto;
   cursor: pointer;
   background: none;
   border: none;
@@ -446,5 +463,28 @@ const progressPercent = computed(
   margin: 0;
   border-top: 1px solid #1e1e2e;
   letter-spacing: 0.03em;
+}
+
+.controls {
+  display: flex;
+  align-items: center;
+  margin-left: auto;
+
+  .keyframe-jump {
+    padding: 2px 8px;
+    font-weight: bold;
+    color: var(--light-gray);
+    transition: outline 0.3s;
+    outline: 1px solid transparent;
+
+    &:hover {
+      outline-color: var(--light-gray);
+    }
+  }
+
+  .label-add-keyframe {
+    width: 14px;
+    height: 14px;
+  }
 }
 </style>

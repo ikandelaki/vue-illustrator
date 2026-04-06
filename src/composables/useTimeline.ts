@@ -3,6 +3,10 @@ import { computed, onUnmounted } from "vue";
 import { useObjectsStore } from "../store/objects";
 import { useTimelineStore } from "../store/timeline";
 import { storeToRefs } from "pinia";
+import {
+  getClosestNextKeyframe,
+  getClosestPrevKeyframe,
+} from "../utils/keyframe";
 
 // Export
 export function useTimeline() {
@@ -167,6 +171,38 @@ export function useTimeline() {
     addKeyframe(currentTime.value, type, value, objectId);
   };
 
+  const jumpToNextKeyframe = (type: string, objectId?: number) => {
+    const track = getSelectedObjectTrack(type, objectId);
+
+    if (!track) {
+      return;
+    }
+
+    const nextKeyframe = getClosestNextKeyframe(track, currentTime.value);
+
+    if (!nextKeyframe) {
+      return;
+    }
+
+    currentTime.value = nextKeyframe.time;
+  };
+
+  const jumpToPrevKeyframe = (type: string, objectId?: number) => {
+    const track = getSelectedObjectTrack(type, objectId);
+
+    if (!track) {
+      return;
+    }
+
+    const nextKeyframe = getClosestPrevKeyframe(track, currentTime.value);
+
+    if (!nextKeyframe) {
+      return;
+    }
+
+    currentTime.value = nextKeyframe.time;
+  };
+
   // Cleanup
   onUnmounted(() => {
     cleanup();
@@ -180,6 +216,8 @@ export function useTimeline() {
     isPlaying,
     keyframeObjects,
     totalWidth,
+    selectedObjectTracks,
+    selectedObjectId,
     // converters
     timeToX,
     xToTime,
@@ -198,6 +236,7 @@ export function useTimeline() {
     moveKeyframe,
     updateKeyframeValue,
     setKeyframe,
-    selectedObjectTracks,
+    jumpToNextKeyframe,
+    jumpToPrevKeyframe,
   };
 }
