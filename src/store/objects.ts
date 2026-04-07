@@ -229,6 +229,8 @@ export const useObjectsStore = defineStore("objects", () => {
 
       selectedObject.value.cx = x;
       selectedObject.value.cy = y;
+      setKeyframe(x, "x", selectedObject.value.id, currentTime.value);
+      setKeyframe(y, "y", selectedObject.value.id, currentTime.value);
 
       return;
     }
@@ -236,6 +238,18 @@ export const useObjectsStore = defineStore("objects", () => {
     if (selectedObject.value.type === SHAPE_TYPES.rectangle) {
       selectedObject.value.x = x - selectedObject.value.width / 2;
       selectedObject.value.y = y - selectedObject.value.height / 2;
+      setKeyframe(
+        x - selectedObject.value.width / 2,
+        "x",
+        selectedObject.value.id,
+        currentTime.value,
+      );
+      setKeyframe(
+        y - selectedObject.value.height / 2,
+        "y",
+        selectedObject.value.id,
+        currentTime.value,
+      );
 
       return;
     }
