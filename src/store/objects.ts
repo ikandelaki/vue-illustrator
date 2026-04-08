@@ -265,6 +265,9 @@ export const useObjectsStore = defineStore("objects", () => {
       tri.y1 += deltaY;
       tri.y2 += deltaY;
       tri.y3 += deltaY;
+
+      setKeyframe(deltaX, "x", selectedObject.value.id, currentTime.value);
+      setKeyframe(deltaY, "y", selectedObject.value.id, currentTime.value);
     }
   };
 
