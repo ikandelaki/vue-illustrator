@@ -50,6 +50,12 @@ export const useTracksStore = defineStore("tracks", () => {
       defaultTracks.push(
         getTrack("Radius", [], "radius", (object as any).getRadius?.()),
       );
+      defaultTracks.push(
+        getTrack("cx", [], "cx", (object as any).getRadius?.()),
+      );
+      defaultTracks.push(
+        getTrack("cy", [], "cy", (object as any).getRadius?.()),
+      );
     }
 
     if (object.type === SHAPE_TYPES.rectangle) {

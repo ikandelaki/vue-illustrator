@@ -229,8 +229,8 @@ export const useObjectsStore = defineStore("objects", () => {
 
       selectedObject.value.cx = x;
       selectedObject.value.cy = y;
-      setKeyframe(x, "x", selectedObject.value.id, currentTime.value);
-      setKeyframe(y, "y", selectedObject.value.id, currentTime.value);
+      setKeyframe(x, "cx", selectedObject.value.id, currentTime.value);
+      setKeyframe(y, "cy", selectedObject.value.id, currentTime.value);
 
       return;
     }
