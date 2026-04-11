@@ -373,12 +373,8 @@ export const useObjectsStore = defineStore("objects", () => {
     }
 
     if (selectedObject.value.type === SHAPE_TYPES.triangle) {
-      return calculateDistance(
-        selectedObject.value.x2,
-        selectedObject.value.y2,
-        selectedObject.value.x3,
-        selectedObject.value.y3,
-      );
+      const tri = selectedObject.value as TriangleInterface;
+      return calculateDistance(tri.x1, tri.y1, tri.x2, tri.y2);
     }
 
     return 0;
@@ -396,10 +392,33 @@ export const useObjectsStore = defineStore("objects", () => {
 
     if (selectedObject.value.type === SHAPE_TYPES.rectangle) {
       selectedObject.value.width = Number(value);
+
+      setKeyframe(
+        Number(value),
+        "width",
+        selectedObject.value.id,
+        currentTime.value,
+      );
       return;
     }
 
     if (selectedObject.value.type === SHAPE_TYPES.triangle) {
+      const tri = selectedObject.value as TriangleInterface;
+      const currentWidth = calculateDistance(tri.x1, tri.y1, tri.x2, tri.y2);
+
+      if (currentWidth === 0) return;
+
+      const scale = Number(value) / currentWidth;
+      const { x: centerX = 0, y: centerY = 0 } = getObjectCenterPosition(tri);
+
+      tri.x1 = centerX + (tri.x1 - centerX) * scale;
+      tri.y1 = centerY + (tri.y1 - centerY) * scale;
+      tri.x2 = centerX + (tri.x2 - centerX) * scale;
+      tri.y2 = centerY + (tri.y2 - centerY) * scale;
+      tri.x3 = centerX + (tri.x3 - centerX) * scale;
+      tri.y3 = centerY + (tri.y3 - centerY) * scale;
+
+      setKeyframe(Number(value), "width", tri.id, currentTime.value);
       return;
     }
 
