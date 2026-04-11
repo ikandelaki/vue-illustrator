@@ -1,3 +1,4 @@
+import { FULL_WIDTH } from "./canvas";
 import { useTracksStore } from "./animation";
 import { useSelectedShapeStore } from "./selectedShape";
 import Triangle, { TriangleInterface } from "./../model/Triangle";
@@ -17,7 +18,7 @@ import {
   SHAPE_TYPES,
   TRIANGLE,
 } from "../types/ShapeTypes";
-import { getObjectCenterPosition } from "../utils/math";
+import { calculateDistance, getObjectCenterPosition } from "../utils/math";
 import CircleShape from "../components/CircleShape.vue";
 import RectangleShape from "../components/RectangleShape.vue";
 import TriangleShape from "../components/TriangleShape.vue";
@@ -358,6 +359,53 @@ export const useObjectsStore = defineStore("objects", () => {
     );
   };
 
+  const selectedObjectWidth = computed(() => {
+    if (!selectedObjectId.value || !selectedObject.value) {
+      return 0;
+    }
+
+    if (selectedObject.value.type === SHAPE_TYPES.circle) {
+      return selectedObject.value.radius;
+    }
+
+    if (selectedObject.value.type === SHAPE_TYPES.rectangle) {
+      return selectedObject.value.width;
+    }
+
+    if (selectedObject.value.type === SHAPE_TYPES.triangle) {
+      return calculateDistance(
+        selectedObject.value.x2,
+        selectedObject.value.y2,
+        selectedObject.value.x3,
+        selectedObject.value.y3,
+      );
+    }
+
+    return 0;
+  });
+
+  const setSelectedObjectWidth = (value: string) => {
+    if (!selectedObjectId.value || !selectedObject.value) {
+      return 0;
+    }
+
+    if (selectedObject.value.type === SHAPE_TYPES.circle) {
+      setSelectedObjectRadius(Number(value));
+      return;
+    }
+
+    if (selectedObject.value.type === SHAPE_TYPES.rectangle) {
+      selectedObject.value.width = Number(value);
+      return;
+    }
+
+    if (selectedObject.value.type === SHAPE_TYPES.triangle) {
+      return;
+    }
+
+    return;
+  };
+
   return {
     objects,
     circles,
@@ -379,6 +427,8 @@ export const useObjectsStore = defineStore("objects", () => {
     handleCreateObject,
     selectedObjectOpacity,
     setSelectedObjectOpacity,
+    selectedObjectWidth,
+    setSelectedObjectWidth,
   };
 });
 

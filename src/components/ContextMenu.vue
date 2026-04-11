@@ -7,6 +7,7 @@ import RangeInput from "./RangeInput.vue";
 import ColorInput from "./ColorInput.vue";
 import { useContextMenuStore } from "../store/contextMenu";
 import OpacityInput from "./OpacityInput.vue";
+import TextInput from "./TextInput.vue";
 
 const contextMenuStore = useContextMenuStore();
 const objectsStore = useObjectsStore();
@@ -16,11 +17,13 @@ const {
   selectedObjectType,
   selectedObjectId,
   selectedObjectOpacity,
+  selectedObjectWidth,
 } = storeToRefs(objectsStore);
 const {
   setSelectedObjectRadius,
   setSelectedObjectColor,
   setSelectedObjectOpacity,
+  setSelectedObjectWidth,
   selectObject,
   deleteObject,
 } = objectsStore;
@@ -65,7 +68,19 @@ const menuItems = computed(() => {
       value: selectedObjectRadius.value,
       setValue: setSelectedObjectRadius,
     });
+
+    return items;
   }
+
+  items.push({
+    name: "Width",
+    child: TextInput,
+    props: {
+      title: "Adjust width:",
+    },
+    value: selectedObjectWidth.value,
+    setValue: setSelectedObjectWidth,
+  });
 
   return items;
 });
