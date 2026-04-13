@@ -87,6 +87,10 @@ export const useAnimation = () => {
 
       const currentObject = objects.value[id];
 
+      if (!currentObject) {
+        return;
+      }
+
       tracks.map((track) => {
         if (!track.keyframes?.length) {
           return;
