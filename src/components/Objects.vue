@@ -72,15 +72,14 @@ const handleShapeMove = (event: PointerEvent, objectId: number) => {
   <component
     v-for="object in objects"
     :is="shapeComponents[object.type] || null"
-    :key="object.getId()"
+    :key="object.id"
     :object="object"
-    :selected="selectedObjectId === object.getId()"
-    :transform="object.getTransform()"
-    :id="`shape-${object.getId()}`"
+    :selected="selectedObjectId === object.id"
+    :id="`shape-${object.id}`"
     class="shape"
-    @click="handleShapeClick(object.getId())"
-    @pointerdown="handleShapeMove($event, object.getId())"
-    @contextmenu.prevent="selectObject($event, object.getId(), object.type)"
+    @click="handleShapeClick(object.id)"
+    @pointerdown="handleShapeMove($event, object.id)"
+    @contextmenu.prevent="selectObject($event, object.id, object.type)"
   />
 </template>
 

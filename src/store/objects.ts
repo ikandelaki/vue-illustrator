@@ -25,6 +25,8 @@ import TriangleShape from "../components/TriangleShape.vue";
 import { useGlobalStore } from "./global";
 import { useTimeline } from "../composables/useTimeline";
 import { useTimelineStore } from "./timeline";
+import { BrowserDatabase } from "../composables/useBrowserDatabase";
+import { OBJECT_SHAPES } from "../browserDatabase/objects";
 
 export type ShapeObject =
   | CircleInterface
@@ -35,6 +37,7 @@ export const useObjectsStore = defineStore("objects", () => {
   const objects = ref<Record<number, ShapeObject>>({});
   const selectedObjectId = ref<number | null>(null);
   const selectedObjectType = ref<ShapeType | null>(null);
+  const isObjectsLoading = ref<boolean>(false);
   const contextMenuStore = useContextMenuStore();
   const selectedShapeStore = useSelectedShapeStore();
   const tracksStore = useTracksStore();
@@ -158,6 +161,10 @@ export const useObjectsStore = defineStore("objects", () => {
     setSelectedMenuItemIndex(null);
   };
 
+  const insertIntoLocalDb = async (data: any) => {
+    await BrowserDatabase.insert(OBJECT_SHAPES, data);
+  };
+
   /**
    * Create a new object (circle or rectangle)
    */
@@ -174,6 +181,7 @@ export const useObjectsStore = defineStore("objects", () => {
       const circle = new Circle(id, canvasX, canvasY, size.value, color.value);
       objects.value[id] = circle;
       initTracksForObject(circle);
+      insertIntoLocalDb(circle);
 
       return;
     }
@@ -191,6 +199,7 @@ export const useObjectsStore = defineStore("objects", () => {
       );
       objects.value[id] = rectangle;
       initTracksForObject(rectangle);
+      insertIntoLocalDb(rectangle);
 
       return;
     }
@@ -210,6 +219,7 @@ export const useObjectsStore = defineStore("objects", () => {
       );
       objects.value[id] = triangle;
       initTracksForObject(triangle);
+      insertIntoLocalDb(triangle);
     }
   };
 
@@ -425,6 +435,31 @@ export const useObjectsStore = defineStore("objects", () => {
     return;
   };
 
+  const setIsObjectsLoading = (val: boolean) => {
+    isObjectsLoading.value = val;
+  };
+
+  const createObjectsFromBrowserDb = (objs: ShapeObject[]) => {
+    const shapeObjects = {};
+
+    if (!objs) {
+      return null;
+    }
+
+    objs.forEach((obj) => {
+      const shape = new objectRegistry[obj.type]();
+      Object.keys(obj).forEach((key) => {
+        shape[key] = obj[key];
+      });
+
+      shapeObjects[shape.id] = shape;
+    });
+
+    console.log(">> objs", objs);
+    console.log(">> shapeObjects", shapeObjects);
+    objects.value = shapeObjects;
+  };
+
   return {
     objects,
     circles,
@@ -448,6 +483,9 @@ export const useObjectsStore = defineStore("objects", () => {
     setSelectedObjectOpacity,
     selectedObjectWidth,
     setSelectedObjectWidth,
+    isObjectsLoading,
+    setIsObjectsLoading,
+    createObjectsFromBrowserDb,
   };
 });
 

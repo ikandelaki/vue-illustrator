@@ -5,17 +5,20 @@ import {
   useCanvasStore,
   ZOOM_SENSITIVITY,
 } from "../store/canvas";
-import { useObjectsStore } from "../store/objects";
+import { ShapeObject, useObjectsStore } from "../store/objects";
 import Objects from "./Objects.vue";
 import { useCanvasMove } from "../composables/useCanvasMove";
 import { computed, onMounted, useTemplateRef } from "vue";
 import Grid from "./Grid.vue";
 import { useAnimation } from "../composables/useAnimation";
+import { BrowserDatabase } from "../composables/useBrowserDatabase";
+import { OBJECT_SHAPES } from "../browserDatabase/objects";
 
 const canvasStore = useCanvasStore();
 const objectsStore = useObjectsStore();
 
-const { handleCreateObject } = objectsStore;
+const { handleCreateObject, setIsObjectsLoading, createObjectsFromBrowserDb } =
+  objectsStore;
 const { zoom, setTransform } = useCanvasStore();
 const { isSpacePressed, startDrag } = useCanvasMove();
 
@@ -23,6 +26,13 @@ const canvasContainer = useTemplateRef("canvasContainer");
 const transform = computed(() => {
   return `translate(${canvasStore.transform.x}px, ${canvasStore.transform.y}px) scale(${canvasStore.scale})`;
 });
+
+const setupStoreFromLocalDb = async () => {
+  setIsObjectsLoading(true);
+  const objects = await BrowserDatabase.getAll(OBJECT_SHAPES);
+  createObjectsFromBrowserDb(objects as ShapeObject[]);
+  setIsObjectsLoading(false);
+};
 
 const onWheel = (event: WheelEvent) => {
   if (!canvasContainer.value || (!event.ctrlKey && !event.metaKey)) return;
@@ -46,6 +56,7 @@ onMounted(() => {
   const centerY = (height - INITIAL_HEIGHT * canvasStore.scale) / 2;
 
   setTransform(centerX, centerY);
+  setupStoreFromLocalDb();
 });
 
 useAnimation();

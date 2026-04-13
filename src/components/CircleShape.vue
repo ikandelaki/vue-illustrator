@@ -11,11 +11,12 @@ const { object, selected } = defineProps<{
   <g>
     <circle
       class="shape circle"
-      :cx="object.getCx()"
-      :cy="object.getCy()"
-      :r="object.getRadius()"
+      :cx="object.cx"
+      :cy="object.cy"
+      :r="object.radius"
+      :transform="object.getTransform()"
       :class="[{ selected: selected }, $attrs.class]"
-      :style="{ fill: object.getColor(), opacity: object.opacity }"
+      :style="{ fill: object.color, opacity: object.opacity }"
     />
   </g>
 </template>

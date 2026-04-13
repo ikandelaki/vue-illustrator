@@ -57,9 +57,9 @@ transformObject();
 // Watch for color change for the specific object
 // If the color changes, we should also update the color for the sidebar object as well
 watch(
-  () => objects.value[props.id].color,
+  () => objects.value[props.id]?.color,
   (value?: string) => {
-    if (!value) {
+    if (!value || !sidebarObject.value) {
       return;
     }
 
