@@ -13,12 +13,16 @@ import Grid from "./Grid.vue";
 import { useAnimation } from "../composables/useAnimation";
 import { BrowserDatabase } from "../composables/useBrowserDatabase";
 import { OBJECT_SHAPES } from "../browserDatabase/objects";
+import { storeToRefs } from "pinia";
+import Loader from "./Loader.vue";
 
 const canvasStore = useCanvasStore();
 const objectsStore = useObjectsStore();
 
 const { handleCreateObject, setIsObjectsLoading, createObjectsFromBrowserDb } =
   objectsStore;
+const { isObjectsLoading } = storeToRefs(objectsStore);
+
 const { zoom, setTransform } = useCanvasStore();
 const { isSpacePressed, startDrag } = useCanvasMove();
 
@@ -66,7 +70,7 @@ useAnimation();
   <div
     id="screen"
     class="canvas-container"
-    :class="{ 'cursor-grab': isSpacePressed }"
+    :class="{ 'cursor-grab': isSpacePressed, 'is-loading': isObjectsLoading }"
     @wheel.prevent="onWheel"
     ref="canvasContainer"
   >
@@ -101,6 +105,7 @@ useAnimation();
         <Objects />
       </svg>
     </div>
+    <Loader :visible="isObjectsLoading" />
   </div>
 </template>
 
@@ -150,6 +155,10 @@ svg {
       &:active {
         cursor: grabbing;
       }
+    }
+
+    &.is-loading {
+      pointer-events: none;
     }
   }
 }

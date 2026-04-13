@@ -455,8 +455,6 @@ export const useObjectsStore = defineStore("objects", () => {
       shapeObjects[shape.id] = shape;
     });
 
-    console.log(">> objs", objs);
-    console.log(">> shapeObjects", shapeObjects);
     objects.value = shapeObjects;
   };
 
