@@ -161,7 +161,7 @@ export const useObjectsStore = defineStore("objects", () => {
     setSelectedMenuItemIndex(null);
   };
 
-  const insertIntoLocalDb = async (data: any) => {
+  const insertObjectIntoLocalDb = async (data: any) => {
     await BrowserDatabase.insert(OBJECT_SHAPES, data);
   };
 
@@ -181,7 +181,7 @@ export const useObjectsStore = defineStore("objects", () => {
       const circle = new Circle(id, canvasX, canvasY, size.value, color.value);
       objects.value[id] = circle;
       initTracksForObject(circle);
-      insertIntoLocalDb(circle);
+      insertObjectIntoLocalDb(circle);
 
       return;
     }
@@ -199,7 +199,7 @@ export const useObjectsStore = defineStore("objects", () => {
       );
       objects.value[id] = rectangle;
       initTracksForObject(rectangle);
-      insertIntoLocalDb(rectangle);
+      insertObjectIntoLocalDb(rectangle);
 
       return;
     }
@@ -219,7 +219,7 @@ export const useObjectsStore = defineStore("objects", () => {
       );
       objects.value[id] = triangle;
       initTracksForObject(triangle);
-      insertIntoLocalDb(triangle);
+      insertObjectIntoLocalDb(triangle);
     }
   };
 
@@ -286,7 +286,7 @@ export const useObjectsStore = defineStore("objects", () => {
     selectObject();
   };
 
-  const deleteObject = (id: number | null) => {
+  const deleteObject = async (id: number | null) => {
     if (id === undefined || id === null || !objects.value[id]) {
       return;
     }
@@ -294,6 +294,8 @@ export const useObjectsStore = defineStore("objects", () => {
     delete objects.value[id];
     setIsContextMenuOpened(false);
     setSelectedMenuItemIndex(null);
+
+    await BrowserDatabase.delete(OBJECT_SHAPES, id);
   };
 
   const setObjectName = (event: Event, id: number) => {

@@ -11,14 +11,15 @@ const { object, selected } = defineProps<{
   <g>
     <rect
       class="shape rectangle"
-      :x="object.getX()"
-      :y="object.getY()"
+      :x="object.x"
+      :y="object.y"
       :rx="object.rx"
       :ry="object.ry"
-      :width="object.getWidth()"
-      :height="object.getHeight()"
+      :width="object.width"
+      :height="object.height"
       :class="{ selected: selected }"
-      :style="{ fill: object.getColor(), opacity: object.opacity }"
+      :transform="object.getTransform()"
+      :style="{ fill: object.color, opacity: object.opacity }"
     />
   </g>
 </template>

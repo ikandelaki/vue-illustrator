@@ -1,5 +1,7 @@
+import { OBJECT_KEYFRAMES, OBJECTS } from "../browserDatabase/objects";
+
 const DEFAULT_BROWSER_DATABASE = "browserDatabase";
-const DEFAULT_VERSION = 2;
+const DEFAULT_VERSION = 4;
 
 export class BrowserDatabase {
   private static instance: BrowserDatabase | null = null;
@@ -47,7 +49,9 @@ export class BrowserDatabase {
       request.onupgradeneeded = (event: IDBVersionChangeEvent) => {
         const db = (event.target as IDBOpenDBRequest).result;
         if (!db.objectStoreNames.contains("shapes")) {
-          db.createObjectStore("shapes", { keyPath: "id" });
+          OBJECTS.forEach((objStore) => {
+            db.createObjectStore(objStore, { keyPath: "id" });
+          });
         }
       };
     });
@@ -98,6 +102,63 @@ export class BrowserDatabase {
       request.onsuccess = () => resolve();
       request.onerror = () => {
         console.error(`Could not add object to store: ${storeName}`, value);
+        reject(request.error);
+      };
+    });
+  }
+
+  static async deleteAll(storeName: string) {
+    const instance = BrowserDatabase.getInstance();
+    const db = await instance.ready;
+
+    return new Promise<void>((resolve, reject) => {
+      const transaction = db.transaction(storeName, "readwrite");
+      const request = transaction.objectStore(storeName).clear();
+
+      request.onsuccess = () => resolve();
+      request.onerror = () => {
+        console.error(`Clear request error for store: ${storeName}`);
+        reject(request.error);
+      };
+    });
+  }
+
+  static async deleteAndInsert(storeName: string, data: any) {
+    const instance = BrowserDatabase.getInstance();
+    const db = await instance.ready;
+
+    return new Promise<void>((resolve, reject) => {
+      const transaction = db.transaction(storeName, "readwrite");
+      const store = transaction.objectStore(storeName);
+
+      store.clear();
+      Array.isArray(data)
+        ? data.forEach((datum) => {
+            store.add(datum);
+          })
+        : store.add(data);
+
+      transaction.oncomplete = () => resolve();
+      transaction.onerror = () => reject(transaction.error);
+      transaction.onabort = () => reject(transaction.error);
+    });
+  }
+
+  static async delete(storeName: string, key: string | number) {
+    const instance = BrowserDatabase.getInstance();
+    const db = await instance.ready;
+
+    return new Promise<void>((resolve, reject) => {
+      const request = db
+        .transaction(storeName, "readwrite")
+        .objectStore(storeName)
+        .delete(key);
+
+      request.onsuccess = () => resolve();
+      request.onerror = () => {
+        console.error(
+          `Could not delete object to store: ${storeName} key: ${key}`,
+        );
         reject(request.error);
       };
     });

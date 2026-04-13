@@ -1,5 +1,5 @@
 import { useTracksStore } from "../store/animation";
-import { computed, onUnmounted } from "vue";
+import { computed, onMounted, onUnmounted } from "vue";
 import { useObjectsStore } from "../store/objects";
 import { useTimelineStore } from "../store/timeline";
 import { storeToRefs } from "pinia";
@@ -7,6 +7,8 @@ import {
   getClosestNextKeyframe,
   getClosestPrevKeyframe,
 } from "../utils/keyframe";
+import { BrowserDatabase } from "./useBrowserDatabase";
+import { OBJECT_KEYFRAMES } from "../browserDatabase/objects";
 
 // Export
 export function useTimeline() {
@@ -29,6 +31,7 @@ export function useTimeline() {
     handleWheelZoom,
     cleanup,
   } = timelineStore;
+  const { syncLocalDb } = tracksStore;
 
   const selectedObjectTracks = computed(() => {
     if (!selectedObjectId.value) {
@@ -88,6 +91,7 @@ export function useTimeline() {
 
     track.keyframes.push({ id, time: parseFloat(time.toFixed(3)), value });
     track.keyframes.sort((a, b) => a.time - b.time);
+    syncLocalDb();
   };
 
   // Remove a keyframe of a selected object based on keyframeId and type (color, opacity, etc.)
@@ -99,6 +103,7 @@ export function useTimeline() {
     }
 
     track.keyframes = track.keyframes.filter((k) => k.id !== keyframeId);
+    syncLocalDb();
   };
 
   // Move a keyframe of a selected object to a new time
@@ -119,6 +124,7 @@ export function useTimeline() {
       Math.min(duration.value, parseFloat(newTime.toFixed(3))),
     );
     track.keyframes.sort((a, b) => a.time - b.time);
+    syncLocalDb();
   };
 
   // Update a keyframe value of a selected object based on keyframe id and type
@@ -141,6 +147,7 @@ export function useTimeline() {
     }
 
     kf.value = value;
+    syncLocalDb();
   };
 
   // Create or Update a current selected object keyframe based on value and type
@@ -202,6 +209,21 @@ export function useTimeline() {
 
     currentTime.value = nextKeyframe.time;
   };
+
+  onMounted(async () => {
+    const localKeyframes = await BrowserDatabase.getAll(OBJECT_KEYFRAMES);
+
+    if (!localKeyframes?.length) {
+      return;
+    }
+
+    const keyframes = {};
+    Object.values(localKeyframes).forEach((kf) => {
+      keyframes[kf.id] = kf.tracks;
+    });
+
+    keyframeObjects.value = keyframes;
+  });
 
   // Cleanup
   onUnmounted(() => {
